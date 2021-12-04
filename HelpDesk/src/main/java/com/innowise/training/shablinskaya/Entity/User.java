@@ -33,14 +33,11 @@ public class User {
     @Column(name = "PASSWORD", nullable = false)
     private String userPassword;
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "USER")
+    @ManyToMany(fetch = FetchType.LAZY, mappedBy = "user")
     private Set<Ticket> tickets;
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "USER")
-    private Set<Comment> comments;
-
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "USER")
-    private Set<Feedback> feedbacks;
+    public User() {
+    }
 
     public User(String userFirstName, String userLastName, String userRole, String userEmail, String userPassword) {
         this.userFirstName = userFirstName;

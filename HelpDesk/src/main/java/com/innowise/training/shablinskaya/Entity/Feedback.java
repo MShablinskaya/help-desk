@@ -33,6 +33,10 @@ public class Feedback {
     @Column(name = "TICKET_ID", nullable = false)
     private Long feedbackTicketId;
 
+    @OneToOne
+    @JoinColumn(name = "TICKET_ID", unique = true, nullable = false)
+    private Ticket ticket;
+
     public Feedback() {
     }
 

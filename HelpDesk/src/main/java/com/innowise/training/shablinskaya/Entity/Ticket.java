@@ -6,6 +6,7 @@ import org.hibernate.annotations.DynamicUpdate;
 import javax.persistence.*;
 import java.util.Date;
 import java.util.Objects;
+import java.util.Set;
 
 @Entity
 @DynamicInsert
@@ -47,6 +48,13 @@ public class Ticket {
 
     @Column(name = "APPROVE_ID", nullable = false)
     private Long approveId;
+
+    @ManyToMany
+    @JoinTable(name = "USERS_TICKETS",
+    joinColumns = @JoinColumn(name = "TICKET_ID", referencedColumnName = "ID"),
+    inverseJoinColumns = @JoinColumn(name = "USER_ID", referencedColumnName = "ID")
+    )
+    private Set<User> user;
 
     public Ticket() {
     }
