@@ -6,6 +6,7 @@ import org.hibernate.annotations.DynamicUpdate;
 import javax.persistence.*;
 import java.util.Date;
 import java.util.Objects;
+import java.util.Set;
 
 @Entity
 @DynamicInsert
@@ -32,6 +33,14 @@ public class History {
 
     @Column(name = "DESCRIPTION", nullable = false)
     private String actionOnTicketDescription;
+
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @JoinColumn(name = "USER_ID", nullable = false)
+    private User user;
+
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @JoinColumn(name = "TICKET_ID", nullable = false)
+    private Ticket ticket;
 
     public History() {
     }
@@ -120,4 +129,6 @@ public class History {
                 ", actionOnTicketDescription='" + actionOnTicketDescription + '\'' +
                 '}';
     }
+
+
 }

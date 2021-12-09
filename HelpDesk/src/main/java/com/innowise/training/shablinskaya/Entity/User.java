@@ -34,7 +34,17 @@ public class User {
     private String userPassword;
 
     @ManyToMany(fetch = FetchType.LAZY, mappedBy = "user")
-    private Set<Ticket> tickets;
+    private Set<Ticket> ticketSet;
+
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "user")
+    private Set<History> historySet;
+
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "user")
+    private Set<Comment> commentSet;
+
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "user")
+    private Set<Feedback> feedbackSet;
+
 
     public User() {
     }
@@ -123,4 +133,6 @@ public class User {
                 ", userPassword='" + userPassword + '\'' +
                 '}';
     }
+
+
 }

@@ -4,6 +4,7 @@ import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
 
 import javax.persistence.*;
+import java.util.Set;
 
 @Entity
 @DynamicInsert
@@ -17,6 +18,9 @@ public class Category {
 
     @Column(name = "NAME", nullable = false)
     private String categoryName;
+
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "category")
+    private Set<Ticket> ticketCategory;
 
     public Category() {
     }

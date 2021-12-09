@@ -26,6 +26,14 @@ public class Comment {
     @Column(name = "TICKET_ID", nullable = false)
     private Long commentTicketId;
 
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @JoinColumn(name = "USER_ID", nullable = false)
+    private User user;
+
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @JoinColumn(name = "TICKET_ID", nullable = false)
+    private Ticket ticket;
+
     public Comment() {
     }
 

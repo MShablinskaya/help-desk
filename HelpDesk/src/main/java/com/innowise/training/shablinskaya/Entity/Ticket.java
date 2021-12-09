@@ -51,10 +51,20 @@ public class Ticket {
 
     @ManyToMany
     @JoinTable(name = "USERS_TICKETS",
-    joinColumns = @JoinColumn(name = "TICKET_ID", referencedColumnName = "ID"),
-    inverseJoinColumns = @JoinColumn(name = "USER_ID", referencedColumnName = "ID")
+            joinColumns = @JoinColumn(name = "TICKET_ID", referencedColumnName = "ID"),
+            inverseJoinColumns = @JoinColumn(name = "USER_ID", referencedColumnName = "ID")
     )
     private Set<User> user;
+
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @JoinColumn(name = "CATEGORY_ID", nullable = false)
+    private Category category;
+
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "ticket")
+    private Set<History> historySet;
+
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "ticket")
+    private Set<Attachment> attachmentSet;
 
     public Ticket() {
     }

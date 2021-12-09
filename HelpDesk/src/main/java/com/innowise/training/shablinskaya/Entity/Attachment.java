@@ -27,6 +27,10 @@ public class Attachment {
     @Column(name = "NAME", nullable = false)
     private String attachmentName;
 
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @JoinColumn(name = "TICKET_ID", nullable = false)
+    private Ticket attachmentTicket;
+
     public Attachment(){}
 
     public Attachment(Long attachmentBlob, Long attachmentTicketId,String attachmentName){

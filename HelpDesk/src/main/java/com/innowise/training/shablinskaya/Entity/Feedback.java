@@ -33,6 +33,10 @@ public class Feedback {
     @Column(name = "TICKET_ID", nullable = false)
     private Long feedbackTicketId;
 
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @JoinColumn(name = "USER_ID", nullable = false)
+    private User userFeedback;
+
     @OneToOne
     @JoinColumn(name = "TICKET_ID", unique = true, nullable = false)
     private Ticket ticket;
