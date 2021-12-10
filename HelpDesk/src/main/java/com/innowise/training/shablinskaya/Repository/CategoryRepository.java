@@ -1,4 +1,6 @@
 package com.innowise.training.shablinskaya.Repository;
 
-public interface CategoryRepository {
+import com.innowise.training.shablinskaya.Entity.Category;
+
+public interface CategoryRepository extends TableManagerRepository<Category, Integer> {
 }

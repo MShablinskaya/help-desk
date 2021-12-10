@@ -24,6 +24,7 @@ public class Feedback {
     @Column(name = "RATE", nullable = false)
     private Long feedbackRate;
 
+    @Temporal(TemporalType.DATE)
     @Column(name = "DATE", nullable = false)
     private Date feedbackDate;
 

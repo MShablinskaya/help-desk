@@ -1,4 +1,6 @@
 package com.innowise.training.shablinskaya.Repository;
 
-public interface CommentRepository {
+import com.innowise.training.shablinskaya.Entity.Comment;
+
+public interface CommentRepository extends TableManagerRepository<Comment, Integer> {
 }

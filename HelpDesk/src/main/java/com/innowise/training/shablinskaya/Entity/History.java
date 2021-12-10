@@ -22,6 +22,7 @@ public class History {
     @Column(name = "TICKET_ID", nullable = false)
     private Long historyTicketId;
 
+    @Temporal(TemporalType.DATE)
     @Column(name = "DATE", nullable = false)
     private Date ticketUploadDate;
 

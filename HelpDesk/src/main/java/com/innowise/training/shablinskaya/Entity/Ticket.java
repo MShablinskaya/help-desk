@@ -25,6 +25,7 @@ public class Ticket {
     @Column(name = "DESCRIPTION", nullable = false)
     private String ticketDescription;
 
+    @Temporal(TemporalType.DATE)
     @Column(name = "CREATED_ON", nullable = false)
     private Date ticketDate;
 

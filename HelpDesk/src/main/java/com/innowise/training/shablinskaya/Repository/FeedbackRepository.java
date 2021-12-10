@@ -1,4 +1,6 @@
 package com.innowise.training.shablinskaya.Repository;
 
-public interface FeedbackRepository {
+import com.innowise.training.shablinskaya.Entity.Feedback;
+
+public interface FeedbackRepository extends TableManagerRepository<Feedback, Integer> {
 }
