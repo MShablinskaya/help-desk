@@ -7,17 +7,17 @@ import javax.persistence.*;
 import java.util.Set;
 
 @Entity
-@DynamicInsert
-@DynamicUpdate
+@DynamicInsert//?
+@DynamicUpdate//?
 @Table(name = "CATEGORY")
 public class Category {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "ID", nullable = false)
-    private Long categoryId;
+    private Long categoryId; //id
 
     @Column(name = "NAME", nullable = false)
-    private String categoryName;
+    private String categoryName; //name
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "category")
     private Set<Ticket> ticketCategory;

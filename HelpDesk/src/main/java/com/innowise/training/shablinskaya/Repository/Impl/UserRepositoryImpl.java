@@ -9,7 +9,7 @@ public class UserRepositoryImpl implements UserRepository {
     @Override
     public User getByName(String name) {
         return null;
-    }
+    }//?
 
     @Override
     public User getById(Integer id) {
@@ -24,15 +24,15 @@ public class UserRepositoryImpl implements UserRepository {
     @Override
     public boolean updateTable(User user) {
         return false;
-    }
+    }//?
 
     @Override
     public boolean deleteFromTable(Integer id) {
         return false;
-    }
+    }//?
 
     @Override
-    public void addToTable(User user) {
+    public void addToTable(User user) {//?
 
     }
 }

@@ -8,8 +8,8 @@ import java.sql.Blob;
 import java.util.Objects;
 
 @Entity
-@DynamicInsert
-@DynamicUpdate
+@DynamicInsert//?
+@DynamicUpdate//?
 @Table(name = "ATTACHMENT")
 public class Attachment {
 

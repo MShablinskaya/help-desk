@@ -33,10 +33,10 @@ public class Ticket {
     private Date ticketResolutionDate;
 
     @Column(name = "ASSIGNEE_ID", nullable = false)
-    private Long assigneeId;
+    private Long assigneeId;//?
 
     @Column(name = "OWNER_ID", nullable = false)
-    private Long ownerId;
+    private Long ownerId;//?
 
     @Column(name = "STATE_ID", nullable = false)
     private String stateId;
@@ -48,8 +48,10 @@ public class Ticket {
     private String urgencyId;
 
     @Column(name = "APPROVE_ID", nullable = false)
-    private Long approveId;
+    private Long approveId;//?
 
+    /*Зачем тебе ManyToMany? у тебя есть поля owner, assignee, approver это и есть наши пользователи
+     и у тикета будет только один такой, я тебе это уже рассказывал*/
     @ManyToMany
     @JoinTable(name = "USERS_TICKETS",
             joinColumns = @JoinColumn(name = "TICKET_ID", referencedColumnName = "ID"),

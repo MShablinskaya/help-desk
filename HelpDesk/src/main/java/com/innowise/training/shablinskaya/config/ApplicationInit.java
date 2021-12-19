@@ -23,4 +23,19 @@ public class ApplicationInit extends AbstractAnnotationConfigDispatcherServletIn
     protected String[] getServletMappings() {
         return new String[]{"/"};
     }
+
+    /*@Override
+    protected Class<?>[] getRootConfigClasses() {
+        return new Class[0];
+    }
+
+    @Override
+    protected Class<?>[] getServletConfigClasses() {
+        return new Class[]{SpringConfig.class, PersistenceJpaConfig.class};
+    }
+
+    @Override
+    protected String[] getServletMappings() {
+        return new String[]{"/"};
+    }*/
 }

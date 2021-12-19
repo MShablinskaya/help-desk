@@ -8,8 +8,8 @@ import java.util.Date;
 import java.util.Objects;
 
 @Entity
-@DynamicInsert
-@DynamicUpdate
+@DynamicInsert//?
+@DynamicUpdate//?
 @Table(name = "FEEDBACK")
 public class Feedback {
 
@@ -19,20 +19,20 @@ public class Feedback {
     private Long feedbackId;
 
     @Column(name = "USER_ID", nullable = false)
-    private Long feedbackUserId;
+    private Long feedbackUserId;//?
 
     @Column(name = "RATE", nullable = false)
     private Long feedbackRate;
 
     @Temporal(TemporalType.DATE)
     @Column(name = "DATE", nullable = false)
-    private Date feedbackDate;
+    private Date feedbackDate; //тут лучше используй TimeStamp
 
     @Column(name = "TEXT", nullable = false)
     private String feedbacktext;
 
     @Column(name = "TICKET_ID", nullable = false)
-    private Long feedbackTicketId;
+    private Long feedbackTicketId;//?
 
     @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "USER_ID", nullable = false)
@@ -40,7 +40,7 @@ public class Feedback {
 
     @OneToOne
     @JoinColumn(name = "TICKET_ID", unique = true, nullable = false)
-    private Ticket ticket;
+    private Ticket ticket; //OneToOne
 
     public Feedback() {
     }

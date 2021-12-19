@@ -7,24 +7,25 @@ import javax.persistence.*;
 import java.util.Objects;
 
 @Entity
-@DynamicInsert
-@DynamicUpdate
+@DynamicInsert//зачем тебе это?
+@DynamicUpdate//зачемтебе это?
 @Table(name = "COMMENT")
 public class Comment {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "ID", nullable = false)
-    private Long commentId;
+    private Long commentId;//просто it
 
     @Column(name = "USER_ID", nullable = false)
-    private Long commentUserId;
+    private Long commentUserId;//лишнее
 
     @Column(name = "TEXT", nullable = false)
-    private String commentText;
+    private String commentText;//просто text
 
     @Column(name = "TICKET_ID", nullable = false)
-    private Long commentTicketId;
+    private Long commentTicketId;//лишнее
+    //где дата?
 
     @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "USER_ID", nullable = false)
