@@ -15,64 +15,56 @@ public class Comment {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "ID", nullable = false)
-    private Long commentId;
-
-    @Column(name = "USER_ID", nullable = false)
-    private Long commentUserId;
-
-    @Column(name = "TEXT", nullable = false)
-    private String commentText;
-
-    @Column(name = "TICKET_ID", nullable = false)
-    private Long commentTicketId;
+    private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    @JoinColumn(name = "USER_ID", nullable = false)
-    private User user;
+    @JoinColumn(name = "USER_ID")
+    private User userId;
+
+    @Column(name = "TEXT")
+    private String text;
 
     @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "TICKET_ID", nullable = false)
-    private Ticket ticket;
+    private Ticket ticketId;
+
 
     public Comment() {
     }
 
-    public Comment(Long commentUserId, String commentText, Long commentTicketId) {
-        this.commentUserId = commentUserId;
-        this.commentText = commentText;
-        this.commentTicketId = commentTicketId;
+    public Comment(User userId, String text, Ticket ticketId) {
+        this.userId = userId;
+        this.text = text;
+        this.ticketId = ticketId;
     }
 
-    public Long getCommentId() {
-        return commentId;
+    public Long getId() {
+        return id;
     }
 
-    public void setCommentId(Long commentId) {
-        this.commentId = commentId;
+
+    public User getUserId() {
+        return userId;
     }
 
-    public Long getCommentUserId() {
-        return commentUserId;
+    public void setUserId(User userId) {
+        this.userId = userId;
     }
 
-    public void setCommentUserId(Long commentUserId) {
-        this.commentUserId = commentUserId;
+    public String getText() {
+        return text;
     }
 
-    public String getCommentText() {
-        return commentText;
+    public void setText(String text) {
+        this.text = text;
     }
 
-    public void setCommentText(String commentText) {
-        this.commentText = commentText;
+    public Ticket getTicketId() {
+        return ticketId;
     }
 
-    public Long getCommentTicketId() {
-        return commentTicketId;
-    }
-
-    public void setCommentTicketId(Long commentTicketId) {
-        this.commentTicketId = commentTicketId;
+    public void setTicketId(Ticket ticket) {
+        this.ticketId = ticket;
     }
 
     @Override
@@ -80,23 +72,23 @@ public class Comment {
         if (this == o) return true;
         if (!(o instanceof Comment)) return false;
         Comment comment = (Comment) o;
-        return getCommentUserId().equals(comment.getCommentUserId()) &&
-                getCommentText().equals(comment.getCommentText()) &&
-                getCommentTicketId().equals(comment.getCommentTicketId());
+        return getUserId().equals(comment.getUserId()) &&
+                getText().equals(comment.getText()) &&
+                getTicketId().equals(comment.getTicketId());
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(getCommentUserId(), getCommentText(), getCommentTicketId());
+        return Objects.hash(getUserId(), getText(), getTicketId());
     }
 
     @Override
     public String toString() {
         return "Comment{" +
-                "commentId=" + commentId +
-                ", commentUserId=" + commentUserId +
-                ", commentText='" + commentText + '\'' +
-                ", commentTicketId=" + commentTicketId +
+                "commentId=" + id +
+                ", commentUserId=" + userId +
+                ", commentText='" + text + '\'' +
+                ", commentTicketId=" + ticketId +
                 '}';
     }
 }

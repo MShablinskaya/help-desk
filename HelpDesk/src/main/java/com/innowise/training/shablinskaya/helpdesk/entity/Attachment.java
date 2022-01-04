@@ -20,22 +20,22 @@ public class Attachment {
     @Column(name = "BLOB", nullable = false)
     private Long attachmentBlob;
 
-    @Column(name = "TICKET_ID", nullable = false)
-    private Long attachmentTicketId;
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.MERGE)
+    @JoinColumn(name = "TICKET_ID", nullable = false)
+    private Ticket ticketId;
 
     @Column(name = "NAME", nullable = false)
-    private String attachmentName;
+    private String name;
 
-    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    @JoinColumn(name = "TICKET_ID", nullable = false)
-    private Ticket attachmentTicket;
+
+
 
     public Attachment(){}
 
-    public Attachment(Long attachmentBlob, Long attachmentTicketId,String attachmentName){
+    public Attachment(Long attachmentBlob, Ticket ticketId, String name){
         this.attachmentBlob = attachmentBlob;
-        this.attachmentTicketId = attachmentTicketId;
-        this.attachmentName = attachmentName;
+        this.ticketId = ticketId;
+        this.name = name;
     }
 
     public Long getAttachmentId() {
@@ -54,20 +54,20 @@ public class Attachment {
         this.attachmentBlob = attachmentBlob;
     }
 
-    public Long getAttachmentTicketId() {
-        return attachmentTicketId;
+    public Ticket getTicketId() {
+        return ticketId;
     }
 
-    public void setAttachmentTicketId(Long attachmentTicketId) {
-        this.attachmentTicketId = attachmentTicketId;
+    public void setTicketId(Long attachmentTicketId) {
+        this.ticketId = ticketId;
     }
 
-    public String getAttachmentName() {
-        return attachmentName;
+    public String getName() {
+        return name;
     }
 
-    public void setAttachmentName(String attachmentName) {
-        this.attachmentName = attachmentName;
+    public void setName(String attachmentName) {
+        this.name = attachmentName;
     }
 
     @Override
@@ -76,13 +76,13 @@ public class Attachment {
         if (!(o instanceof Attachment)) return false;
         Attachment that = (Attachment) o;
         return getAttachmentBlob().equals(that.getAttachmentBlob()) &&
-                getAttachmentTicketId().equals(that.getAttachmentTicketId()) &&
-                getAttachmentName().equals(that.getAttachmentName());
+                getTicketId().equals(that.getTicketId()) &&
+                getName().equals(that.getName());
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(getAttachmentBlob(), getAttachmentTicketId(), getAttachmentName());
+        return Objects.hash(getAttachmentBlob(), getTicketId(), getName());
     }
 
     @Override
@@ -90,8 +90,8 @@ public class Attachment {
         return "Attachment{" +
                 "attachmentId=" + attachmentId +
                 ", attachmentBlob=" + attachmentBlob +
-                ", attachmentTicketId=" + attachmentTicketId +
-                ", attachmentName='" + attachmentName + '\'' +
+                ", attachmentTicketId=" + ticketId +
+                ", attachmentName='" + name + '\'' +
                 '}';
     }
 }

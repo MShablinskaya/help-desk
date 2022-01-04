@@ -1,171 +1,179 @@
 package com.innowise.training.shablinskaya.helpdesk.entity;
 
-import org.hibernate.annotations.DynamicInsert;
-import org.hibernate.annotations.DynamicUpdate;
+import com.innowise.training.shablinskaya.helpdesk.enums.State;
+import com.innowise.training.shablinskaya.helpdesk.enums.Urgency;
 
 import javax.persistence.*;
+import java.sql.Timestamp;
 import java.util.Date;
 import java.util.Objects;
 import java.util.Set;
 
 @Entity
-@DynamicInsert
-@DynamicUpdate
 @Table(name = "TICKET")
 public class Ticket {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "ID", nullable = false)
-    private Long ticketId;
+    @Column(name = "ID")
+    private Long id;
 
-    @Column(name = "NAME", nullable = false)
-    private String ticketName;
+    @Column(name = "NAME")
+    private String name;
 
-    @Column(name = "DESCRIPTION", nullable = false)
-    private String ticketDescription;
+    @Column(name = "DESCRIPTION")
+    private String description;
 
-    @Temporal(TemporalType.DATE)
-    @Column(name = "CREATED_ON", nullable = false)
-    private Date ticketDate;
+    @Column(name = "CREATED_ON")
+    private Timestamp date;
 
-    @Column(name = "DESIRED_RESOLUTION_DATE", nullable = false)
-    private Date ticketResolutionDate;
+    @Column(name = "DESIRED_RESOLUTION_DATE")
+    private Timestamp resolutionDate;
 
-    @Column(name = "ASSIGNEE_ID", nullable = false)
-    private Long assigneeId;
+    @JoinColumn(name = "OWNER_ID")
+    @ManyToOne(cascade = CascadeType.MERGE)
+    private User owner;
 
-    @Column(name = "OWNER_ID", nullable = false)
-    private Long ownerId;
+    @JoinColumn(name = "ASSIGNEE_ID")
+    @ManyToOne(cascade = CascadeType.MERGE)
+    private User assignee;
 
-    @Column(name = "STATE_ID", nullable = false)
-    private String stateId;
+    @JoinColumn(name = "APPROVE_ID")
+    @ManyToOne(cascade = CascadeType.MERGE)
+    private User approve;
 
-    @Column(name = "CATEGORY_ID", nullable = false)
-    private Long ticketCategoryId;
+    @Column(name = "STATE_ID")
+    @Enumerated(EnumType.STRING)
+    private State state;
 
-    @Column(name = "URGENCY_ID", nullable = false)
-    private String urgencyId;
-
-    @Column(name = "APPROVE_ID", nullable = false)
-    private Long approveId;
-
+    @JoinColumn(name = "CATEGORY_ID")
     @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.MERGE)
-    @JoinColumn(name = "OWNER_ID", nullable = false)
-    private User user;
-
-    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.MERGE)
-    @JoinColumn(name = "CATEGORY_ID", nullable = false)
     private Category category;
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "ticket")
+    @Column(name = "URGENCY_ID")
+    @Enumerated(EnumType.STRING)
+    private Urgency urgency;
+
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "ticketId")
     private Set<History> historySet;
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "ticket")
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "ticketId")
     private Set<Attachment> attachmentSet;
 
     public Ticket() {
     }
 
-    public Ticket(String ticketName, String ticketDescription, Date ticketDate, Date ticketResolutionDate, Long assigneeId, Long ownerId, String stateId, Long ticketCategoryId, String urgencyId, Long approveId) {
-        this.ticketName = ticketName;
-        this.ticketDescription = ticketDescription;
-        this.ticketDate = ticketDate;
-        this.ticketResolutionDate = ticketResolutionDate;
-        this.assigneeId = assigneeId;
-        this.ownerId = ownerId;
-        this.stateId = stateId;
-        this.ticketCategoryId = ticketCategoryId;
-        this.urgencyId = urgencyId;
-        this.approveId = approveId;
+    public Ticket(Long id, String name,String description, Timestamp date, Timestamp resolutionDate, User owner, User assignee,User approve, State  state, Urgency urgency){
+        this.id = id;
+        this.name = name;
+        this.description = description;
+        this.date = date;
+        this.resolutionDate = resolutionDate;
+        this.owner = owner;
+        this.assignee = assignee;
+        this.approve = approve;
+        this.state = state;
+        this.urgency = urgency;
     }
 
-    public Long getTicketId() {
-        return ticketId;
+    public Long getId() {
+        return id;
     }
 
-    public void setTicketId(Long ticketId) {
-        this.ticketId = ticketId;
+    public String getName() {
+        return name;
     }
 
-    public String getTicketName() {
-        return ticketName;
+    public void setName(String name) {
+        this.name = name;
     }
 
-    public void setTicketName(String ticketName) {
-        this.ticketName = ticketName;
+    public String getDescription() {
+        return description;
     }
 
-    public String getTicketDescription() {
-        return ticketDescription;
+    public void setDescription(String description) {
+        this.description = description;
     }
 
-    public void setTicketDescription(String ticketDescription) {
-        this.ticketDescription = ticketDescription;
+    public Timestamp getDate() {
+        return date;
     }
 
-    public Date getTicketDate() {
-        return ticketDate;
+    public void setDate(Timestamp date) {
+        this.date = date;
     }
 
-    public void setTicketDate(Date ticketDate) {
-        this.ticketDate = ticketDate;
+    public Date getResolutionDate() {
+        return resolutionDate;
     }
 
-    public Date getTicketResolutionDate() {
-        return ticketResolutionDate;
+    public void setResolutionDate(Timestamp resolutionDate) {
+        this.resolutionDate = resolutionDate;
     }
 
-    public void setTicketResolutionDate(Date ticketResolutionDate) {
-        this.ticketResolutionDate = ticketResolutionDate;
+    public User getOwner() {
+        return owner;
     }
 
-    public Long getAssigneeId() {
-        return assigneeId;
+    public void setOwner(User owner) {
+        this.owner = owner;
     }
 
-    public void setAssigneeId(Long assigneeId) {
-        this.assigneeId = assigneeId;
+    public User getAssignee() {
+        return assignee;
     }
 
-    public Long getOwnerId() {
-        return ownerId;
+    public void setAssignee(User assignee) {
+        this.assignee = assignee;
     }
 
-    public void setOwnerId(Long ownerId) {
-        this.ownerId = ownerId;
+    public User getApprove() {
+        return approve;
     }
 
-    public String getStateId() {
-        return stateId;
+    public void setApprove(User approve) {
+        this.approve = approve;
     }
 
-    public void setStateId(String stateId) {
-        this.stateId = stateId;
+    public State getState() {
+        return state;
     }
 
-    public Long getTicketCategoryId() {
-        return ticketCategoryId;
+    public void setState(State state) {
+        this.state = state;
     }
 
-    public void setTicketCategoryId(Long ticketCategoryId) {
-        this.ticketCategoryId = ticketCategoryId;
+    public Category getCategory() {
+        return category;
     }
 
-    public String getUrgencyId() {
-        return urgencyId;
+    public void setCategory(Category category) {
+        this.category = category;
     }
 
-    public void setUrgencyId(String urgencyId) {
-        this.urgencyId = urgencyId;
+    public Urgency getUrgency() {
+        return urgency;
     }
 
-    public Long getApproveId() {
-        return approveId;
+    public void setUrgency(Urgency urgency) {
+        this.urgency = urgency;
     }
 
-    public void setApproveId(Long approveId) {
-        this.approveId = approveId;
+    public Set<History> getHistorySet() {
+        return historySet;
+    }
+
+    public void setHistorySet(Set<History> historySet) {
+        this.historySet = historySet;
+    }
+
+    public Set<Attachment> getAttachmentSet() {
+        return attachmentSet;
+    }
+
+    public void setAttachmentSet(Set<Attachment> attachmentSet) {
+        this.attachmentSet = attachmentSet;
     }
 
     @Override
@@ -173,37 +181,42 @@ public class Ticket {
         if (this == o) return true;
         if (!(o instanceof Ticket)) return false;
         Ticket ticket = (Ticket) o;
-        return getTicketName().equals(ticket.getTicketName()) &&
-                getTicketDescription().equals(ticket.getTicketDescription()) &&
-                getTicketDate().equals(ticket.getTicketDate()) &&
-                getTicketResolutionDate().equals(ticket.getTicketResolutionDate()) &&
-                getAssigneeId().equals(ticket.getAssigneeId()) &&
-                getOwnerId().equals(ticket.getOwnerId()) &&
-                getStateId().equals(ticket.getStateId()) &&
-                getTicketCategoryId().equals(ticket.getTicketCategoryId()) &&
-                getUrgencyId().equals(ticket.getUrgencyId()) &&
-                getApproveId().equals(ticket.getApproveId());
+        return getId().equals(ticket.getId()) &&
+                getName().equals(ticket.getName()) &&
+                getDescription().equals(ticket.getDescription()) &&
+                getDate().equals(ticket.getDate()) &&
+                Objects.equals(getResolutionDate(), ticket.getResolutionDate()) &&
+                getOwner().equals(ticket.getOwner()) &&
+                Objects.equals(getAssignee(), ticket.getAssignee()) &&
+                Objects.equals(getApprove(), ticket.getApprove()) &&
+                getState() == ticket.getState() &&
+                getCategory().equals(ticket.getCategory()) &&
+                getUrgency() == ticket.getUrgency() &&
+                Objects.equals(getHistorySet(), ticket.getHistorySet()) &&
+                Objects.equals(getAttachmentSet(), ticket.getAttachmentSet());
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(getTicketName(), getTicketDescription(), getTicketDate(), getTicketResolutionDate(), getAssigneeId(), getOwnerId(), getStateId(), getTicketCategoryId(), getUrgencyId(), getApproveId());
+        return Objects.hash(getId(), getName(), getDescription(), getDate(), getResolutionDate(), getOwner(), getAssignee(), getApprove(), getState(), getCategory(), getUrgency(), getHistorySet(), getAttachmentSet());
     }
 
     @Override
     public String toString() {
         return "Ticket{" +
-                "ticketId=" + ticketId +
-                ", ticketName='" + ticketName + '\'' +
-                ", ticketDescription='" + ticketDescription + '\'' +
-                ", ticketDate=" + ticketDate +
-                ", ticketResolutionDate=" + ticketResolutionDate +
-                ", assigneeId=" + assigneeId +
-                ", ownerId=" + ownerId +
-                ", stateId='" + stateId + '\'' +
-                ", ticketCategoryId=" + ticketCategoryId +
-                ", urgencyId='" + urgencyId + '\'' +
-                ", approveId=" + approveId +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", description='" + description + '\'' +
+                ", date=" + date +
+                ", resolutionDate=" + resolutionDate +
+                ", owner=" + owner +
+                ", assignee=" + assignee +
+                ", approve=" + approve +
+                ", state=" + state +
+                ", category=" + category +
+                ", urgency=" + urgency +
+                ", historySet=" + historySet +
+                ", attachmentSet=" + attachmentSet +
                 '}';
     }
 }

@@ -1,56 +1,45 @@
 package com.innowise.training.shablinskaya.helpdesk.entity;
 
-import org.hibernate.annotations.DynamicInsert;
-import org.hibernate.annotations.DynamicUpdate;
-
 import javax.persistence.*;
+import java.sql.Timestamp;
 import java.util.Date;
 import java.util.Objects;
 
 @Entity
-@DynamicInsert
-@DynamicUpdate
 @Table(name = "FEEDBACK")
 public class Feedback {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "ID", nullable = false)
+    @Column(name = "ID")
     private Long feedbackId;
 
-    @Column(name = "USER_ID", nullable = false)
-    private Long feedbackUserId;
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.MERGE)
+    @JoinColumn(name = "USER_ID")
+    private User userId;
 
-    @Column(name = "RATE", nullable = false)
+    @Column(name = "RATE")
     private Long feedbackRate;
 
-    @Temporal(TemporalType.DATE)
-    @Column(name = "DATE", nullable = false)
-    private Date feedbackDate;
+    @Column(name = "DATE")
+    private Timestamp feedbackDate;
 
-    @Column(name = "TEXT", nullable = false)
-    private String feedbacktext;
-
-    @Column(name = "TICKET_ID", nullable = false)
-    private Long feedbackTicketId;
-
-    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    @JoinColumn(name = "USER_ID", nullable = false)
-    private User userFeedback;
+    @Column(name = "TEXT")
+    private String text;
 
     @OneToOne
-    @JoinColumn(name = "TICKET_ID", unique = true, nullable = false)
+    @JoinColumn(name = "TICKET_ID", unique = true)
     private Ticket ticket;
 
     public Feedback() {
     }
 
-    public Feedback(Long feedbackUserId, Long feedbackRate, Date feedbackDate, String feedbacktext, Long feedbackTicketId) {
-        this.feedbackUserId = feedbackUserId;
+    public Feedback(User userId, Long feedbackRate, Timestamp feedbackDate, String text, Ticket ticket) {
+        this.userId = userId;
         this.feedbackRate = feedbackRate;
         this.feedbackDate = feedbackDate;
-        this.feedbacktext = feedbacktext;
-        this.feedbackTicketId = feedbackTicketId;
+        this.text = text;
+        this.ticket = ticket;
     }
 
     public Long getFeedbackId() {
@@ -61,12 +50,12 @@ public class Feedback {
         this.feedbackId = feedbackId;
     }
 
-    public Long getFeedbackUserId() {
-        return feedbackUserId;
+    public User getUserId() {
+        return userId;
     }
 
-    public void setFeedbackUserId(Long feedbackUserId) {
-        this.feedbackUserId = feedbackUserId;
+    public void setUserId(User userId) {
+        this.userId = userId;
     }
 
     public Long getFeedbackRate() {
@@ -81,24 +70,24 @@ public class Feedback {
         return feedbackDate;
     }
 
-    public void setFeedbackDate(Date feedbackDate) {
+    public void setFeedbackDate(Timestamp feedbackDate) {
         this.feedbackDate = feedbackDate;
     }
 
-    public String getFeedbacktext() {
-        return feedbacktext;
+    public String getText() {
+        return text;
     }
 
-    public void setFeedbacktext(String feedbacktext) {
-        this.feedbacktext = feedbacktext;
+    public void setText(String text) {
+        this.text = text;
     }
 
-    public Long getFeedbackTicketId() {
-        return feedbackTicketId;
+    public Ticket getFeedbackTicketId() {
+        return ticket;
     }
 
-    public void setFeedbackTicketId(Long feedbackTicketId) {
-        this.feedbackTicketId = feedbackTicketId;
+    public void setTicket(Ticket ticket) {
+        this.ticket = ticket;
     }
 
     @Override
@@ -106,27 +95,27 @@ public class Feedback {
         if (this == o) return true;
         if (!(o instanceof Feedback)) return false;
         Feedback feedback = (Feedback) o;
-        return getFeedbackUserId().equals(feedback.getFeedbackUserId()) &&
+        return getUserId().equals(feedback.getUserId()) &&
                 getFeedbackRate().equals(feedback.getFeedbackRate()) &&
                 getFeedbackDate().equals(feedback.getFeedbackDate()) &&
-                getFeedbacktext().equals(feedback.getFeedbacktext()) &&
+                getText().equals(feedback.getText()) &&
                 getFeedbackTicketId().equals(feedback.getFeedbackTicketId());
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(getFeedbackUserId(), getFeedbackRate(), getFeedbackDate(), getFeedbacktext(), getFeedbackTicketId());
+        return Objects.hash(getUserId(), getFeedbackRate(), getFeedbackDate(), getText(), getFeedbackTicketId());
     }
 
     @Override
     public String toString() {
         return "Feedback{" +
                 "feedbackId=" + feedbackId +
-                ", feedbackUserId=" + feedbackUserId +
+                ", feedbackUserId=" + userId +
                 ", feedbackRate=" + feedbackRate +
                 ", feedbackDate=" + feedbackDate +
-                ", feedbacktext='" + feedbacktext + '\'' +
-                ", feedbackTicketId=" + feedbackTicketId +
+                ", feedbacktext='" + text + '\'' +
+                ", feedbackTicketId=" + ticket +
                 '}';
     }
 }

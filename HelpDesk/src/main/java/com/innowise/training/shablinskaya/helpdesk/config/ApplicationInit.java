@@ -8,7 +8,8 @@ public class ApplicationInit extends AbstractAnnotationConfigDispatcherServletIn
 
     @Override
     protected Class<?>[] getRootConfigClasses() {
-        return new Class[0];
+        return new Class[]{com.innowise.training.shablinskaya.helpdesk.config.SpringConfig.class,
+                com.innowise.training.shablinskaya.helpdesk.config.PersistenceJPAConfig.class};
     }
 
     @Override
@@ -19,6 +20,6 @@ public class ApplicationInit extends AbstractAnnotationConfigDispatcherServletIn
 
     @Override
     protected String[] getServletMappings() {
-        return new String[0];
+        return new String[]{"/"};
     }
 }

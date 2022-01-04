@@ -1,58 +1,57 @@
 package com.innowise.training.shablinskaya.helpdesk.entity;
 
-import org.hibernate.annotations.DynamicInsert;
-import org.hibernate.annotations.DynamicUpdate;
+
+import com.innowise.training.shablinskaya.helpdesk.enums.Role;
 
 import javax.persistence.*;
 import java.util.Objects;
 import java.util.Set;
 
 @Entity
-@DynamicInsert
-@DynamicUpdate
 @Table(name = "USER")
 public class User {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "ID", nullable = false)
+    @Column(name = "ID")
     private Long id;
 
-    @Column(name = "FIRST_NAME", nullable = false)
+    @Column(name = "FIRST_NAME")
     private String firstName;
 
-    @Column(name = "LAST_NAME", nullable = false)
+    @Column(name = "LAST_NAME")
     private String lastName;
 
-    @Column(name = "ROLE_ID", nullable = false)
-    private String userRole;
+    @Column(name = "ROLE_ID")
+    @Enumerated(EnumType.STRING)
+    private Role role;
 
-    @Column(name = "EMAIL", nullable = false)
+    @Column(name = "EMAIL")
     private String email;
 
-    @Column(name = "PASSWORD", nullable = false)
+    @Column(name = "PASSWORD")
     private String password;
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "user")
+    @OneToMany(fetch = FetchType.LAZY)
     private Set<Ticket> ticketSet;
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "user")
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "userId")
     private Set<History> historySet;
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "user")
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "userId")
     private Set<Comment> commentSet;
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "user")
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "userId")
     private Set<Feedback> feedbackSet;
 
 
     public User() {
     }
 
-    public User(String firstName, String lastName, String userRole, String email, String password) {
+    public User(String firstName, String lastName, Role role, String email, String password) {
         this.firstName = firstName;
         this.lastName = lastName;
-        this.userRole = userRole;
+        this.role = role;
         this.email = email;
         this.password = password;
     }
@@ -81,12 +80,12 @@ public class User {
         this.lastName = userLastName;
     }
 
-    public String getUserRole() {
-        return userRole;
+    public Role getRole() {
+        return role;
     }
 
-    public void setUserRole(String userRole) {
-        this.userRole = userRole;
+    public void setRole(Role role) {
+        this.role = this.role;
     }
 
     public String getEmail() {
@@ -112,14 +111,14 @@ public class User {
         User user = (User) o;
         return getFirstName().equals(user.getFirstName()) &&
                 getLastName().equals(user.getLastName()) &&
-                getUserRole().equals(user.getUserRole()) &&
+                getRole().equals(user.getRole()) &&
                 getEmail().equals(user.getEmail()) &&
                 getPassword().equals(user.getPassword());
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(getFirstName(), getLastName(), getUserRole(), getEmail(), getPassword());
+        return Objects.hash(getFirstName(), getLastName(), getRole(), getEmail(), getPassword());
     }
 
     @Override
@@ -128,7 +127,7 @@ public class User {
                 "userId=" + id +
                 ", userFirstName='" + firstName + '\'' +
                 ", userLastName='" + lastName + '\'' +
-                ", userRole='" + userRole + '\'' +
+                ", userRole='" + role + '\'' +
                 ", userEmail='" + email + '\'' +
                 ", userPassword='" + password + '\'' +
                 '}';

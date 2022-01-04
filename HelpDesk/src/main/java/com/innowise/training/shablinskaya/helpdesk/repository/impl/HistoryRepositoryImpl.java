@@ -17,16 +17,14 @@ public class HistoryRepositoryImpl implements HistoryRepository {
 
     @Override
     public List<History> findByTicketId(int ticketId) {
-        return entityManager.createQuery("SELECT h FROM History h WHERE h.historyTicketId = :ticketId", History.class)
+        return entityManager.createQuery("SELECT h FROM History h WHERE h.ticketId = :ticketId", History.class)
                 .setParameter(ticketId, History.class)
                 .getResultList();
     }
 
     @Override
-    public Optional<History> getById(Integer id) {
-        return Optional.of(entityManager.createQuery("SELECT h FROM History h WHERE h.historyId = :id", History.class)
-        .setParameter(id, History.class)
-        .getSingleResult());
+    public Optional<History> getById(Long id) {
+        return Optional.of(entityManager.find(History.class, id));
     }
 
     @Override
@@ -37,24 +35,16 @@ public class HistoryRepositoryImpl implements HistoryRepository {
 
     @Override
     public History updateTable(History history) {
-        if (history.getHistoryId() != null)
             entityManager.merge(history);
 
         return history;
     }
 
     @Override
-    public void deleteFromTable(History history) {
-        History mergedHistory = entityManager.merge(history);
-        entityManager.remove(mergedHistory);
-
-    }
-
-    @Override
     public void addToTable(History history) {
-        if (history.getHistoryId() == null) {
+
             entityManager.persist(history);
-        }
+
 
     }
 }

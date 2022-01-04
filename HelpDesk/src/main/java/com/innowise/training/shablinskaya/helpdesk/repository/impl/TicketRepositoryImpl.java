@@ -16,27 +16,16 @@ public class TicketRepositoryImpl implements TicketRepository {
     private EntityManager entityManager;
 
     @Override
-    public List<Ticket> getByOwnerId(int userId) {
-        return entityManager.createQuery("SELECT t FROM Ticket t WHERE t.ownerId = :userId", Ticket.class)
+    public List<Ticket> getByUserId(Integer userId) {
+        return entityManager.createQuery("SELECT t FROM Ticket t WHERE t.owner = :userId", Ticket.class)
                 .setParameter(userId, Ticket.class)
                 .getResultList();
     }
 
-//    @Override
-//    public List<Ticket> getByAssigneeId(int userId) {
-//        return null;
-//    }
-//
-//    @Override
-//    public List<Ticket> getByApproveId(int userId) {
-//        return null;
-//    }
 
     @Override
-    public Optional<Ticket> getById(Integer id) {
-        return Optional.of(entityManager.createQuery("SELECT t FROM Ticket t WHERE t.ticketId = :id", Ticket.class)
-                .setParameter(id, Ticket.class)
-                .getSingleResult());
+    public Optional<Ticket> getById(Long id) {
+        return Optional.of(entityManager.find(Ticket.class, id));
     }
 
     @Override
@@ -47,21 +36,16 @@ public class TicketRepositoryImpl implements TicketRepository {
 
     @Override
     public Ticket updateTable(Ticket ticket) {
-        if (ticket.getTicketId() != null)
+        if (ticket.getId() != null)
             entityManager.merge(ticket);
 
         return ticket;
     }
 
-    @Override
-    public void deleteFromTable(Ticket ticket) {
-        Ticket mergedTicket = entityManager.merge(ticket);
-        entityManager.remove(mergedTicket);
-    }
 
     @Override
     public void addToTable(Ticket ticket) {
-        if (ticket.getTicketId() == null) {
+        if (ticket.getId() == null) {
             entityManager.persist(ticket);
         }
 

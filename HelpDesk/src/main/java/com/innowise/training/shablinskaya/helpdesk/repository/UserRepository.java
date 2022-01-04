@@ -9,7 +9,9 @@ import java.util.Optional;
 
 public interface UserRepository extends TableManagerRepository<User, Integer> {
 
+    List<User> findByName(String name);
+
     List<User> findByRole(Role role);
 
-    Optional<User> getByEmail(String email);
+    Optional<User> findByEmail(String email);
 }
