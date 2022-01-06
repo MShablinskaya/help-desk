@@ -1,69 +1,30 @@
-package com.innowise.training.shablinskaya.helpdesk.entity;
+package com.innowise.training.shablinskaya.helpdesk.dto;
 
+import com.innowise.training.shablinskaya.helpdesk.entity.Category;
+import com.innowise.training.shablinskaya.helpdesk.entity.User;
 import com.innowise.training.shablinskaya.helpdesk.enums.State;
 import com.innowise.training.shablinskaya.helpdesk.enums.Urgency;
 
-import javax.persistence.*;
 import java.sql.Timestamp;
-import java.util.Date;
 import java.util.Objects;
-import java.util.Set;
 
-@Entity
-@Table(name = "TICKET")
-public class Ticket {
+public class TicketDto {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "ID")
     private Long id;
-
-    @Column(name = "NAME")
     private String name;
-
-    @Column(name = "DESCRIPTION")
     private String description;
-
-    @Column(name = "CREATED_ON")
     private Timestamp date;
-
-    @Column(name = "DESIRED_RESOLUTION_DATE")
     private Timestamp resolutionDate;
-
-    @JoinColumn(name = "OWNER_ID")
-    @ManyToOne(cascade = CascadeType.MERGE)
     private User owner;
-
-    @JoinColumn(name = "ASSIGNEE_ID")
-    @ManyToOne(cascade = CascadeType.MERGE)
     private User assignee;
-
-    @JoinColumn(name = "APPROVE_ID")
-    @ManyToOne(cascade = CascadeType.MERGE)
     private User approve;
-
-    @Column(name = "STATE_ID")
-    @Enumerated(EnumType.STRING)
     private State state;
-
-    @JoinColumn(name = "CATEGORY_ID")
-    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.MERGE)
     private Category category;
-
-    @Column(name = "URGENCY_ID")
-    @Enumerated(EnumType.STRING)
     private Urgency urgency;
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "ticketId")
-    private Set<History> historySet;
+    public TicketDto(){}
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "ticketId")
-    private Set<Attachment> attachmentSet;
-
-    public Ticket() {
-    }
-
-    public Ticket(Long id, String name,String description, Timestamp date, Timestamp resolutionDate, User owner, User assignee,User approve, State  state, Urgency urgency){
+    public TicketDto(Long id, String name, String description, Timestamp date, Timestamp resolutionDate, User owner, User assignee, User approve, State state, Category category, Urgency urgency) {
         this.id = id;
         this.name = name;
         this.description = description;
@@ -73,11 +34,16 @@ public class Ticket {
         this.assignee = assignee;
         this.approve = approve;
         this.state = state;
+        this.category = category;
         this.urgency = urgency;
     }
 
     public Long getId() {
         return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
     }
 
     public String getName() {
@@ -160,50 +126,31 @@ public class Ticket {
         this.urgency = urgency;
     }
 
-    public Set<History> getHistorySet() {
-        return historySet;
-    }
-
-    public void setHistorySet(Set<History> historySet) {
-        this.historySet = historySet;
-    }
-
-    public Set<Attachment> getAttachmentSet() {
-        return attachmentSet;
-    }
-
-    public void setAttachmentSet(Set<Attachment> attachmentSet) {
-        this.attachmentSet = attachmentSet;
-    }
-
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof Ticket)) return false;
-        Ticket ticket = (Ticket) o;
-        return getId().equals(ticket.getId()) &&
-                getName().equals(ticket.getName()) &&
-                getDescription().equals(ticket.getDescription()) &&
-                getDate().equals(ticket.getDate()) &&
-                Objects.equals(getResolutionDate(), ticket.getResolutionDate()) &&
-                getOwner().equals(ticket.getOwner()) &&
-                Objects.equals(getAssignee(), ticket.getAssignee()) &&
-                Objects.equals(getApprove(), ticket.getApprove()) &&
-                getState() == ticket.getState() &&
-                getCategory().equals(ticket.getCategory()) &&
-                getUrgency() == ticket.getUrgency() &&
-                Objects.equals(getHistorySet(), ticket.getHistorySet()) &&
-                Objects.equals(getAttachmentSet(), ticket.getAttachmentSet());
+        if (o == null || getClass() != o.getClass()) return false;
+        TicketDto ticketDto = (TicketDto) o;
+        return name.equals(ticketDto.name) &&
+                Objects.equals(description, ticketDto.description) &&
+                date.equals(ticketDto.date) &&
+                Objects.equals(resolutionDate, ticketDto.resolutionDate) &&
+                owner.equals(ticketDto.owner) &&
+                Objects.equals(assignee, ticketDto.assignee) &&
+                Objects.equals(approve, ticketDto.approve) &&
+                state == ticketDto.state &&
+                category.equals(ticketDto.category) &&
+                urgency == ticketDto.urgency;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(getId(), getName(), getDescription(), getDate(), getResolutionDate(), getOwner(), getAssignee(), getApprove(), getState(), getCategory(), getUrgency(), getHistorySet(), getAttachmentSet());
+        return Objects.hash(name, description, date, resolutionDate, owner, assignee, approve, state, category, urgency);
     }
 
     @Override
     public String toString() {
-        return "Ticket{" +
+        return "TicketDto{" +
                 "id=" + id +
                 ", name='" + name + '\'' +
                 ", description='" + description + '\'' +
@@ -215,8 +162,6 @@ public class Ticket {
                 ", state=" + state +
                 ", category=" + category +
                 ", urgency=" + urgency +
-                ", historySet=" + historySet +
-                ", attachmentSet=" + attachmentSet +
                 '}';
     }
 }
