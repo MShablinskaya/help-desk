@@ -48,7 +48,7 @@ public class User {
     public User() {
     }
 
-    public User(String firstName, String lastName, Role role, String email, String password, String confirmPassword) {
+    public User(String firstName, String lastName, Role role, String email, String password) {
         this.firstName = firstName;
         this.lastName = lastName;
         this.role = role;
@@ -99,8 +99,8 @@ public class User {
         return password;
     }
 
-    public void setPassword(String userPassword) {
-        this.password = userPassword;
+    public void setPassword(String password) {
+        this.password = password;
     }
 
 
