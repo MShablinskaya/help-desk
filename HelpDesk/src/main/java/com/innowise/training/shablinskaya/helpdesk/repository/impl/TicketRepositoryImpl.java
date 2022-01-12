@@ -1,5 +1,6 @@
 package com.innowise.training.shablinskaya.helpdesk.repository.impl;
 
+import com.innowise.training.shablinskaya.helpdesk.dto.TicketDto;
 import com.innowise.training.shablinskaya.helpdesk.entity.Ticket;
 import com.innowise.training.shablinskaya.helpdesk.repository.TicketRepository;
 import org.springframework.stereotype.Repository;

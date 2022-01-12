@@ -48,7 +48,7 @@ public class User {
     public User() {
     }
 
-    public User(String firstName, String lastName, Role role, String email, String password) {
+    public User(String firstName, String lastName, Role role, String email, String password, String confirmPassword) {
         this.firstName = firstName;
         this.lastName = lastName;
         this.role = role;
@@ -85,7 +85,6 @@ public class User {
     }
 
     public void setRole(Role role) {
-        this.role = this.role;
     }
 
     public String getEmail() {
@@ -103,6 +102,7 @@ public class User {
     public void setPassword(String userPassword) {
         this.password = userPassword;
     }
+
 
     @Override
     public boolean equals(Object o) {

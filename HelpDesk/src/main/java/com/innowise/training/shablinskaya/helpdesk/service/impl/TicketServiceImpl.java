@@ -1,6 +1,6 @@
 package com.innowise.training.shablinskaya.helpdesk.service.impl;
 
-import com.innowise.training.shablinskaya.helpdesk.converter.TicketDtoConvertor;
+import com.innowise.training.shablinskaya.helpdesk.converter.TicketDtoConverter;
 import com.innowise.training.shablinskaya.helpdesk.dto.TicketDto;
 import com.innowise.training.shablinskaya.helpdesk.entity.Ticket;
 import com.innowise.training.shablinskaya.helpdesk.repository.TicketRepository;
@@ -15,12 +15,12 @@ import java.util.List;
 public class TicketServiceImpl implements TicketService {
 
     private TicketRepository ticketRepository;
-    private TicketDtoConvertor ticketDtoConvertor;
+    private TicketDtoConverter ticketDtoConverter;
 
     @Autowired
-    public TicketServiceImpl(TicketRepository ticketRepository, TicketDtoConvertor ticketDtoConvertor) {
+    public TicketServiceImpl(TicketRepository ticketRepository, TicketDtoConverter ticketDtoConverter) {
         this.ticketRepository = ticketRepository;
-        this.ticketDtoConvertor = ticketDtoConvertor;
+        this.ticketDtoConverter = ticketDtoConverter;
     }
 
     @Override
@@ -31,11 +31,23 @@ public class TicketServiceImpl implements TicketService {
 
     @Override
     public TicketDto findById(Long id) {
-        return ticketDtoConvertor.toDto(ticketRepository.getById(id).orElseThrow(EntityNotFoundException::new));
+        return ticketDtoConverter.toDto(ticketRepository.getById(id).orElseThrow(EntityNotFoundException::new));
     }
 
     @Override
     public void save(TicketDto dto) {
-        
+        Ticket ticket;
+        ticket = ticketDtoConverter.toEntity(dto);
+
+        ticketRepository.addToTable(ticket);
     }
+
+    @Override
+    public void update(TicketDto dto) {
+        Ticket ticket;
+        ticket = ticketDtoConverter.toEntity(dto);
+
+        ticketRepository.updateTable(ticket);
+    }
+
 }

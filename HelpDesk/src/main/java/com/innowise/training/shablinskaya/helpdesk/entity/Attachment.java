@@ -58,7 +58,7 @@ public class Attachment {
         return ticketId;
     }
 
-    public void setTicketId(Long attachmentTicketId) {
+    public void setTicketId(Ticket attachmentTicketId) {
         this.ticketId = ticketId;
     }
 

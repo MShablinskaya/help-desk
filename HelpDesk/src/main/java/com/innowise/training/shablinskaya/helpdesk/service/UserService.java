@@ -1,6 +1,5 @@
 package com.innowise.training.shablinskaya.helpdesk.service;
 
-import com.innowise.training.shablinskaya.helpdesk.dto.UserDto;
 import com.innowise.training.shablinskaya.helpdesk.entity.User;
 
 import java.util.List;
@@ -12,5 +11,7 @@ public interface UserService {
 
     List<User> findByName(String name);
 
-    UserDto findById(Long id);
+    Optional<User> findByEmail(String email);
+
+    User findById(Long id);
 }

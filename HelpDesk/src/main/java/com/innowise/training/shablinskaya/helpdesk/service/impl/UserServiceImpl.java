@@ -1,7 +1,6 @@
 package com.innowise.training.shablinskaya.helpdesk.service.impl;
 
-import com.innowise.training.shablinskaya.helpdesk.dto.UserDto;
-import com.innowise.training.shablinskaya.helpdesk.converter.UserDtoConvertor;
+
 import com.innowise.training.shablinskaya.helpdesk.entity.User;
 import com.innowise.training.shablinskaya.helpdesk.repository.UserRepository;
 import com.innowise.training.shablinskaya.helpdesk.service.UserService;
@@ -10,17 +9,16 @@ import org.springframework.stereotype.Service;
 
 import javax.persistence.EntityNotFoundException;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class UserServiceImpl implements UserService {
 
     private UserRepository userRepository;
-    private UserDtoConvertor userDtoConvertor;
 
     @Autowired
-    public UserServiceImpl(UserRepository userRepository, UserDtoConvertor userDtoConvertor) {
+    public UserServiceImpl(UserRepository userRepository) {
         this.userRepository = userRepository;
-        this.userDtoConvertor = userDtoConvertor;
     }
 
     @Override
@@ -35,9 +33,14 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserDto findById(Long id) {
+    public Optional<User> findByEmail(String email) {
+        return userRepository.findByEmail(email);
+    }
 
-        return userDtoConvertor.toDto(userRepository.getById(id).orElseThrow(EntityNotFoundException::new));
+    @Override
+    public User findById(Long id) {
+
+        return userRepository.getById(id).orElseThrow(EntityNotFoundException::new);
     }
 }
 

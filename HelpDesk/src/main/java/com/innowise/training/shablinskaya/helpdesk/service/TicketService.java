@@ -10,4 +10,5 @@ public interface TicketService {
     List<Ticket> getAll();
     TicketDto findById(Long id);
     void save(TicketDto dto);
+    void update(TicketDto dto);
 }
