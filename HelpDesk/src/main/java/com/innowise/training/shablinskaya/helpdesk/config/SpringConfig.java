@@ -3,6 +3,8 @@ package com.innowise.training.shablinskaya.helpdesk.config;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.ProviderManager;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.multipart.commons.CommonsMultipartResolver;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
@@ -20,6 +22,7 @@ public class SpringConfig implements WebMvcConfigurer {
 //        multipartResolver.setMaxUploadSize(5000000);
 //        return multipartResolver;
 //    }
+
 //
 //    @Bean
 //    public BCryptPasswordEncoder BCryptPasswordEncoder(){

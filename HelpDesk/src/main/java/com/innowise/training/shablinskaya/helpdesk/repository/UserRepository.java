@@ -7,11 +7,16 @@ import java.util.List;
 import java.util.Optional;
 
 
-public interface UserRepository extends TableManagerRepository<User, Integer> {
+public interface UserRepository {
 
     List<User> findByName(String name);
 
     List<User> findByRole(Role role);
 
     Optional<User> findByEmail(String email);
+
+    Optional<User> getById(Long id);
+
+    List<User> getAllFromTable();
+
 }

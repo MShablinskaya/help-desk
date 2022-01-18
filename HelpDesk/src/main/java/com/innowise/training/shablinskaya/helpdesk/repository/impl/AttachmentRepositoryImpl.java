@@ -2,12 +2,14 @@ package com.innowise.training.shablinskaya.helpdesk.repository.impl;
 
 import com.innowise.training.shablinskaya.helpdesk.entity.Attachment;
 import com.innowise.training.shablinskaya.helpdesk.repository.AttachmentRepository;
+import org.springframework.stereotype.Repository;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import java.util.List;
 import java.util.Optional;
 
+@Repository
 public class AttachmentRepositoryImpl implements AttachmentRepository {
 
     @PersistenceContext
@@ -19,19 +21,18 @@ public class AttachmentRepositoryImpl implements AttachmentRepository {
     }
 
     @Override
-    public List<Attachment> getAllFromTable() {
-        return entityManager.createQuery("SELECT a FROM Attachment a", Attachment.class)
-                .getResultList();
+    public List<Attachment> getByTicketId(Long id) {
+        return null;
     }
 
     @Override
-    public Attachment updateTable(Attachment attachment) {
+    public Attachment update(Attachment attachment) {
         return entityManager.merge(attachment);
     }
 
     @Override
-    public void addToTable(Attachment attachment) {
+    public void save(Attachment attachment) {
         entityManager.persist(attachment);
-
     }
+
 }

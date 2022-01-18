@@ -24,7 +24,7 @@ public class User {
 
     @Column(name = "ROLE_ID")
     @Enumerated(EnumType.STRING)
-    private Role role;
+    private Role roleId;
 
     @Column(name = "EMAIL")
     private String email;
@@ -48,10 +48,10 @@ public class User {
     public User() {
     }
 
-    public User(String firstName, String lastName, Role role, String email, String password) {
+    public User(String firstName, String lastName, Role roleId, String email, String password) {
         this.firstName = firstName;
         this.lastName = lastName;
-        this.role = role;
+        this.roleId = roleId;
         this.email = email;
         this.password = password;
     }
@@ -80,11 +80,11 @@ public class User {
         this.lastName = userLastName;
     }
 
-    public Role getRole() {
-        return role;
+    public Role getRoleId() {
+        return roleId;
     }
 
-    public void setRole(Role role) {
+    public void setRoleId(Role role) { this.roleId = role;
     }
 
     public String getEmail() {
@@ -111,14 +111,14 @@ public class User {
         User user = (User) o;
         return getFirstName().equals(user.getFirstName()) &&
                 getLastName().equals(user.getLastName()) &&
-                getRole().equals(user.getRole()) &&
+                getRoleId().equals(user.getRoleId()) &&
                 getEmail().equals(user.getEmail()) &&
                 getPassword().equals(user.getPassword());
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(getFirstName(), getLastName(), getRole(), getEmail(), getPassword());
+        return Objects.hash(getFirstName(), getLastName(), getRoleId(), getEmail(), getPassword());
     }
 
     @Override
@@ -127,7 +127,7 @@ public class User {
                 "userId=" + id +
                 ", userFirstName='" + firstName + '\'' +
                 ", userLastName='" + lastName + '\'' +
-                ", userRole='" + role + '\'' +
+                ", userRole='" + roleId + '\'' +
                 ", userEmail='" + email + '\'' +
                 ", userPassword='" + password + '\'' +
                 '}';

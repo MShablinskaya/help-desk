@@ -16,9 +16,9 @@ public class HistoryRepositoryImpl implements HistoryRepository {
     private EntityManager entityManager;
 
     @Override
-    public List<History> findByTicketId(int ticketId) {
+    public List<History> findByTicketId(Long ticketId) {
         return entityManager.createQuery("SELECT h FROM History h WHERE h.ticketId = :ticketId", History.class)
-                .setParameter(ticketId, History.class)
+                .setParameter(Math.toIntExact(ticketId), History.class)
                 .getResultList();
     }
 
@@ -28,23 +28,9 @@ public class HistoryRepositoryImpl implements HistoryRepository {
     }
 
     @Override
-    public List<History> getAllFromTable() {
-        return entityManager.createQuery("SELECT h FROM History h", History.class)
-                .getResultList();
+    public void save(History history) {
+        entityManager.persist(history);
     }
 
-    @Override
-    public History updateTable(History history) {
-            entityManager.merge(history);
 
-        return history;
-    }
-
-    @Override
-    public void addToTable(History history) {
-
-            entityManager.persist(history);
-
-
-    }
 }

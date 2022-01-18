@@ -24,14 +24,4 @@ public class CategoryRepositoryImpl implements CategoryRepository {
                 .getResultList();
     }
 
-    @Override
-    public Category updateTable(Category category) {
-        return entityManager.merge(category);
-    }
-
-    @Override
-    public void addToTable(Category category) {
-        entityManager.persist(category);
-
-    }
 }

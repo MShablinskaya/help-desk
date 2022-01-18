@@ -27,20 +27,6 @@ public class UserRepositoryImpl implements UserRepository {
     }
 
     @Override
-    public User updateTable(User user) {
-         entityManager.merge(user);
-
-        return user;
-    }
-
-    @Override
-    public void addToTable(User user) {
-        if (user.getId() == null) {
-            entityManager.persist(user);
-        }
-    }
-
-    @Override
     public List<User> findByName(String name) {
         return entityManager.createQuery("SELECT u FROM User u WHERE u.firstName LIKE : name", User.class)
                 .setParameter("name", name)
@@ -49,10 +35,12 @@ public class UserRepositoryImpl implements UserRepository {
 
     @Override
     public List<User> findByRole(Role role) {
+        String roleU = role.name();
         return entityManager.createQuery(
-                "SELECT u FROM User u WHERE u.role LIKE : role", User.class)
+                "SELECT u FROM User u WHERE u.roleId = : role", User.class)
                 .setParameter("role", role).getResultList();
     }
+
 
     @Override
     public Optional<User> findByEmail(String email) {

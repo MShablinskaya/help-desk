@@ -1,6 +1,6 @@
 package com.innowise.training.shablinskaya.helpdesk.repository.impl;
 
-import com.innowise.training.shablinskaya.helpdesk.dto.TicketDto;
+
 import com.innowise.training.shablinskaya.helpdesk.entity.Ticket;
 import com.innowise.training.shablinskaya.helpdesk.repository.TicketRepository;
 import org.springframework.stereotype.Repository;
@@ -17,9 +17,9 @@ public class TicketRepositoryImpl implements TicketRepository {
     private EntityManager entityManager;
 
     @Override
-    public List<Ticket> getByUserId(Integer userId) {
+    public List<Ticket> getByUserId(Long userId) {
         return entityManager.createQuery("SELECT t FROM Ticket t WHERE t.owner = :userId", Ticket.class)
-                .setParameter(userId, Ticket.class)
+                .setParameter(Math.toIntExact(userId), Ticket.class)
                 .getResultList();
     }
 

@@ -7,7 +7,6 @@ import com.innowise.training.shablinskaya.helpdesk.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import javax.persistence.EntityNotFoundException;
 import java.util.List;
 import java.util.Optional;
 
@@ -17,13 +16,12 @@ public class UserServiceImpl implements UserService {
     private UserRepository userRepository;
 
     @Autowired
-    public UserServiceImpl(UserRepository userRepository) {
+    public UserServiceImpl(UserRepository userRepository){
         this.userRepository = userRepository;
     }
 
     @Override
     public List<User> getAll() {
-
         return userRepository.getAllFromTable();
     }
 
@@ -38,9 +36,8 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public User findById(Long id) {
-
-        return userRepository.getById(id).orElseThrow(EntityNotFoundException::new);
+    public Optional<User> findById(Long id) {
+        return userRepository.getById(id);
     }
 }
 
