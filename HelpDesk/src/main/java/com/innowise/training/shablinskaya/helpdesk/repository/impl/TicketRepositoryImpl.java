@@ -30,20 +30,20 @@ public class TicketRepositoryImpl implements TicketRepository {
     }
 
     @Override
-    public List<Ticket> getAllFromTable() {
+    public List<Ticket> getAll() {
         return entityManager.createQuery("SELECT t FROM Ticket t", Ticket.class)
                 .getResultList();
     }
 
     @Override
-    public Ticket updateTable(Ticket ticket) {
+    public Ticket update(Ticket ticket) {
             entityManager.merge(ticket);
         return ticket;
     }
 
 
     @Override
-    public void addToTable(Ticket ticket) {
+    public void create(Ticket ticket) {
         entityManager.persist(ticket);
     }
 }

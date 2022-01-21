@@ -26,7 +26,7 @@ public class TicketServiceImpl implements TicketService {
     @Override
     public List<Ticket> getAll() {
 
-        return ticketRepository.getAllFromTable();
+        return ticketRepository.getAll();
     }
 
     @Override
@@ -39,7 +39,7 @@ public class TicketServiceImpl implements TicketService {
         Ticket ticket;
         ticket = ticketDtoConverter.toEntity(dto);
 
-        ticketRepository.addToTable(ticket);
+        ticketRepository.create(ticket);
     }
 
     @Override
@@ -47,7 +47,7 @@ public class TicketServiceImpl implements TicketService {
         Ticket ticket;
         ticket = ticketDtoConverter.toEntity(dto);
 
-        ticketRepository.updateTable(ticket);
+        ticketRepository.update(ticket);
     }
 
 }

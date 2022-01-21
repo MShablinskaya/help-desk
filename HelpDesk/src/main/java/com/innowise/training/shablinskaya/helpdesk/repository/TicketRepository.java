@@ -9,11 +9,11 @@ import java.util.Optional;
 public interface TicketRepository {
     Optional<Ticket> getById(Long id);
 
-    List<Ticket> getAllFromTable();
+    List<Ticket> getAll();
 
-    Ticket updateTable(Ticket ticket);
+    Ticket update(Ticket ticket);
 
-    void addToTable(Ticket ticket);
+    void create(Ticket ticket);
 
     List<Ticket> getByUserId(Long userId);
 

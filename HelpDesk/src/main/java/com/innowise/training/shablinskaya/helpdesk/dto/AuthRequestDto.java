@@ -4,15 +4,15 @@ package com.innowise.training.shablinskaya.helpdesk.dto;
 import java.util.Objects;
 
 
-public class AuthenticationDto {
+public class AuthRequestDto {
 
     private String email;
 
     private String password;
 
-    public AuthenticationDto(){}
+    public AuthRequestDto(){}
 
-    public AuthenticationDto(String email, String password){
+    public AuthRequestDto(String email, String password){
         this.email = email;
         this.password = password;
     }
@@ -37,7 +37,7 @@ public class AuthenticationDto {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        AuthenticationDto that = (AuthenticationDto) o;
+        AuthRequestDto that = (AuthRequestDto) o;
         return email.equals(that.email) &&
                 password.equals(that.password);
     }

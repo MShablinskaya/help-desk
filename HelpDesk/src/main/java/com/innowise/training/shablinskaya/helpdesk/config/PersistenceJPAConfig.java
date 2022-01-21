@@ -23,7 +23,7 @@ public class PersistenceJPAConfig {
         LocalContainerEntityManagerFactoryBean entityManager
                 = new LocalContainerEntityManagerFactoryBean();
         entityManager.setDataSource(dataSource());
-        entityManager.setPackagesToScan("com.innowise.training.shablinskaya.helpdesk");
+        entityManager.setPackagesToScan("com.innowise.training.shablinskaya.helpdesk.entity");
 
         JpaVendorAdapter vendorAdapter = new HibernateJpaVendorAdapter();
         entityManager.setJpaVendorAdapter(vendorAdapter);
@@ -59,6 +59,7 @@ public class PersistenceJPAConfig {
         Properties properties = new Properties();
         properties.setProperty("hibernate.hbm2ddl.auto", "create-drop");
         properties.setProperty("hibernate.dialect", "org.hibernate.dialect.H2Dialect");
+        properties.setProperty("javax.persistence.validation.mode", "NONE");
 
         return properties;
     }

@@ -17,6 +17,6 @@ public interface UserRepository {
 
     Optional<User> getById(Long id);
 
-    List<User> getAllFromTable();
+    List<User> getAll();
 
 }

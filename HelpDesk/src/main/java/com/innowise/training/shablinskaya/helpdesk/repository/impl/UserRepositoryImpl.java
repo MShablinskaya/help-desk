@@ -22,7 +22,7 @@ public class UserRepositoryImpl implements UserRepository {
     }
 
     @Override
-    public List<User> getAllFromTable() {
+    public List<User> getAll() {
         return entityManager.createQuery("SELECT u FROM User u", User.class).getResultList();
     }
 
@@ -35,7 +35,7 @@ public class UserRepositoryImpl implements UserRepository {
 
     @Override
     public List<User> findByRole(Role role) {
-        String roleU = role.name();
+        //String roleId = role.name();
         return entityManager.createQuery(
                 "SELECT u FROM User u WHERE u.roleId = : role", User.class)
                 .setParameter("role", role).getResultList();
@@ -44,7 +44,9 @@ public class UserRepositoryImpl implements UserRepository {
 
     @Override
     public Optional<User> findByEmail(String email) {
-        return Optional.of(entityManager.find(User.class, email));
+        return Optional.of(entityManager.createQuery("select u from User u WHERE u.email = : email", User.class)
+        .setParameter("email", email)
+        .getSingleResult());
     }
 
 

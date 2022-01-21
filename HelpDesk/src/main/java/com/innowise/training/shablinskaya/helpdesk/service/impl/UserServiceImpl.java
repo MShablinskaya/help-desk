@@ -4,14 +4,16 @@ package com.innowise.training.shablinskaya.helpdesk.service.impl;
 import com.innowise.training.shablinskaya.helpdesk.entity.User;
 import com.innowise.training.shablinskaya.helpdesk.repository.UserRepository;
 import com.innowise.training.shablinskaya.helpdesk.service.UserService;
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.persistence.EntityNotFoundException;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class UserServiceImpl implements UserService {
+    private static final Logger log = org.apache.log4j.Logger.getLogger(UserServiceImpl.class);
 
     private UserRepository userRepository;
 
@@ -22,7 +24,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public List<User> getAll() {
-        return userRepository.getAllFromTable();
+        return userRepository.getAll();
     }
 
     @Override
@@ -31,13 +33,14 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public Optional<User> findByEmail(String email) {
-        return userRepository.findByEmail(email);
+    public User findByEmail(String email) {
+
+        return userRepository.findByEmail(email).orElseThrow(EntityNotFoundException::new);
     }
 
     @Override
-    public Optional<User> findById(Long id) {
-        return userRepository.getById(id);
+    public User findById(Long id) {
+        return userRepository.getById(id).orElseThrow(EntityNotFoundException::new);
     }
 }
 

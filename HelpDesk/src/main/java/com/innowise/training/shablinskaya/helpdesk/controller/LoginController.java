@@ -1,58 +1,54 @@
 package com.innowise.training.shablinskaya.helpdesk.controller;
 
-import com.innowise.training.shablinskaya.helpdesk.dto.AuthenticationDto;
+import com.innowise.training.shablinskaya.helpdesk.dto.AuthRequestDto;
+import com.innowise.training.shablinskaya.helpdesk.dto.AuthResponseDto;
 import com.innowise.training.shablinskaya.helpdesk.entity.User;
-import com.innowise.training.shablinskaya.helpdesk.security.jwt.JwtProvider;
+import com.innowise.training.shablinskaya.helpdesk.security.JwtProvider;
 import com.innowise.training.shablinskaya.helpdesk.service.UserService;
+import com.innowise.training.shablinskaya.helpdesk.service.impl.UserServiceImpl;
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.BadCredentialsException;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import javax.persistence.EntityNotFoundException;
-import java.util.HashMap;
-import java.util.Map;
+import javax.naming.AuthenticationException;
 
 @RestController
-@RequestMapping(value = "/login")
+@RequestMapping(value = "/")
 public class LoginController {
 
-    private final AuthenticationManager authenticationManager;
+    private static final Logger log = org.apache.log4j.Logger.getLogger(UserServiceImpl.class);
 
-    private final JwtProvider jwtProvider;
+    private UserService userService;
+    private JwtProvider jwtProvider;
+    private PasswordEncoder passwordEncoder;
 
-    private final UserService userService;
+    public LoginController() {
+    }
 
     @Autowired
-    public LoginController(AuthenticationManager authenticationManager, JwtProvider jwtProvider, UserService userService) {
-        this.authenticationManager = authenticationManager;
-        this.jwtProvider = jwtProvider;
+    public LoginController(UserService userService, JwtProvider jwtProvider, PasswordEncoder passwordEncoder) {
         this.userService = userService;
+        this.jwtProvider = jwtProvider;
+        this.passwordEncoder = passwordEncoder;
     }
 
-    public ResponseEntity login(@RequestBody AuthenticationDto authenticationDto){
-        try{
-            String email = authenticationDto.getEmail();
-            authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(email, authenticationDto.getPassword()));
-            User user = userService.findByEmail(email).orElseThrow(EntityNotFoundException::new);
+    @PostMapping("/login")
+    public AuthResponseDto authResponseDto(@RequestBody AuthRequestDto requestDto) throws AuthenticationException {
+        User user = userService.findByEmail(requestDto.getEmail());
 
-            String token = jwtProvider.createToken(email, user.getRoleId());
-
-            Map<Object, Object> response = new HashMap<>();
-            response.put("email", email);
-            response.put("token", token);
-
-            return ResponseEntity.ok(response);
-        }catch (AuthenticationException e) {
-            throw new BadCredentialsException("Invalid E-mail or password!");
+        if (user != null) {
+            if (passwordEncoder.matches(user.getPassword(), passwordEncoder.encode(requestDto.getPassword()))) {
+                String token = jwtProvider.generateToken(user.getEmail());
+                return new AuthResponseDto(token, user.getEmail(), user.getRoleId().toString());
+            } else {
+                throw new AuthenticationException("Invalid Password");
+            }
+        } else {
+            throw new AuthenticationException("User not found!");
         }
-
     }
-
-
 }

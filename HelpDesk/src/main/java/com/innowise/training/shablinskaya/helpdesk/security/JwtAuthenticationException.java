@@ -1,4 +1,4 @@
-package com.innowise.training.shablinskaya.helpdesk.security.jwt;
+package com.innowise.training.shablinskaya.helpdesk.security;
 
 import org.springframework.security.core.AuthenticationException;
 
