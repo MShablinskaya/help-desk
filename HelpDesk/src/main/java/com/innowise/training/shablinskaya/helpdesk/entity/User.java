@@ -2,6 +2,7 @@ package com.innowise.training.shablinskaya.helpdesk.entity;
 
 
 import com.innowise.training.shablinskaya.helpdesk.enums.Role;
+import jakarta.validation.constraints.Pattern;
 
 import javax.persistence.*;
 import java.util.Objects;
@@ -27,9 +28,11 @@ public class User {
     private Role roleId;
 
     @Column(name = "EMAIL")
+    @Pattern(regexp = ".+@.+\\.[a-z]", message = "Invalid Email address!")
     private String email;
 
     @Column(name = "PASSWORD")
+    @Pattern(regexp = "^(&=.*\\d).{6,20}$", flags = Pattern.Flag.UNICODE_CASE)
     private String password;
 
     @OneToMany(fetch = FetchType.LAZY)

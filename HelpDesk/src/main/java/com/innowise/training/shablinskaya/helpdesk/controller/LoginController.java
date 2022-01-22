@@ -20,7 +20,7 @@ import javax.naming.AuthenticationException;
 @RequestMapping(value = "/")
 public class LoginController {
 
-    private static final Logger log = org.apache.log4j.Logger.getLogger(UserServiceImpl.class);
+    private static final Logger log = org.apache.log4j.Logger.getLogger(LoginController.class);
 
     private UserService userService;
     private JwtProvider jwtProvider;
