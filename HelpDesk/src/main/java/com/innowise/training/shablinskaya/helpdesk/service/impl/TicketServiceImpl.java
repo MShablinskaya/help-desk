@@ -35,6 +35,33 @@ public class TicketServiceImpl implements TicketService {
     }
 
     @Override
+    public TicketDto findByOwner(Long id) {
+        List<Ticket> tickets = ticketRepository.getByOwnerId(id);
+
+        return null;
+    }
+
+    @Override
+    public List<TicketDto> findByApprove(Long id) {
+        return null;
+    }
+
+    @Override
+    public List<TicketDto> findByAssignee(Long id) {
+        return null;
+    }
+
+    @Override
+    public List<TicketDto> findByState(String state) {
+        return null;
+    }
+
+    @Override
+    public List<TicketDto> findByUrgency(String state) {
+        return null;
+    }
+
+    @Override
     public void save(TicketDto dto) {
         Ticket ticket;
         ticket = ticketDtoConverter.toEntity(dto);

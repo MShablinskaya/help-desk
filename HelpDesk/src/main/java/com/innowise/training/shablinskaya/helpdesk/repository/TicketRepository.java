@@ -15,8 +15,14 @@ public interface TicketRepository {
 
     void create(Ticket ticket);
 
-    List<Ticket> getByUserId(Long userId);
+    List<Ticket> getByOwnerId(Long ownerId);
 
-  //  List<Ticket> getByEmail(String email);
+    List<Ticket> getByApproveId(Long approveId);
+
+    List<Ticket> getByAssigneeId(Long assigneeId);
+
+    List<Ticket> getByState(String state);
+
+    List<Ticket> getByUrgency(String urgency);
 
 }
