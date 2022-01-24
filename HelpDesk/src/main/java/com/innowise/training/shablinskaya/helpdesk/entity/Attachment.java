@@ -1,14 +1,9 @@
 package com.innowise.training.shablinskaya.helpdesk.entity;
 
-import org.hibernate.annotations.DynamicInsert;
-import org.hibernate.annotations.DynamicUpdate;
-
 import javax.persistence.*;
 import java.util.Objects;
 
 @Entity
-@DynamicInsert
-@DynamicUpdate
 @Table(name = "ATTACHMENT")
 public class Attachment {
 

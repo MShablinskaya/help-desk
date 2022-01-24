@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.persistence.EntityNotFoundException;
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -24,9 +25,18 @@ public class TicketServiceImpl implements TicketService {
     }
 
     @Override
-    public List<Ticket> getAll() {
+    public List<TicketDto> getAll() {
+        List<Ticket> tickets = ticketRepository.getAll();
 
-        return ticketRepository.getAll();
+        List<TicketDto> ticketDtos = new ArrayList<>();
+
+        if (tickets != null) {
+            tickets.forEach(ticket -> {
+                ticketDtos.add(ticketDtoConverter.toDto(ticket));
+            });
+        }
+
+        return ticketDtos;
     }
 
     @Override
@@ -35,30 +45,74 @@ public class TicketServiceImpl implements TicketService {
     }
 
     @Override
-    public TicketDto findByOwner(Long id) {
+    public List<TicketDto> findByOwner(Long id) {
         List<Ticket> tickets = ticketRepository.getByOwnerId(id);
 
-        return null;
+        List<TicketDto> ticketDtos = new ArrayList<>();
+
+        if (tickets != null) {
+            tickets.forEach(ticket -> {
+                ticketDtos.add(ticketDtoConverter.toDto(ticket));
+            });
+        }
+
+        return ticketDtos;
     }
 
     @Override
     public List<TicketDto> findByApprove(Long id) {
-        return null;
+        List<Ticket> tickets = ticketRepository.getByApproveId(id);
+
+        List<TicketDto> ticketDtos = new ArrayList<>();
+
+        if (tickets != null) {
+            tickets.forEach(ticket -> {
+                ticketDtos.add(ticketDtoConverter.toDto(ticket));
+            });
+        }
+        return ticketDtos;
     }
 
     @Override
     public List<TicketDto> findByAssignee(Long id) {
-        return null;
+        List<Ticket> tickets = ticketRepository.getByAssigneeId(id);
+
+        List<TicketDto> ticketDtos = new ArrayList<>();
+
+        if (tickets != null) {
+            tickets.forEach(ticket -> {
+                ticketDtos.add(ticketDtoConverter.toDto(ticket));
+            });
+        }
+        return ticketDtos;
     }
 
     @Override
     public List<TicketDto> findByState(String state) {
-        return null;
+        List<Ticket> tickets = ticketRepository.getByState(state);
+
+        List<TicketDto> ticketDtos = new ArrayList<>();
+
+        if (tickets != null) {
+            tickets.forEach(ticket -> {
+                ticketDtos.add(ticketDtoConverter.toDto(ticket));
+            });
+        }
+        return ticketDtos;
     }
 
     @Override
-    public List<TicketDto> findByUrgency(String state) {
-        return null;
+    public List<TicketDto> findByUrgency(String urgency) {
+        List<Ticket> tickets = ticketRepository.getByUrgency(urgency);
+
+        List<TicketDto> ticketDtos = new ArrayList<>();
+
+        if (tickets != null) {
+            tickets.forEach(ticket -> {
+                ticketDtos.add(ticketDtoConverter.toDto(ticket));
+            });
+        }
+        return ticketDtos;
     }
 
     @Override

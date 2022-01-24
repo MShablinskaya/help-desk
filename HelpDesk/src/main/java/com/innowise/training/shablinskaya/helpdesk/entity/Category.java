@@ -1,15 +1,14 @@
 package com.innowise.training.shablinskaya.helpdesk.entity;
 
-import org.hibernate.annotations.DynamicInsert;
-import org.hibernate.annotations.DynamicUpdate;
+
+import org.hibernate.annotations.Proxy;
 
 import javax.persistence.*;
 import java.util.Set;
 
 @Entity
-@DynamicInsert
-@DynamicUpdate
 @Table(name = "CATEGORY")
+@Proxy(lazy = false)
 public class Category {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

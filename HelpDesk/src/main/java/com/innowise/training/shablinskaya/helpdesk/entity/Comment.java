@@ -7,8 +7,6 @@ import javax.persistence.*;
 import java.util.Objects;
 
 @Entity
-@DynamicInsert
-@DynamicUpdate
 @Table(name = "COMMENT")
 public class Comment {
 

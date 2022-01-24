@@ -7,11 +7,11 @@ import java.util.List;
 
 public interface TicketService {
 
-    List<Ticket> getAll();
+    List<TicketDto> getAll();
 
     TicketDto findById(Long id);
 
-    TicketDto findByOwner(Long id);
+    List<TicketDto> findByOwner(Long id);
 
     List<TicketDto> findByApprove(Long id);
 
@@ -19,7 +19,7 @@ public interface TicketService {
 
     List<TicketDto> findByState(String state);
 
-    List<TicketDto> findByUrgency(String state);
+    List<TicketDto> findByUrgency(String urgency);
 
     void save(TicketDto dto);
 
