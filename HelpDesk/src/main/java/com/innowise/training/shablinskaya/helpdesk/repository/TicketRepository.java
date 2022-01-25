@@ -9,7 +9,7 @@ import java.util.Optional;
 public interface TicketRepository {
     Optional<Ticket> getById(Long id);
 
-    List<Ticket> getAll();
+//    List<Ticket> getAll();
 
     Ticket update(Ticket ticket);
 

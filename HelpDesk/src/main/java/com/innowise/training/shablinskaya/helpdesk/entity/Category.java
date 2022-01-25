@@ -1,6 +1,7 @@
 package com.innowise.training.shablinskaya.helpdesk.entity;
 
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import org.hibernate.annotations.Proxy;
 
 import javax.persistence.*;
@@ -13,6 +14,7 @@ public class Category {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "ID", nullable = false)
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private Long categoryId;
 
     @Column(name = "NAME", nullable = false)

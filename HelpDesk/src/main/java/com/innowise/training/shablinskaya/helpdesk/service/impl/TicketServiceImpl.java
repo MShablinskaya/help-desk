@@ -24,20 +24,20 @@ public class TicketServiceImpl implements TicketService {
         this.ticketDtoConverter = ticketDtoConverter;
     }
 
-    @Override
-    public List<TicketDto> getAll() {
-        List<Ticket> tickets = ticketRepository.getAll();
-
-        List<TicketDto> ticketDtos = new ArrayList<>();
-
-        if (tickets != null) {
-            tickets.forEach(ticket -> {
-                ticketDtos.add(ticketDtoConverter.toDto(ticket));
-            });
-        }
-
-        return ticketDtos;
-    }
+//    @Override
+//    public List<TicketDto> getAll() {
+//        List<Ticket> tickets = ticketRepository.getAll();
+//
+//        List<TicketDto> ticketDtos = new ArrayList<>();
+//
+//        if (tickets != null) {
+//            tickets.forEach(ticket -> {
+//                ticketDtos.add(ticketDtoConverter.toDto(ticket));
+//            });
+//        }
+//
+//        return ticketDtos;
+//    }
 
     @Override
     public TicketDto findById(Long id) {

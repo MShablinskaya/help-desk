@@ -18,35 +18,35 @@ public class TicketRepositoryImpl implements TicketRepository {
 
     @Override
     public List<Ticket> getByOwnerId(Long ownerId) {
-        return entityManager.createQuery("SELECT t FROM Ticket t WHERE t.owner = :ownerId", Ticket.class)
+        return entityManager.createQuery("SELECT t FROM Ticket t WHERE t.owner.id = :ownerId", Ticket.class)
                 .setParameter("ownerId", ownerId)
                 .getResultList();
     }
 
     @Override
     public List<Ticket> getByApproveId(Long approveId) {
-        return entityManager.createQuery("SELECT t FROM Ticket t WHERE t.approve =: approveId", Ticket.class)
+        return entityManager.createQuery("SELECT t FROM Ticket t WHERE t.approve.id =: approveId", Ticket.class)
                 .setParameter("approveId", approveId)
                 .getResultList();
     }
 
     @Override
     public List<Ticket> getByAssigneeId(Long assigneeId) {
-        return entityManager.createQuery("SELECT t FROM Ticket t WHERE t.assignee =:assigneeId", Ticket.class)
+        return entityManager.createQuery("SELECT t FROM Ticket t WHERE t.assignee.id =:assigneeId", Ticket.class)
                 .setParameter("assigneeId", assigneeId)
                 .getResultList();
     }
 
     @Override
     public List<Ticket> getByState(String state) {
-        return entityManager.createQuery("SELECT t FROM Ticket t WHERE t.state =: state", Ticket.class)
+        return entityManager.createQuery("SELECT t FROM Ticket t WHERE t.state  = :state", Ticket.class)
                 .setParameter("state", state)
                 .getResultList();
     }
 
     @Override
     public List<Ticket> getByUrgency(String urgency) {
-        return entityManager.createQuery("SELECT t FROM Ticket t WHERE t.urgency =: urgency", Ticket.class)
+        return entityManager.createQuery("SELECT t FROM Ticket t WHERE t.urgency = :urgency", Ticket.class)
                 .setParameter("urgency", urgency)
                 .getResultList();
     }
@@ -57,11 +57,11 @@ public class TicketRepositoryImpl implements TicketRepository {
         return Optional.of(entityManager.find(Ticket.class, id));
     }
 
-    @Override
-    public List<Ticket> getAll() {
-        return entityManager.createQuery("SELECT t FROM Ticket t", Ticket.class)
-                .getResultList();
-    }
+//    @Override
+//    public List<Ticket> getAll() {
+//        return entityManager.createQuery("SELECT t FROM Ticket t", Ticket.class)
+//                .getResultList();
+//    }
 
     @Override
     public Ticket update(Ticket ticket) {

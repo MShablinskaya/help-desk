@@ -43,7 +43,7 @@ public class LoginController {
         if (user != null) {
             if (passwordEncoder.matches(user.getPassword(), passwordEncoder.encode(requestDto.getPassword()))) {
                 String token = jwtProvider.generateToken(user.getEmail());
-                return new AuthResponseDto(token, user.getEmail(), user.getRoleId().toString());
+                return new AuthResponseDto(token, user.getLastName(), user.getRoleId().toString());
             } else {
                 throw new AuthenticationException("Invalid Password");
             }

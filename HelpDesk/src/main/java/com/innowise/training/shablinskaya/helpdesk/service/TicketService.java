@@ -7,7 +7,7 @@ import java.util.List;
 
 public interface TicketService {
 
-    List<TicketDto> getAll();
+    //List<TicketDto> getAll();
 
     TicketDto findById(Long id);
 

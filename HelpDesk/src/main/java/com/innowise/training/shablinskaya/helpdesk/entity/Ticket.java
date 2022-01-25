@@ -1,5 +1,6 @@
 package com.innowise.training.shablinskaya.helpdesk.entity;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.innowise.training.shablinskaya.helpdesk.enums.State;
 import com.innowise.training.shablinskaya.helpdesk.enums.Urgency;
 
@@ -22,6 +23,7 @@ public class Ticket {
     private String name;
 
     @Column(name = "DESCRIPTION")
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private String description;
 
     @Column(name = "CREATED_ON")
