@@ -3,16 +3,20 @@ package com.innowise.training.shablinskaya.helpdesk.service.impl;
 import com.innowise.training.shablinskaya.helpdesk.converter.TicketDtoConverter;
 import com.innowise.training.shablinskaya.helpdesk.dto.TicketDto;
 import com.innowise.training.shablinskaya.helpdesk.entity.Ticket;
+import com.innowise.training.shablinskaya.helpdesk.enums.State;
+import com.innowise.training.shablinskaya.helpdesk.enums.Urgency;
 import com.innowise.training.shablinskaya.helpdesk.repository.TicketRepository;
 import com.innowise.training.shablinskaya.helpdesk.service.TicketService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
 
 @Service
+@Transactional
 public class TicketServiceImpl implements TicketService {
 
     private TicketRepository ticketRepository;
@@ -88,7 +92,8 @@ public class TicketServiceImpl implements TicketService {
     }
 
     @Override
-    public List<TicketDto> findByState(String state) {
+    public List<TicketDto> findByState(State state) {
+
         List<Ticket> tickets = ticketRepository.getByState(state);
 
         List<TicketDto> ticketDtos = new ArrayList<>();
@@ -102,7 +107,7 @@ public class TicketServiceImpl implements TicketService {
     }
 
     @Override
-    public List<TicketDto> findByUrgency(String urgency) {
+    public List<TicketDto> findByUrgency(Urgency urgency) {
         List<Ticket> tickets = ticketRepository.getByUrgency(urgency);
 
         List<TicketDto> ticketDtos = new ArrayList<>();
@@ -116,11 +121,12 @@ public class TicketServiceImpl implements TicketService {
     }
 
     @Override
-    public void save(TicketDto dto) {
+    public Ticket save(TicketDto dto) {
         Ticket ticket;
         ticket = ticketDtoConverter.toEntity(dto);
 
         ticketRepository.create(ticket);
+        return ticket;
     }
 
     @Override

@@ -2,6 +2,8 @@ package com.innowise.training.shablinskaya.helpdesk.service;
 
 import com.innowise.training.shablinskaya.helpdesk.dto.TicketDto;
 import com.innowise.training.shablinskaya.helpdesk.entity.Ticket;
+import com.innowise.training.shablinskaya.helpdesk.enums.State;
+import com.innowise.training.shablinskaya.helpdesk.enums.Urgency;
 
 import java.util.List;
 
@@ -17,11 +19,11 @@ public interface TicketService {
 
     List<TicketDto> findByAssignee(Long id);
 
-    List<TicketDto> findByState(String state);
+    List<TicketDto> findByState(State state);
 
-    List<TicketDto> findByUrgency(String urgency);
+    List<TicketDto> findByUrgency(Urgency urgency);
 
-    void save(TicketDto dto);
+    Ticket save(TicketDto dto);
 
     void update(TicketDto dto);
 }

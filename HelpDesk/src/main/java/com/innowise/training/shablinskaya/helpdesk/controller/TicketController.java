@@ -1,13 +1,18 @@
 package com.innowise.training.shablinskaya.helpdesk.controller;
 
 import com.innowise.training.shablinskaya.helpdesk.dto.TicketDto;
+import com.innowise.training.shablinskaya.helpdesk.entity.Ticket;
+import com.innowise.training.shablinskaya.helpdesk.enums.State;
+import com.innowise.training.shablinskaya.helpdesk.enums.Urgency;
 import com.innowise.training.shablinskaya.helpdesk.service.TicketService;
 import org.apache.log4j.Logger;
-import org.hibernate.annotations.Parameter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.annotation.Secured;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -54,9 +59,25 @@ public class TicketController {
     }
 
     @GetMapping("/by-state/{state}")
-    public ResponseEntity<List<TicketDto>> getByState(@PathVariable(value = "state") String state){
+    public ResponseEntity<List<TicketDto>> getByState(@PathVariable(value = "state") State state){
         List<TicketDto> ticketDtos = ticketService.findByState(state);
 
         return ResponseEntity.ok(ticketDtos);
     }
+
+    @GetMapping("/by-urgency/{urgency}")
+    public ResponseEntity<List<TicketDto>> getByUrgency(@PathVariable(value = "urgency")Urgency urgency){
+        List<TicketDto> ticketDtos = ticketService.findByUrgency(urgency);
+
+        return ResponseEntity.ok(ticketDtos);
+    }
+
+   // @PreAuthorize("hasRole('EMPLOYEE') or hasRole('MANAGER')")
+    @PostMapping("/ticket-create")
+    public ResponseEntity<Ticket> createTicket(@RequestBody TicketDto ticketDto){
+        Ticket ticket = ticketService.save(ticketDto);
+
+        return new ResponseEntity<>(ticket, HttpStatus.CREATED);
+    }
+
 }

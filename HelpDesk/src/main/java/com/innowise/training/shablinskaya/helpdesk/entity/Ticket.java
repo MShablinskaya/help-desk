@@ -6,7 +6,6 @@ import com.innowise.training.shablinskaya.helpdesk.enums.Urgency;
 
 import javax.persistence.*;
 import java.sql.Timestamp;
-import java.util.Date;
 import java.util.Objects;
 import java.util.Set;
 
@@ -17,7 +16,7 @@ public class Ticket {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "ID")
-    private Long id;
+    private java.lang.Long id;
 
     @Column(name = "NAME")
     private String name;
@@ -65,7 +64,7 @@ public class Ticket {
     public Ticket() {
     }
 
-    public Ticket(Long id, String name,String description, Timestamp date, Timestamp resolutionDate, User owner, User assignee,User approve, State  state, Urgency urgency){
+    public Ticket(java.lang.Long id, String name, String description, Timestamp date, Timestamp resolutionDate, User owner, User assignee, User approve, State  state, Urgency urgency){
         this.id = id;
         this.name = name;
         this.description = description;
@@ -78,7 +77,7 @@ public class Ticket {
         this.urgency = urgency;
     }
 
-    public Long getId() {
+    public java.lang.Long getId() {
         return id;
     }
 

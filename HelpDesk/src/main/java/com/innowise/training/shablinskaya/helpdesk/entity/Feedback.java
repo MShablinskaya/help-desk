@@ -12,14 +12,14 @@ public class Feedback {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "ID")
-    private Long feedbackId;
+    private java.lang.Long feedbackId;
 
     @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.MERGE)
     @JoinColumn(name = "USER_ID")
     private User userId;
 
     @Column(name = "RATE")
-    private Long feedbackRate;
+    private java.lang.Long feedbackRate;
 
     @Column(name = "DATE")
     private Timestamp feedbackDate;
@@ -34,7 +34,7 @@ public class Feedback {
     public Feedback() {
     }
 
-    public Feedback(User userId, Long feedbackRate, Timestamp feedbackDate, String text, Ticket ticket) {
+    public Feedback(User userId, java.lang.Long feedbackRate, Timestamp feedbackDate, String text, Ticket ticket) {
         this.userId = userId;
         this.feedbackRate = feedbackRate;
         this.feedbackDate = feedbackDate;
@@ -42,11 +42,11 @@ public class Feedback {
         this.ticket = ticket;
     }
 
-    public Long getFeedbackId() {
+    public java.lang.Long getFeedbackId() {
         return feedbackId;
     }
 
-    public void setFeedbackId(Long feedbackId) {
+    public void setFeedbackId(java.lang.Long feedbackId) {
         this.feedbackId = feedbackId;
     }
 
@@ -58,11 +58,11 @@ public class Feedback {
         this.userId = userId;
     }
 
-    public Long getFeedbackRate() {
+    public java.lang.Long getFeedbackRate() {
         return feedbackRate;
     }
 
-    public void setFeedbackRate(Long feedbackRate) {
+    public void setFeedbackRate(java.lang.Long feedbackRate) {
         this.feedbackRate = feedbackRate;
     }
 

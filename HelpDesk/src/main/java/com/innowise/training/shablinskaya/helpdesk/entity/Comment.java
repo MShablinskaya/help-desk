@@ -1,8 +1,5 @@
 package com.innowise.training.shablinskaya.helpdesk.entity;
 
-import org.hibernate.annotations.DynamicInsert;
-import org.hibernate.annotations.DynamicUpdate;
-
 import javax.persistence.*;
 import java.util.Objects;
 
@@ -13,7 +10,7 @@ public class Comment {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "ID", nullable = false)
-    private Long id;
+    private java.lang.Long id;
 
     @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "USER_ID")
@@ -36,7 +33,7 @@ public class Comment {
         this.ticketId = ticketId;
     }
 
-    public Long getId() {
+    public java.lang.Long getId() {
         return id;
     }
 

@@ -2,11 +2,14 @@ package com.innowise.training.shablinskaya.helpdesk.repository.impl;
 
 
 import com.innowise.training.shablinskaya.helpdesk.entity.Ticket;
+import com.innowise.training.shablinskaya.helpdesk.enums.State;
+import com.innowise.training.shablinskaya.helpdesk.enums.Urgency;
 import com.innowise.training.shablinskaya.helpdesk.repository.TicketRepository;
 import org.springframework.stereotype.Repository;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import javax.persistence.Query;
 import java.util.List;
 import java.util.Optional;
 
@@ -38,15 +41,16 @@ public class TicketRepositoryImpl implements TicketRepository {
     }
 
     @Override
-    public List<Ticket> getByState(String state) {
-        return entityManager.createQuery("SELECT t FROM Ticket t WHERE t.state  = :state", Ticket.class)
+    public List<Ticket> getByState(State state) {
+        return entityManager.createQuery("SELECT t FROM Ticket t WHERE t.state  = :state")
                 .setParameter("state", state)
                 .getResultList();
     }
 
+
     @Override
-    public List<Ticket> getByUrgency(String urgency) {
-        return entityManager.createQuery("SELECT t FROM Ticket t WHERE t.urgency = :urgency", Ticket.class)
+    public List<Ticket> getByUrgency(Urgency urgency) {
+        return entityManager.createQuery("SELECT t FROM Ticket t WHERE t.urgency = :urgency")
                 .setParameter("urgency", urgency)
                 .getResultList();
     }

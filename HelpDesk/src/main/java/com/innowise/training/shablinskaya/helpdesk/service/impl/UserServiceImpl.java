@@ -6,6 +6,9 @@ import com.innowise.training.shablinskaya.helpdesk.repository.UserRepository;
 import com.innowise.training.shablinskaya.helpdesk.service.UserService;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
 import javax.persistence.EntityNotFoundException;
@@ -39,8 +42,32 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public User findById(Long id) {
+    public User findById(java.lang.Long id) {
         return userRepository.getById(id).orElseThrow(EntityNotFoundException::new);
     }
+
+    @Override
+    public User getCurrentUser() {
+        return userRepository.findByEmail(getEmailFromContext()).orElseThrow(
+                EntityNotFoundException::new);
+    }
+
+    @Override
+    public boolean hasRole(String... roles) {
+        User user = getCurrentUser();
+        for(String role : roles){
+            if(role.equals(user.getRoleId().toString())){
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private String getEmailFromContext(){
+       UserDetails userDetails = (UserDetails)SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
+       String email = userDetails.getUsername();
+
+       return email;    }
 }
 

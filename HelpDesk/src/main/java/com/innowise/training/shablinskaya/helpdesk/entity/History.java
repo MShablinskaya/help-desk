@@ -13,7 +13,7 @@ public class History {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "ID")
-    private Long historyId;
+    private java.lang.Long historyId;
 
     @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "TICKET_ID")
@@ -44,11 +44,11 @@ public class History {
         this.actionOnTicketDescription = actionOnTicketDescription;
     }
 
-    public Long getHistoryId() {
+    public java.lang.Long getHistoryId() {
         return historyId;
     }
 
-    public void setHistoryId(Long historyId) {
+    public void setHistoryId(java.lang.Long historyId) {
         this.historyId = historyId;
     }
 

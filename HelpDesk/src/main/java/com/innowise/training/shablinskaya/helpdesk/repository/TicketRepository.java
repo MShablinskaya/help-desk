@@ -1,6 +1,8 @@
 package com.innowise.training.shablinskaya.helpdesk.repository;
 
 import com.innowise.training.shablinskaya.helpdesk.entity.Ticket;
+import com.innowise.training.shablinskaya.helpdesk.enums.State;
+import com.innowise.training.shablinskaya.helpdesk.enums.Urgency;
 
 
 import java.util.List;
@@ -21,8 +23,8 @@ public interface TicketRepository {
 
     List<Ticket> getByAssigneeId(Long assigneeId);
 
-    List<Ticket> getByState(String state);
+    List<Ticket> getByState(State state);
 
-    List<Ticket> getByUrgency(String urgency);
+    List<Ticket> getByUrgency(Urgency urgency);
 
 }

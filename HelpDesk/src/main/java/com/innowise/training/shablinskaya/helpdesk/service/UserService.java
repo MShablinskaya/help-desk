@@ -3,7 +3,6 @@ package com.innowise.training.shablinskaya.helpdesk.service;
 import com.innowise.training.shablinskaya.helpdesk.entity.User;
 
 import java.util.List;
-import java.util.Optional;
 
 public interface UserService {
 
@@ -13,5 +12,9 @@ public interface UserService {
 
     User findByEmail(String email);
 
-    User findById(Long id);
+    User findById(java.lang.Long id);
+
+    User getCurrentUser();
+
+    boolean hasRole(String... roles);
 }

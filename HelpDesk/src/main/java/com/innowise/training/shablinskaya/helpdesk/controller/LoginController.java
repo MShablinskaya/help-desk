@@ -5,7 +5,6 @@ import com.innowise.training.shablinskaya.helpdesk.dto.AuthResponseDto;
 import com.innowise.training.shablinskaya.helpdesk.entity.User;
 import com.innowise.training.shablinskaya.helpdesk.security.JwtProvider;
 import com.innowise.training.shablinskaya.helpdesk.service.UserService;
-import com.innowise.training.shablinskaya.helpdesk.service.impl.UserServiceImpl;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
