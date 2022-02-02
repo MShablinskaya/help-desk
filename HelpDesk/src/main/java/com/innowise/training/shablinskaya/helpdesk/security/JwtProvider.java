@@ -1,47 +1,98 @@
 package com.innowise.training.shablinskaya.helpdesk.security;
 
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
+
+import com.innowise.training.shablinskaya.helpdesk.enums.Role;
+import com.innowise.training.shablinskaya.helpdesk.service.impl.UserDetailsServiceImpl;
+import io.jsonwebtoken.*;
 import org.apache.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
+
+import javax.annotation.PostConstruct;
+import javax.servlet.http.HttpServletRequest;
 import java.time.LocalDate;
 import java.time.ZoneId;
+import java.util.ArrayList;
+import java.util.Base64;
 import java.util.Date;
+import java.util.List;
 
 
 @Component
 public class JwtProvider {
     private static final Logger log = org.apache.log4j.Logger.getLogger(JwtProvider.class);
 
+    private UserDetailsServiceImpl userDetailsService;
+
     @Value("${jwt.token.secret}")
     private String jwtSecret;
 
-    public String generateToken(String login) {
-        Date date = Date.from(LocalDate.now().plusDays(5).atStartOfDay(ZoneId.systemDefault()).toInstant());
+    @Autowired
+    public JwtProvider(UserDetailsServiceImpl userDetailsService){
+        this.userDetailsService = userDetailsService;
+    }
 
-        return Jwts.builder()
-                .setSubject(login)
-                .setExpiration(date)
-                .signWith(SignatureAlgorithm.HS512, jwtSecret)
+    @PostConstruct
+    protected void init() {
+        jwtSecret = Base64.getEncoder().encodeToString(jwtSecret.getBytes());
+    }
+
+    public String createToken(String username, List<Role> roles) {
+
+        Claims claims = Jwts.claims().setSubject(username);
+        claims.put("roles", getRoleNames(roles));
+
+        Date now = new Date();
+        Date validity = Date.from(LocalDate.now().plusDays(5).atStartOfDay(ZoneId.systemDefault()).toInstant());
+
+
+        return Jwts.builder()//
+                .setClaims(claims)//
+                .setIssuedAt(now)//
+                .setExpiration(validity)//
+                .signWith(SignatureAlgorithm.HS256, jwtSecret)//
                 .compact();
+    }
+
+    public Authentication getAuthentication(String token) {
+        UserDetails userDetails = userDetailsService.loadUserByUsername(getUsername(token));
+        return new UsernamePasswordAuthenticationToken(userDetails, "", userDetails.getAuthorities());
+    }
+
+    public String getUsername(String token) {
+        return Jwts.parser().setSigningKey(jwtSecret).parseClaimsJws(token).getBody().getSubject();
+    }
+
+    public String resolveToken(HttpServletRequest req) {
+        String bearerToken = req.getHeader("Authorization");
+        if (bearerToken != null && bearerToken.startsWith("Bearer ")) {
+            return bearerToken.substring(7);
+        }
+        return null;
     }
 
     public boolean validateToken(String token) {
         try {
-            Jwts.parser().setSigningKey(jwtSecret).parseClaimsJws(token);
+            Jws<Claims> claims = Jwts.parser().setSigningKey(jwtSecret).parseClaimsJws(token);
 
-            return true;
-        } catch (Exception e){
-            log.info("Invalid Token");
-            return false;
+            return !claims.getBody().getExpiration().before(new Date());
+        } catch (JwtException | IllegalArgumentException e) {
+            throw new JwtAuthenticationException("JWT token is expired or invalid");
         }
     }
 
-    public String getLoginFromToken(String token){
-        Claims claims = Jwts.parser().setSigningKey(jwtSecret).parseClaimsJws(token).getBody();
-        return claims.getSubject();
+    private List<String> getRoleNames(List<Role> userRoles) {
+        List<String> result = new ArrayList<>();
+
+        userRoles.forEach(role -> {
+            result.add(role.name());
+        });
+
+        return result;
     }
 }

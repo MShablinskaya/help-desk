@@ -3,6 +3,7 @@ package com.innowise.training.shablinskaya.helpdesk.service.impl;
 
 import com.innowise.training.shablinskaya.helpdesk.entity.User;
 import com.innowise.training.shablinskaya.helpdesk.repository.UserRepository;
+import com.innowise.training.shablinskaya.helpdesk.security.JwtProvider;
 import com.innowise.training.shablinskaya.helpdesk.service.UserService;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -48,7 +49,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public User getCurrentUser() {
-        return userRepository.findByEmail(getEmailFromContext()).orElseThrow(
+        return userRepository.findByEmail(SecurityContextHolder.getContext().getAuthentication().getName()).orElseThrow(
                 EntityNotFoundException::new);
     }
 
@@ -63,11 +64,5 @@ public class UserServiceImpl implements UserService {
         return false;
     }
 
-    private String getEmailFromContext(){
-       UserDetails userDetails = (UserDetails)SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-
-       String email = userDetails.getUsername();
-
-       return email;    }
 }
 

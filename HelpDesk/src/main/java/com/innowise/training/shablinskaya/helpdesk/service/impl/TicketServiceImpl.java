@@ -120,6 +120,7 @@ public class TicketServiceImpl implements TicketService {
         return ticketDtos;
     }
 
+    @Transactional
     @Override
     public Ticket save(TicketDto dto) {
         Ticket ticket;
@@ -129,6 +130,7 @@ public class TicketServiceImpl implements TicketService {
         return ticket;
     }
 
+    @Transactional
     @Override
     public void update(TicketDto dto) {
         Ticket ticket;

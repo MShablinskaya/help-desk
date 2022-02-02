@@ -5,6 +5,7 @@ import com.innowise.training.shablinskaya.helpdesk.entity.Ticket;
 import com.innowise.training.shablinskaya.helpdesk.enums.State;
 import com.innowise.training.shablinskaya.helpdesk.enums.Urgency;
 import com.innowise.training.shablinskaya.helpdesk.service.TicketService;
+import com.innowise.training.shablinskaya.helpdesk.service.UserService;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -24,10 +25,12 @@ public class TicketController {
     private static final Logger log = org.apache.log4j.Logger.getLogger(TicketController.class);
 
     private TicketService ticketService;
+    private UserService userService;
 
     @Autowired
-    public TicketController(TicketService ticketService){
+    public TicketController(TicketService ticketService, UserService userService){
         this.ticketService = ticketService;
+        this.userService = userService;
     }
 
     @GetMapping("/{id}")
@@ -72,12 +75,20 @@ public class TicketController {
         return ResponseEntity.ok(ticketDtos);
     }
 
-   // @PreAuthorize("hasRole('EMPLOYEE') or hasRole('MANAGER')")
+    @GetMapping("/my-tickets")
+    public ResponseEntity<List<TicketDto>> getByCurrentUser(){
+        List<TicketDto> ticketDtos = ticketService.findByOwner(userService.getCurrentUser().getId());
+
+        return ResponseEntity.ok(ticketDtos);
+    }
+
+
+    @PreAuthorize("@userServiceImpl.hasRole('EMPLOYEE', 'MANAGER')")
     @PostMapping("/ticket-create")
     public ResponseEntity<Ticket> createTicket(@RequestBody TicketDto ticketDto){
         Ticket ticket = ticketService.save(ticketDto);
-
-        return new ResponseEntity<>(ticket, HttpStatus.CREATED);
+        //System.out.println("Created!" + ticketService.findById(ticket.getId()).getName());
+        return ResponseEntity.ok(ticket);
     }
 
 }

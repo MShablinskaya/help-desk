@@ -7,8 +7,8 @@ import org.springframework.security.config.annotation.method.configuration.Globa
 @Configuration
 @EnableGlobalMethodSecurity(
         prePostEnabled = true,
-        securedEnabled = true,
-        jsr250Enabled = true
+        securedEnabled = false,
+        jsr250Enabled = false
 )
 public class MethodSecurityConfig extends GlobalMethodSecurityConfiguration {
 }

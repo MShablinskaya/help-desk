@@ -80,17 +80,17 @@ CREATE TABLE IF NOT EXISTS PUBLIC.FEEDBACK
 );
 
 INSERT INTO USER (FIRST_NAME, LAST_NAME, ROLE_ID, EMAIL, PASSWORD)
-VALUES ('John', 'Doe', 'EMPLOYEE', 'user1_mogilev@yopmail.com', 'qwerty123');
+VALUES ('John', 'Doe', 'EMPLOYEE', 'user1_mogilev@yopmail.com', '$2a$10$1XVHOs4YjZPhAu/YwkckT.3wXD1oY2LSsFekR1cOA/6btODowO2Qi');
 INSERT INTO USER (FIRST_NAME, LAST_NAME, ROLE_ID, EMAIL, PASSWORD)
-VALUES ('Jane', 'Doe', 'EMPLOYEE', 'user2_mogilev@yopmail.com', 'qwerty123');
+VALUES ('Jane', 'Doe', 'EMPLOYEE', 'user2_mogilev@yopmail.com', '$2a$10$1XVHOs4YjZPhAu/YwkckT.3wXD1oY2LSsFekR1cOA/6btODowO2Qi');
 INSERT INTO USER (FIRST_NAME, LAST_NAME, ROLE_ID, EMAIL, PASSWORD)
-VALUES ('Elvis', 'Presley', 'MANAGER', 'manager1_mogilev@yopmail.com', 'qwerty123');
+VALUES ('Elvis', 'Presley', 'MANAGER', 'manager1_mogilev@yopmail.com', '$2a$10$1XVHOs4YjZPhAu/YwkckT.3wXD1oY2LSsFekR1cOA/6btODowO2Qi');
 INSERT INTO USER (FIRST_NAME, LAST_NAME, ROLE_ID, EMAIL, PASSWORD)
-VALUES ('Pope', 'Ofrome', 'MANAGER', 'manager2_mogilev@yopmail.com', 'qwerty123');
+VALUES ('Pope', 'Ofrome', 'MANAGER', 'manager2_mogilev@yopmail.com', '$2a$10$1XVHOs4YjZPhAu/YwkckT.3wXD1oY2LSsFekR1cOA/6btODowO2Qi');
 INSERT INTO USER (FIRST_NAME, LAST_NAME, ROLE_ID, EMAIL, PASSWORD)
-VALUES ('Papa', 'Carlo', 'ENGINEER', 'engineer1_mogilev@yopmail.com', 'qwerty123');
+VALUES ('Papa', 'Carlo', 'ENGINEER', 'engineer1_mogilev@yopmail.com', '$2a$10$1XVHOs4YjZPhAu/YwkckT.3wXD1oY2LSsFekR1cOA/6btODowO2Qi');
 INSERT INTO USER (FIRST_NAME, LAST_NAME, ROLE_ID, EMAIL, PASSWORD)
-VALUES ('Ella', 'Cinder', 'ENGINEER', 'engineer2_mogilev@yopmail.com', 'qwerty123');
+VALUES ('Ella', 'Cinder', 'ENGINEER', 'engineer2_mogilev@yopmail.com', '$2a$10$1XVHOs4YjZPhAu/YwkckT.3wXD1oY2LSsFekR1cOA/6btODowO2Qi');
 
 INSERT INTO CATEGORY(NAME)
 VALUES ('OFFICE');
