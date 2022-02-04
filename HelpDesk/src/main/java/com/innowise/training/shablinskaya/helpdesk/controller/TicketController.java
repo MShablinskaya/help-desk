@@ -4,6 +4,7 @@ import com.innowise.training.shablinskaya.helpdesk.dto.TicketDto;
 import com.innowise.training.shablinskaya.helpdesk.entity.Ticket;
 import com.innowise.training.shablinskaya.helpdesk.enums.State;
 import com.innowise.training.shablinskaya.helpdesk.enums.Urgency;
+import com.innowise.training.shablinskaya.helpdesk.service.HistoryService;
 import com.innowise.training.shablinskaya.helpdesk.service.TicketService;
 import com.innowise.training.shablinskaya.helpdesk.service.UserService;
 import org.apache.log4j.Logger;
@@ -11,11 +12,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
+import java.sql.Timestamp;
+import java.time.Instant;
+import java.time.LocalDate;
 import java.util.List;
 
 
@@ -26,11 +28,13 @@ public class TicketController {
 
     private TicketService ticketService;
     private UserService userService;
+    private HistoryService historyService;
 
     @Autowired
-    public TicketController(TicketService ticketService, UserService userService){
+    public TicketController(TicketService ticketService, UserService userService, HistoryService historyService){
         this.ticketService = ticketService;
         this.userService = userService;
+        this.historyService = historyService;
     }
 
     @GetMapping("/{id}")
@@ -86,9 +90,19 @@ public class TicketController {
     @PreAuthorize("@userServiceImpl.hasRole('EMPLOYEE', 'MANAGER')")
     @PostMapping("/ticket-create")
     public ResponseEntity<Ticket> createTicket(@RequestBody TicketDto ticketDto){
+        Timestamp now = Timestamp.from(Instant.now());
+        LocalDate currentDate = now.toLocalDateTime().toLocalDate();
+
+        Timestamp setTime = ticketDto.getResolutionDate();
+        LocalDate resolutionDate = setTime.toLocalDateTime().toLocalDate();
+
+        if(currentDate.compareTo(resolutionDate) <= 0){
         Ticket ticket = ticketService.save(ticketDto);
-        //System.out.println("Created!" + ticketService.findById(ticket.getId()).getName());
-        return ResponseEntity.ok(ticket);
+
+        System.out.println("History created" + historyService.create(userService.getCurrentUser().getId()));
+        return ResponseEntity.ok(ticket);}else{
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
     }
 
 }

@@ -9,7 +9,7 @@ public interface HistoryRepository {
 
     Optional<History> getById(Long id);
 
-    void save(History history);
+    History save(History history);
 
     List<History> findByTicketId(Long ticketId);
 }

@@ -17,7 +17,7 @@ public class User {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "ID")
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
-    private java.lang.Long id;
+    private Long id;
 
     @Column(name = "FIRST_NAME")
     private String firstName;
@@ -63,12 +63,8 @@ public class User {
         this.password = password;
     }
 
-    public java.lang.Long getId() {
+    public Long getId() {
         return id;
-    }
-
-    public void setId(java.lang.Long userId) {
-        this.id = userId;
     }
 
     public String getFirstName() {

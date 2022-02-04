@@ -16,7 +16,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Service
-@Transactional
 public class TicketServiceImpl implements TicketService {
 
     private TicketRepository ticketRepository;
@@ -126,8 +125,7 @@ public class TicketServiceImpl implements TicketService {
         Ticket ticket;
         ticket = ticketDtoConverter.toEntity(dto);
 
-        ticketRepository.create(ticket);
-        return ticket;
+        return ticketRepository.create(ticket);
     }
 
     @Transactional

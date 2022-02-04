@@ -15,7 +15,7 @@ public interface TicketRepository {
 
     Ticket update(Ticket ticket);
 
-    void create(Ticket ticket);
+    Ticket create(Ticket ticket);
 
     List<Ticket> getByOwnerId(Long ownerId);
 

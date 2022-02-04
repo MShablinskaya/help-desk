@@ -4,6 +4,7 @@ import com.innowise.training.shablinskaya.helpdesk.entity.User;
 import com.innowise.training.shablinskaya.helpdesk.enums.Role;
 import com.innowise.training.shablinskaya.helpdesk.repository.UserRepository;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -24,6 +25,12 @@ public class UserRepositoryImpl implements UserRepository {
     @Override
     public List<User> getAll() {
         return entityManager.createQuery("SELECT u FROM User u", User.class).getResultList();
+    }
+
+    @Transactional
+    @Override
+    public User update(User user) {
+        return entityManager.merge(user);
     }
 
     @Override

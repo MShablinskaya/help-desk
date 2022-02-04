@@ -3,9 +3,12 @@ package com.innowise.training.shablinskaya.helpdesk.repository.impl;
 import com.innowise.training.shablinskaya.helpdesk.entity.History;
 import com.innowise.training.shablinskaya.helpdesk.repository.HistoryRepository;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import java.sql.Timestamp;
+import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
 
@@ -17,8 +20,8 @@ public class HistoryRepositoryImpl implements HistoryRepository {
 
     @Override
     public List<History> findByTicketId(Long ticketId) {
-        return entityManager.createQuery("SELECT h FROM History h WHERE h.ticketId = :ticketId", History.class)
-                .setParameter(Math.toIntExact(ticketId), History.class)
+        return entityManager.createQuery("SELECT h FROM History h WHERE h.ticketId.id = :ticketId", History.class)
+                .setParameter("ticketId", History.class)
                 .getResultList();
     }
 
@@ -27,9 +30,11 @@ public class HistoryRepositoryImpl implements HistoryRepository {
         return Optional.of(entityManager.find(History.class, id));
     }
 
+    @Transactional
     @Override
-    public void save(History history) {
+    public History save(History history) {
         entityManager.persist(history);
+        return history;
     }
 
 

@@ -17,4 +17,6 @@ public interface UserService {
     User getCurrentUser();
 
     boolean hasRole(String... roles);
+
+    User refresh(User user);
 }

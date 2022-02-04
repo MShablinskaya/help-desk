@@ -3,13 +3,10 @@ package com.innowise.training.shablinskaya.helpdesk.service.impl;
 
 import com.innowise.training.shablinskaya.helpdesk.entity.User;
 import com.innowise.training.shablinskaya.helpdesk.repository.UserRepository;
-import com.innowise.training.shablinskaya.helpdesk.security.JwtProvider;
 import com.innowise.training.shablinskaya.helpdesk.service.UserService;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
 import javax.persistence.EntityNotFoundException;
@@ -62,6 +59,11 @@ public class UserServiceImpl implements UserService {
             }
         }
         return false;
+    }
+
+    @Override
+    public User refresh(User user) {
+        return userRepository.update(user);
     }
 
 }

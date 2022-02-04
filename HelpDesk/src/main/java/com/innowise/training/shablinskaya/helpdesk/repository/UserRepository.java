@@ -19,4 +19,6 @@ public interface UserRepository {
 
     List<User> getAll();
 
+    User update(User user);
+
 }

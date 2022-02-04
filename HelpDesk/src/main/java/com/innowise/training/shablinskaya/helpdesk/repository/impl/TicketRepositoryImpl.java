@@ -6,6 +6,7 @@ import com.innowise.training.shablinskaya.helpdesk.enums.State;
 import com.innowise.training.shablinskaya.helpdesk.enums.Urgency;
 import com.innowise.training.shablinskaya.helpdesk.repository.TicketRepository;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -67,6 +68,7 @@ public class TicketRepositoryImpl implements TicketRepository {
 //                .getResultList();
 //    }
 
+    @Transactional
     @Override
     public Ticket update(Ticket ticket) {
             entityManager.merge(ticket);
@@ -74,8 +76,10 @@ public class TicketRepositoryImpl implements TicketRepository {
     }
 
 
+    @Transactional
     @Override
-    public void create(Ticket ticket) {
+    public Ticket create(Ticket ticket) {
         entityManager.persist(ticket);
+        return ticket;
     }
 }
