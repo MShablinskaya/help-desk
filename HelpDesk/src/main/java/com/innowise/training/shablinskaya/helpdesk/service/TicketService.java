@@ -25,5 +25,7 @@ public interface TicketService {
 
     Ticket save(TicketDto dto);
 
+//    void save(TicketDto dto);
+
     void update(TicketDto dto);
 }

@@ -9,6 +9,7 @@ import org.springframework.format.FormatterRegistry;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
+
 @Configuration
 @EnableWebMvc
 @ComponentScan(basePackages = "com.innowise.training.shablinskaya.helpdesk")

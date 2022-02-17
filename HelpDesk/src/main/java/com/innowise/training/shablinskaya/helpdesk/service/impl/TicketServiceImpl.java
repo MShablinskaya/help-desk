@@ -12,6 +12,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityNotFoundException;
+import java.sql.Timestamp;
+import java.time.Instant;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -122,10 +125,16 @@ public class TicketServiceImpl implements TicketService {
     @Transactional
     @Override
     public Ticket save(TicketDto dto) {
-        Ticket ticket;
-        ticket = ticketDtoConverter.toEntity(dto);
+        Timestamp now = Timestamp.from(Instant.now());
+        LocalDate currentDate = now.toLocalDateTime().toLocalDate();
 
-        return ticketRepository.create(ticket);
+        Timestamp setTime = dto.getResolutionDate();
+        LocalDate resolutionDate = setTime.toLocalDateTime().toLocalDate();
+
+        if(currentDate.compareTo(resolutionDate) <= 0){
+        return ticketRepository.create(ticketDtoConverter.toEntity(dto));}
+
+        return null;
     }
 
     @Transactional

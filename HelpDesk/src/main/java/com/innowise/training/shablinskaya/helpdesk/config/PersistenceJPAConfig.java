@@ -23,7 +23,7 @@ public class PersistenceJPAConfig {
         LocalContainerEntityManagerFactoryBean entityManager
                 = new LocalContainerEntityManagerFactoryBean();
         entityManager.setDataSource(dataSource());
-        entityManager.setPackagesToScan("com.innowise.training.shablinskaya.helpdesk.entity");
+        entityManager.setPackagesToScan("com.innowise.training.shablinskaya.helpdesk");
 
         JpaVendorAdapter vendorAdapter = new HibernateJpaVendorAdapter();
         entityManager.setJpaVendorAdapter(vendorAdapter);
@@ -36,7 +36,7 @@ public class PersistenceJPAConfig {
     public DataSource dataSource() {
         DriverManagerDataSource dataSource = new DriverManagerDataSource();
         dataSource.setDriverClassName("org.h2.Driver");
-        dataSource.setUrl("jdbc:h2:mem:test;INIT=runscript from '~/IdeaProjects/HelpDesk/src/main/resources/initsql.sql'");
+        dataSource.setUrl("jdbc:h2:mem:test");
         dataSource.setUsername("sa");
         dataSource.setPassword("");
         return dataSource;
@@ -57,7 +57,8 @@ public class PersistenceJPAConfig {
 
     final Properties additionalProperties() {
         Properties properties = new Properties();
-        properties.setProperty("hibernate.hbm2ddl.auto", "create-drop");
+        properties.setProperty("hibernate.show_sql", "true");
+        properties.setProperty("hibernate.hbm2ddl.auto", "update");
         properties.setProperty("hibernate.dialect", "org.hibernate.dialect.H2Dialect");
         properties.setProperty("javax.persistence.validation.mode", "NONE");
 

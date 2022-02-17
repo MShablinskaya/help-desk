@@ -15,8 +15,7 @@ public class ApplicationInit extends AbstractAnnotationConfigDispatcherServletIn
     @Override
     protected Class<?>[] getServletConfigClasses() {
         return new Class[]{com.innowise.training.shablinskaya.helpdesk.config.SpringConfig.class,
-        com.innowise.training.shablinskaya.helpdesk.config.PersistenceJPAConfig.class,
-                com.innowise.training.shablinskaya.helpdesk.config.SecurityConfig.class};
+        com.innowise.training.shablinskaya.helpdesk.config.PersistenceJPAConfig.class};
     }
 
     @Override

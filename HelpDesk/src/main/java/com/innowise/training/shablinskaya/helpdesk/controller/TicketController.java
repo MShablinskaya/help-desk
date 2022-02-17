@@ -14,7 +14,9 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
+import java.net.URI;
 import java.sql.Timestamp;
 import java.time.Instant;
 import java.time.LocalDate;
@@ -31,56 +33,56 @@ public class TicketController {
     private HistoryService historyService;
 
     @Autowired
-    public TicketController(TicketService ticketService, UserService userService, HistoryService historyService){
+    public TicketController(TicketService ticketService, UserService userService, HistoryService historyService) {
         this.ticketService = ticketService;
         this.userService = userService;
         this.historyService = historyService;
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<TicketDto> getById(@PathVariable(name = "id") Long id){
+    public ResponseEntity<TicketDto> getById(@PathVariable(name = "id") Long id) {
         TicketDto ticketDto = ticketService.findById(id);
 
         return new ResponseEntity<>(ticketDto, HttpStatus.OK);
     }
 
     @GetMapping("/by-owner/{id}")
-    public ResponseEntity<List<TicketDto>> getByOwnerId(@PathVariable(name="id") Long id){
+    public ResponseEntity<List<TicketDto>> getByOwnerId(@PathVariable(name = "id") Long id) {
         List<TicketDto> ticketDtos = ticketService.findByOwner(id);
 
         return ResponseEntity.ok(ticketDtos);
     }
 
     @GetMapping("/by-approve/{id}")
-    public ResponseEntity<List<TicketDto>> getByApproveId(@PathVariable(name = "id") Long id){
+    public ResponseEntity<List<TicketDto>> getByApproveId(@PathVariable(name = "id") Long id) {
         List<TicketDto> ticketDtos = ticketService.findByApprove(id);
 
         return new ResponseEntity<>(ticketDtos, HttpStatus.OK);
     }
 
     @GetMapping("/by-assignee/{id}")
-    public  ResponseEntity<List<TicketDto>> getByAssigneeId(@PathVariable(name = "id") Long id){
+    public ResponseEntity<List<TicketDto>> getByAssigneeId(@PathVariable(name = "id") Long id) {
         List<TicketDto> ticketDtos = ticketService.findByAssignee(id);
 
         return ResponseEntity.ok(ticketDtos);
     }
 
     @GetMapping("/by-state/{state}")
-    public ResponseEntity<List<TicketDto>> getByState(@PathVariable(value = "state") State state){
+    public ResponseEntity<List<TicketDto>> getByState(@PathVariable(value = "state") State state) {
         List<TicketDto> ticketDtos = ticketService.findByState(state);
 
         return ResponseEntity.ok(ticketDtos);
     }
 
     @GetMapping("/by-urgency/{urgency}")
-    public ResponseEntity<List<TicketDto>> getByUrgency(@PathVariable(value = "urgency")Urgency urgency){
+    public ResponseEntity<List<TicketDto>> getByUrgency(@PathVariable(value = "urgency") Urgency urgency) {
         List<TicketDto> ticketDtos = ticketService.findByUrgency(urgency);
 
         return ResponseEntity.ok(ticketDtos);
     }
 
     @GetMapping("/my-tickets")
-    public ResponseEntity<List<TicketDto>> getByCurrentUser(){
+    public ResponseEntity<List<TicketDto>> getByCurrentUser() {
         List<TicketDto> ticketDtos = ticketService.findByOwner(userService.getCurrentUser().getId());
 
         return ResponseEntity.ok(ticketDtos);
@@ -89,20 +91,14 @@ public class TicketController {
 
     @PreAuthorize("@userServiceImpl.hasRole('EMPLOYEE', 'MANAGER')")
     @PostMapping("/ticket-create")
-    public ResponseEntity<Ticket> createTicket(@RequestBody TicketDto ticketDto){
-        Timestamp now = Timestamp.from(Instant.now());
-        LocalDate currentDate = now.toLocalDateTime().toLocalDate();
-
-        Timestamp setTime = ticketDto.getResolutionDate();
-        LocalDate resolutionDate = setTime.toLocalDateTime().toLocalDate();
-
-        if(currentDate.compareTo(resolutionDate) <= 0){
+    public ResponseEntity<Ticket> createTicket(@RequestBody TicketDto ticketDto) {
         Ticket ticket = ticketService.save(ticketDto);
 
-        System.out.println("History created" + historyService.create(userService.getCurrentUser().getId()));
-        return ResponseEntity.ok(ticket);}else{
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-        }
-    }
+        String currentUri = ServletUriComponentsBuilder.fromCurrentRequestUri().toString();
+        String savedTicketLocation = currentUri + "/" + ticket.getId();
 
+        return ResponseEntity.created(URI.create(savedTicketLocation)).build();
+    }
 }
+
+

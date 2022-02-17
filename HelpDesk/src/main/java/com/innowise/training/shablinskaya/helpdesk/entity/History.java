@@ -1,6 +1,8 @@
 package com.innowise.training.shablinskaya.helpdesk.entity;
 
 
+import org.hibernate.annotations.Proxy;
+
 import javax.persistence.*;
 import java.sql.Timestamp;
 import java.util.Date;
@@ -8,6 +10,7 @@ import java.util.Objects;
 
 @Entity
 @Table(name = "HISTORY")
+@Proxy(lazy = false)
 public class History {
 
     @Id

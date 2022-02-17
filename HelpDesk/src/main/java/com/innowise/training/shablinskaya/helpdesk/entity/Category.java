@@ -9,7 +9,7 @@ import java.util.Set;
 
 @Entity
 @Table(name = "CATEGORY")
-@Proxy(lazy = false)
+
 public class Category {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

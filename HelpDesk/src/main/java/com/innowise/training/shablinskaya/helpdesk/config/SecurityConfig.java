@@ -41,7 +41,6 @@ public  class SecurityConfig extends WebSecurityConfigurerAdapter{
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-        log.info("Henlo, im in SecurityConfig!");
         http
                 .httpBasic().disable()
                 .csrf().disable()
