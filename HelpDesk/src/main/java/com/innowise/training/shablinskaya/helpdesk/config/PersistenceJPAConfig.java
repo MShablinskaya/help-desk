@@ -59,6 +59,7 @@ public class PersistenceJPAConfig {
         Properties properties = new Properties();
         properties.setProperty("hibernate.show_sql", "true");
         properties.setProperty("hibernate.hbm2ddl.auto", "update");
+        properties.setProperty("hibernate.hbm2ddl.import_files", "~/IdeaProjects/HelpDesk/src/main/resources/data.sql");
         properties.setProperty("hibernate.dialect", "org.hibernate.dialect.H2Dialect");
         properties.setProperty("javax.persistence.validation.mode", "NONE");
 
