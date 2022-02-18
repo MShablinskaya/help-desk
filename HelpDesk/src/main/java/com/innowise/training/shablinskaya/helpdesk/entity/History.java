@@ -9,7 +9,7 @@ import java.util.Date;
 import java.util.Objects;
 
 @Entity
-@Table(name = "HISTORY")
+@Table(name = "HISTORY", schema = "PUBLIC")
 @Proxy(lazy = false)
 public class History {
 

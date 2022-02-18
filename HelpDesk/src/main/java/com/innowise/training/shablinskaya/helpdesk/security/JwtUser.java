@@ -8,7 +8,6 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;
 import java.util.Collections;
-import java.util.List;
 
 public class JwtUser implements UserDetails {
     private String email;
@@ -29,7 +28,7 @@ public class JwtUser implements UserDetails {
 
         JwtUser jwtUser = new JwtUser();
         jwtUser.email  = user.getEmail();
-        jwtUser.password = user.getPassword();
+        jwtUser.password = user.getUserPassword();
         jwtUser.role = user.getRoleId();
         jwtUser.grantedAuthorities = Collections.singletonList(new SimpleGrantedAuthority(user.getRoleId().name()));
 
