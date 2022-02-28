@@ -3,8 +3,8 @@ package com.innowise.training.shablinskaya.helpdesk.entity;
 import javax.persistence.*;
 import java.util.Objects;
 
-@Entity
-@Table(name = "COMMENT", schema = "PUBLIC")
+@Entity(name = "PUBLIC.COMMENT")
+//@Table(name = "COMMENT")
 public class Comment {
 
     @Id

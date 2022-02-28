@@ -1,10 +1,13 @@
 package com.innowise.training.shablinskaya.helpdesk.entity;
 
+import com.innowise.training.shablinskaya.helpdesk.util.HibernateSessionFactory;
+
 import javax.persistence.*;
 import java.util.Objects;
 
-@Entity
-@Table(name = "ATTACHMENT", schema = "PUBLIC")
+
+@Entity(name = "PUBLIC.ATTACHMENT")
+//@Table(name = "ATTACHMENT")
 public class Attachment {
 
     @Id

@@ -2,6 +2,7 @@ package com.innowise.training.shablinskaya.helpdesk.controller;
 
 import com.innowise.training.shablinskaya.helpdesk.dto.AuthRequestDto;
 import com.innowise.training.shablinskaya.helpdesk.dto.AuthResponseDto;
+import com.innowise.training.shablinskaya.helpdesk.dto.TicketDto;
 import com.innowise.training.shablinskaya.helpdesk.entity.User;
 import com.innowise.training.shablinskaya.helpdesk.enums.Role;
 import com.innowise.training.shablinskaya.helpdesk.security.JwtProvider;
@@ -14,10 +15,7 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -53,6 +51,8 @@ public class LoginController {
 
         User user = userService.findByEmail(email);
 
+
+
         if (user != null) {
            {
                 List<Role> role = new ArrayList<>();
@@ -63,6 +63,7 @@ public class LoginController {
                 response.put("email", email);
                 response.put("role", role);
                 response.put("token", token);
+
                 return ResponseEntity.ok(response);
 
             }
@@ -70,4 +71,5 @@ public class LoginController {
             throw new BadCredentialsException("User not found!");
         }
     }
+
 }

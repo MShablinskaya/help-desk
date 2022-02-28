@@ -36,7 +36,7 @@ public class PersistenceJPAConfig {
     public DataSource dataSource() {
         DriverManagerDataSource dataSource = new DriverManagerDataSource();
         dataSource.setDriverClassName("org.h2.Driver");
-        dataSource.setUrl("jdbc:h2:mem:test");
+        dataSource.setUrl("jdbc:h2:~/test");
         dataSource.setUsername("sa");
         dataSource.setPassword("");
         return dataSource;
@@ -57,13 +57,11 @@ public class PersistenceJPAConfig {
 
     final Properties additionalProperties() {
         Properties properties = new Properties();
+        properties.setProperty("hibernate.dialect", "org.hibernate.dialect.H2Dialect");
+        properties.setProperty("hibernate.hbm2ddl.auto", "create-drop");
+        properties.setProperty("hibernate.hbm2ddl.import_files", "data.sql");
         properties.setProperty("hibernate.show_sql", "true");
         properties.setProperty("hibernate.format_sql", "true");
-       // properties.setProperty("h2.console.enable", "true");
-        properties.setProperty("javax.persistence.schema-generation.database.action", "create-drop");
-        properties.setProperty("hibernate.hbm2ddl.import_files", "data.sql");
-        properties.setProperty("hibernate.dialect", "org.hibernate.dialect.H2Dialect");
-        properties.setProperty("javax.persistence.validation.mode", "NONE");
 
         return properties;
     }

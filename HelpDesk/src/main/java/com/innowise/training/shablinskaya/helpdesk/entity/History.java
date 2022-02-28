@@ -8,8 +8,8 @@ import java.sql.Timestamp;
 import java.util.Date;
 import java.util.Objects;
 
-@Entity
-@Table(name = "HISTORY", schema = "PUBLIC")
+@Entity(name = "PUBLIC.HISTORY")
+//@Table(name = "HISTORY")
 @Proxy(lazy = false)
 public class History {
 

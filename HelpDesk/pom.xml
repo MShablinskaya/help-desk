@@ -28,6 +28,7 @@
         <hibernate.validator.version>7.0.1.Final</hibernate.validator.version>
         <javax.persistence.version>2.2</javax.persistence.version>
         <javax.servlet.version>4.0.1</javax.servlet.version>
+        <javax.validation.version>2.0.1.Final</javax.validation.version>
     </properties>
 
     <dependencies>
@@ -151,6 +152,14 @@
             <artifactId>hibernate-validator</artifactId>
             <version>${hibernate.validator.version}</version>
         </dependency>
+
+        <!-- javax.validation/validation-api -->
+        <dependency>
+            <groupId>javax.validation</groupId>
+            <artifactId>validation-api</artifactId>
+            <version>${javax.validation.version}</version>
+        </dependency>
+
 
         <!-- hibernate-entitymanager -->
         <dependency>

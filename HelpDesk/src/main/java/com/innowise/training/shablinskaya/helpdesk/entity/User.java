@@ -10,7 +10,7 @@ import java.util.Objects;
 import java.util.Set;
 
 @Entity
-@Table(name = "USERS", schema = "PUBLIC")
+@Table(name = "USERS")
 public class User {
 
     @Id
@@ -34,10 +34,10 @@ public class User {
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private String email;
 
-    @Column(name = "PASSWORT")
+    @Column(name = "PASSWORD")
     @Pattern(regexp = "^(&=.*\\d).{6,20}$", flags = Pattern.Flag.UNICODE_CASE)
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
-    private String userPassword;
+    private transient String password;
 
     @OneToMany(fetch = FetchType.LAZY)
     private Set<Ticket> ticketSet;
@@ -55,12 +55,12 @@ public class User {
     public User() {
     }
 
-    public User(String firstName, String lastName, Role roleId, String email, String userPassword) {
+    public User(String firstName, String lastName, Role roleId, String email, String password) {
         this.firstName = firstName;
         this.lastName = lastName;
         this.roleId = roleId;
         this.email = email;
-        this.userPassword = userPassword;
+        this.password = password;
     }
 
     public Long getId() {
@@ -98,12 +98,12 @@ public class User {
         this.email = userEmail;
     }
 
-    public String getUserPassword() {
-        return userPassword;
+    public String getPassword() {
+        return password;
     }
 
-    public void setUserPassword(String password) {
-        this.userPassword = password;
+    public void setPassword(String password) {
+        this.password = password;
     }
 
 
@@ -116,12 +116,12 @@ public class User {
                 getLastName().equals(user.getLastName()) &&
                 getRoleId().equals(user.getRoleId()) &&
                 getEmail().equals(user.getEmail()) &&
-                getUserPassword().equals(user.getUserPassword());
+                getPassword().equals(user.getPassword());
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(getFirstName(), getLastName(), getRoleId(), getEmail(), getUserPassword());
+        return Objects.hash(getFirstName(), getLastName(), getRoleId(), getEmail(), getPassword());
     }
 
     @Override
@@ -132,7 +132,7 @@ public class User {
                 ", userLastName='" + lastName + '\'' +
                 ", userRole='" + roleId + '\'' +
                 ", userEmail='" + email + '\'' +
-                ", userPassword='" + userPassword + '\'' +
+                ", userPassword='" + password + '\'' +
                 '}';
     }
 

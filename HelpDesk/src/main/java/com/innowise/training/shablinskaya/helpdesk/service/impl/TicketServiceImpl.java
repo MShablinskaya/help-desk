@@ -96,7 +96,7 @@ public class TicketServiceImpl implements TicketService {
     @Override
     public List<TicketDto> findByState(State state) {
 
-        List<Ticket> tickets = ticketRepository.getByState(state);
+        List<Ticket> tickets = ticketRepository.getByState(State.valueOf(state.name().toUpperCase()));
 
         List<TicketDto> ticketDtos = new ArrayList<>();
 
@@ -110,7 +110,7 @@ public class TicketServiceImpl implements TicketService {
 
     @Override
     public List<TicketDto> findByUrgency(Urgency urgency) {
-        List<Ticket> tickets = ticketRepository.getByUrgency(urgency);
+        List<Ticket> tickets = ticketRepository.getByUrgency(Urgency.valueOf(urgency.name().toUpperCase()));
 
         List<TicketDto> ticketDtos = new ArrayList<>();
 

@@ -29,7 +29,7 @@ public class JwtProvider {
 
     private UserDetailsServiceImpl userDetailsService;
 
-    @Value("${jwt.token.secret}")
+    @Value("jwtoken.secret")
     private String jwtSecret;
 
     @Autowired
@@ -51,11 +51,11 @@ public class JwtProvider {
         Date validity = Date.from(LocalDate.now().plusDays(5).atStartOfDay(ZoneId.systemDefault()).toInstant());
 
 
-        return Jwts.builder()//
-                .setClaims(claims)//
-                .setIssuedAt(now)//
-                .setExpiration(validity)//
-                .signWith(SignatureAlgorithm.HS256, jwtSecret)//
+        return Jwts.builder()
+                .setClaims(claims)
+                .setIssuedAt(now)
+                .setExpiration(validity)
+                .signWith(SignatureAlgorithm.HS256, jwtSecret)
                 .compact();
     }
 
@@ -82,7 +82,7 @@ public class JwtProvider {
 
             return !claims.getBody().getExpiration().before(new Date());
         } catch (JwtException | IllegalArgumentException e) {
-            throw new JwtAuthenticationException("JWT token is expired or invalid");
+            throw new JwtAuthenticationException("JW token is expired or invalid");
         }
     }
 

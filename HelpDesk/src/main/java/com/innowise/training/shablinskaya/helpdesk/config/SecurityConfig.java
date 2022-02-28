@@ -6,7 +6,9 @@ import com.innowise.training.shablinskaya.helpdesk.security.JwtProvider;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -18,6 +20,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 
 @Configuration
 @EnableWebSecurity
+@ComponentScan(basePackages = {"com.innowise.training.shablinskaya.helpdesk"})
 public  class SecurityConfig extends WebSecurityConfigurerAdapter{
     private static final Logger log = org.apache.log4j.Logger.getLogger(SecurityConfig.class);
 
@@ -44,10 +47,11 @@ public  class SecurityConfig extends WebSecurityConfigurerAdapter{
         http
                 .httpBasic().disable()
                 .csrf().disable()
+                .cors().disable()
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and()
                 .authorizeRequests()
-                .antMatchers("/login**").permitAll()
+                .antMatchers(HttpMethod.POST, "/login**").permitAll()
                 .anyRequest().authenticated()
                 .and()
                 .apply(new JwtConfig(jwtProvider));

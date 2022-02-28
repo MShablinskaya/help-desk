@@ -29,6 +29,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
         if(user == null){
             throw new UsernameNotFoundException("Unknown user: " + email);
         }
+        System.out.println(JwtUser.fromUserToJwtUser(user));
         return JwtUser.fromUserToJwtUser(user);
     }
 }

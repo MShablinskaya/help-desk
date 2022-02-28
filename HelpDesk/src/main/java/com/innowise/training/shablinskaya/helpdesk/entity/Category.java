@@ -7,8 +7,8 @@ import org.hibernate.annotations.Proxy;
 import javax.persistence.*;
 import java.util.Set;
 
-@Entity
-@Table(name = "CATEGORY", schema = "PUBLIC")
+@Entity(name = "PUBLIC.CATEGORY")
+//@Table(name = "CATEGORY")
 
 public class Category {
     @Id
