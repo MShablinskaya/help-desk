@@ -1,28 +1,62 @@
 package com.innowise.training.shablinskaya.helpdesk.controller;
 
 
+import com.innowise.training.shablinskaya.helpdesk.dto.AuthRequestDto;
 import com.innowise.training.shablinskaya.helpdesk.entity.User;
+import com.innowise.training.shablinskaya.helpdesk.enums.Role;
+import com.innowise.training.shablinskaya.helpdesk.security.JwtProvider;
 import com.innowise.training.shablinskaya.helpdesk.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 @RestController
-@RequestMapping(value = "/login", produces = MediaType.APPLICATION_JSON_VALUE)
+@RequestMapping(value = "/", produces = MediaType.APPLICATION_JSON_VALUE)
 public class LoginController {
+    private AuthenticationManager authenticationManager;
     private UserService userService;
+    private JwtProvider jwtProvider;
+    private PasswordEncoder passwordEncoder;
 
     @Autowired
-    public LoginController(UserService userService){
+    public LoginController(AuthenticationManager authenticationManager, UserService userService, JwtProvider jwtProvider, PasswordEncoder passwordEncoder){
+        this.authenticationManager = authenticationManager;
         this.userService = userService;
+        this.jwtProvider = jwtProvider;
+        this.passwordEncoder = passwordEncoder;
     }
 
-    @GetMapping("/{id}")
-    public ResponseEntity<User> getUserById(@PathVariable("id") Long id){
-        User user = userService.findById(id);
+    @PostMapping("/login")
+    public ResponseEntity login(@RequestBody AuthRequestDto requestDto){
+        String email = requestDto.getEmail();
+        authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(email, requestDto.getPassword()));
 
-        return ResponseEntity.ok(user);
+        User user = userService.findByEmail(email);
+
+        if (user != null){
+            List<Role> role = new ArrayList<>();
+            role.add(user.getRoleId());
+
+            String token = jwtProvider.createToken(email, role);
+            Map<Object, Object> response = new HashMap<>();
+            response.put("email", email);
+            response.put("role", role);
+            response.put("token", token);
+
+            return ResponseEntity.ok(response);
+        }else{
+            throw new BadCredentialsException("User not found!");
+        }
     }
 
 }
