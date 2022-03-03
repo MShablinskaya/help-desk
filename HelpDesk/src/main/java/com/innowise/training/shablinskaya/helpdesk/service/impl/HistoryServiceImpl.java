@@ -2,10 +2,8 @@ package com.innowise.training.shablinskaya.helpdesk.service.impl;
 
 import com.innowise.training.shablinskaya.helpdesk.dto.TicketDto;
 import com.innowise.training.shablinskaya.helpdesk.entity.History;
-import com.innowise.training.shablinskaya.helpdesk.entity.Ticket;
 import com.innowise.training.shablinskaya.helpdesk.entity.User;
 import com.innowise.training.shablinskaya.helpdesk.repository.HistoryRepository;
-import com.innowise.training.shablinskaya.helpdesk.repository.UserRepository;
 import com.innowise.training.shablinskaya.helpdesk.service.HistoryService;
 import com.innowise.training.shablinskaya.helpdesk.service.TicketService;
 import com.innowise.training.shablinskaya.helpdesk.service.UserService;
@@ -21,14 +19,14 @@ import java.util.List;
 public class HistoryServiceImpl implements HistoryService {
     private final static String TICKET_CREATED = "Ticket is created";
 
-    private HistoryRepository historyRepository;
-    private UserService userService;
-    private TicketService ticketService;
+    private final HistoryRepository historyRepository;
+    private final UserService userService;
+    private final TicketService ticketService;
 
     @Autowired
-    public HistoryServiceImpl(HistoryRepository historyRepository, UserService userService, TicketService ticketService){
+    public HistoryServiceImpl(HistoryRepository historyRepository, UserService userService, TicketService ticketService) {
         this.historyRepository = historyRepository;
-        this.userService= userService;
+        this.userService = userService;
         this.ticketService = ticketService;
     }
 
@@ -62,9 +60,10 @@ public class HistoryServiceImpl implements HistoryService {
     public List<History> getByTicketId(Long id) {
         TicketDto ticket = ticketService.findById(id);
 
-        if(ticket != null){
-        List<History> histories = historyRepository.findByTicketId(id);
-        return histories;}
+        if (ticket != null) {
+            List<History> histories = historyRepository.findByTicketId(id);
+            return histories;
+        }
 
         return null;
     }

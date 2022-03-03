@@ -64,7 +64,7 @@ public class Ticket {
     public Ticket() {
     }
 
-    public Ticket(Long id, String name, String description, Timestamp date, Timestamp resolutionDate, User owner, User assignee, User approve, State  state, Urgency urgency){
+    public Ticket(Long id, String name, String description, Timestamp date, Timestamp resolutionDate, User owner, User assignee, User approve, State state, Urgency urgency) {
         this.id = id;
         this.name = name;
         this.description = description;

@@ -10,10 +10,10 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class CustomDetailsServiceImpl implements UserDetailsService {
-    private UserService userService;
+    private final UserService userService;
 
     @Autowired
-    public CustomDetailsServiceImpl(UserService userService){
+    public CustomDetailsServiceImpl(UserService userService) {
         this.userService = userService;
     }
 
@@ -21,7 +21,7 @@ public class CustomDetailsServiceImpl implements UserDetailsService {
     public JwtUser loadUserByUsername(String username) throws UsernameNotFoundException {
         User user = userService.findByEmail(username);
 
-        if (user == null){
+        if (user == null) {
             throw new UsernameNotFoundException("User is not exist: " + username);
         }
         return JwtUser.fromUserToJwtUser(user);

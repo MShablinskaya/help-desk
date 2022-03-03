@@ -7,7 +7,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class AttachmentDtoConverter {
 
-    public AttachmentDto toDto(Attachment attachment){
+    public AttachmentDto toDto(Attachment attachment) {
         AttachmentDto dto = new AttachmentDto();
 
         dto.setId(attachment.getAttachmentId());
@@ -18,7 +18,7 @@ public class AttachmentDtoConverter {
         return dto;
     }
 
-    public Attachment toEntity(AttachmentDto dto){
+    public Attachment toEntity(AttachmentDto dto) {
         Attachment attachment = new Attachment();
 
         attachment.setAttachmentBlob(dto.getBlob());

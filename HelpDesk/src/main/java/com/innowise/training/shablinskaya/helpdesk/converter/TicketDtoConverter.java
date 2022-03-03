@@ -1,7 +1,6 @@
 package com.innowise.training.shablinskaya.helpdesk.converter;
 
 import com.innowise.training.shablinskaya.helpdesk.dto.TicketDto;
-import com.innowise.training.shablinskaya.helpdesk.entity.Category;
 import com.innowise.training.shablinskaya.helpdesk.entity.Ticket;
 import com.innowise.training.shablinskaya.helpdesk.enums.State;
 import com.innowise.training.shablinskaya.helpdesk.enums.Urgency;
@@ -15,11 +14,11 @@ import java.time.Instant;
 
 @Component
 public class TicketDtoConverter {
-    private UserService userService;
-    private CategoryService categoryService;
+    private final UserService userService;
+    private final CategoryService categoryService;
 
     @Autowired
-    public TicketDtoConverter(UserService userService, CategoryService categoryService){
+    public TicketDtoConverter(UserService userService, CategoryService categoryService) {
         this.userService = userService;
         this.categoryService = categoryService;
     }

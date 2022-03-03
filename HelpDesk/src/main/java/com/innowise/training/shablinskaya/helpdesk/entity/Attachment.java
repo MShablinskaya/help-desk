@@ -1,7 +1,5 @@
 package com.innowise.training.shablinskaya.helpdesk.entity;
 
-import com.innowise.training.shablinskaya.helpdesk.util.HibernateSessionFactory;
-
 import javax.persistence.*;
 import java.util.Objects;
 
@@ -26,11 +24,10 @@ public class Attachment {
     private String name;
 
 
+    public Attachment() {
+    }
 
-
-    public Attachment(){}
-
-    public Attachment(Long attachmentBlob, Ticket ticketId, String name){
+    public Attachment(Long attachmentBlob, Ticket ticketId, String name) {
         this.attachmentBlob = attachmentBlob;
         this.ticketId = ticketId;
         this.name = name;

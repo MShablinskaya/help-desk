@@ -88,7 +88,8 @@ public class User {
         return roleId;
     }
 
-    public void setRoleId(Role role) { this.roleId = role;
+    public void setRoleId(Role role) {
+        this.roleId = role;
     }
 
     public String getEmail() {

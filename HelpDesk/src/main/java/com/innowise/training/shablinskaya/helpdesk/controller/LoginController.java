@@ -13,7 +13,10 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -23,13 +26,13 @@ import java.util.Map;
 @RestController
 @RequestMapping(value = "/", produces = MediaType.APPLICATION_JSON_VALUE)
 public class LoginController {
-    private AuthenticationManager authenticationManager;
-    private UserService userService;
-    private JwtProvider jwtProvider;
-    private PasswordEncoder passwordEncoder;
+    private final AuthenticationManager authenticationManager;
+    private final UserService userService;
+    private final JwtProvider jwtProvider;
+    private final PasswordEncoder passwordEncoder;
 
     @Autowired
-    public LoginController(AuthenticationManager authenticationManager, UserService userService, JwtProvider jwtProvider, PasswordEncoder passwordEncoder){
+    public LoginController(AuthenticationManager authenticationManager, UserService userService, JwtProvider jwtProvider, PasswordEncoder passwordEncoder) {
         this.authenticationManager = authenticationManager;
         this.userService = userService;
         this.jwtProvider = jwtProvider;
@@ -37,13 +40,13 @@ public class LoginController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity login(@RequestBody AuthRequestDto requestDto){
+    public ResponseEntity login(@RequestBody AuthRequestDto requestDto) {
         String email = requestDto.getEmail();
         authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(email, requestDto.getPassword()));
 
         User user = userService.findByEmail(email);
 
-        if (user != null){
+        if (user != null) {
             List<Role> role = new ArrayList<>();
             role.add(user.getRoleId());
 
@@ -54,7 +57,7 @@ public class LoginController {
             response.put("token", token);
 
             return ResponseEntity.ok(response);
-        }else{
+        } else {
             throw new BadCredentialsException("User not found!");
         }
     }

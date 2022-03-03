@@ -17,9 +17,6 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.net.URI;
-import java.sql.Timestamp;
-import java.time.Instant;
-import java.time.LocalDate;
 import java.util.List;
 
 
@@ -28,9 +25,9 @@ import java.util.List;
 public class TicketController {
     private static final Logger log = org.apache.log4j.Logger.getLogger(TicketController.class);
 
-    private TicketService ticketService;
-    private UserService userService;
-    private HistoryService historyService;
+    private final TicketService ticketService;
+    private final UserService userService;
+    private final HistoryService historyService;
 
     @Autowired
     public TicketController(TicketService ticketService, UserService userService, HistoryService historyService) {

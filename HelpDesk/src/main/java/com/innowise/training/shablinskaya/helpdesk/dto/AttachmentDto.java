@@ -12,7 +12,8 @@ public class AttachmentDto {
     private Ticket ticketId;
     private String name;
 
-    public AttachmentDto(){}
+    public AttachmentDto() {
+    }
 
     public AttachmentDto(Long id, Long blob, Ticket ticketId, String name) {
         this.id = id;

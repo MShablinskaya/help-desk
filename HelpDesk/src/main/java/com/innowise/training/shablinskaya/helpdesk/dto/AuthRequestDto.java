@@ -10,9 +10,10 @@ public class AuthRequestDto {
 
     private String password;
 
-    public AuthRequestDto(){}
+    public AuthRequestDto() {
+    }
 
-    public AuthRequestDto(String email, String password){
+    public AuthRequestDto(String email, String password) {
         this.email = email;
         this.password = password;
     }

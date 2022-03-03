@@ -9,7 +9,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
-
 import javax.persistence.EntityNotFoundException;
 import java.util.List;
 
@@ -17,10 +16,10 @@ import java.util.List;
 public class UserServiceImpl implements UserService {
     private static final Logger log = org.apache.log4j.Logger.getLogger(UserServiceImpl.class);
 
-    private UserRepository userRepository;
+    private final UserRepository userRepository;
 
     @Autowired
-    public UserServiceImpl(UserRepository userRepository){
+    public UserServiceImpl(UserRepository userRepository) {
         this.userRepository = userRepository;
     }
 
@@ -54,8 +53,8 @@ public class UserServiceImpl implements UserService {
     @Override
     public boolean hasRole(String... roles) {
         User user = getCurrentUser();
-        for(String role : roles){
-            if(role.equals(user.getRoleId().toString())){
+        for (String role : roles) {
+            if (role.equals(user.getRoleId().toString())) {
                 return true;
             }
         }

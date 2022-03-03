@@ -4,7 +4,6 @@ import com.innowise.training.shablinskaya.helpdesk.entity.Ticket;
 import com.innowise.training.shablinskaya.helpdesk.enums.State;
 import com.innowise.training.shablinskaya.helpdesk.enums.Urgency;
 
-
 import java.util.List;
 import java.util.Optional;
 

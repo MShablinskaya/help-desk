@@ -10,7 +10,8 @@ public class AuthResponseDto {
 
     private String role;
 
-    public AuthResponseDto(){}
+    public AuthResponseDto() {
+    }
 
     public AuthResponseDto(String token, String lastName, String role) {
         this.token = token;

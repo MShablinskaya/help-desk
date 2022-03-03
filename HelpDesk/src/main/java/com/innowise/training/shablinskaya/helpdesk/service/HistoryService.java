@@ -4,7 +4,7 @@ import com.innowise.training.shablinskaya.helpdesk.entity.History;
 
 import java.util.List;
 
-public interface HistoryService  {
+public interface HistoryService {
 
     History create(Long ticketId);
 

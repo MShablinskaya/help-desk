@@ -2,7 +2,6 @@ package com.innowise.training.shablinskaya.helpdesk.entity;
 
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import org.hibernate.annotations.Proxy;
 
 import javax.persistence.*;
 import java.util.Set;

@@ -15,7 +15,8 @@ public class JwtUser implements UserDetails {
     private Role role;
     private Collection<? extends GrantedAuthority> grantedAuthorities;
 
-    public JwtUser() {    }
+    public JwtUser() {
+    }
 
     public JwtUser(String email, String password, Role role, Collection<? extends GrantedAuthority> grantedAuthorities) {
         this.email = email;
@@ -24,7 +25,7 @@ public class JwtUser implements UserDetails {
         this.grantedAuthorities = grantedAuthorities;
     }
 
-    public static JwtUser fromUserToJwtUser(User user){
+    public static JwtUser fromUserToJwtUser(User user) {
         return new JwtUser(
                 user.getEmail(),
                 user.getPassword(),

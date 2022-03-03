@@ -21,8 +21,8 @@ import java.util.List;
 @Service
 public class TicketServiceImpl implements TicketService {
 
-    private TicketRepository ticketRepository;
-    private TicketDtoConverter ticketDtoConverter;
+    private final TicketRepository ticketRepository;
+    private final TicketDtoConverter ticketDtoConverter;
 
     @Autowired
     public TicketServiceImpl(TicketRepository ticketRepository, TicketDtoConverter ticketDtoConverter) {
@@ -131,8 +131,9 @@ public class TicketServiceImpl implements TicketService {
         Timestamp setTime = dto.getResolutionDate();
         LocalDate resolutionDate = setTime.toLocalDateTime().toLocalDate();
 
-        if(currentDate.compareTo(resolutionDate) <= 0){
-        return ticketRepository.create(ticketDtoConverter.toEntity(dto));}
+        if (currentDate.compareTo(resolutionDate) <= 0) {
+            return ticketRepository.create(ticketDtoConverter.toEntity(dto));
+        }
 
         return null;
     }

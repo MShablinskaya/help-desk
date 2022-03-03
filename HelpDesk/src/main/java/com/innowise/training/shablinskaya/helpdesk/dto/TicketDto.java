@@ -1,11 +1,5 @@
 package com.innowise.training.shablinskaya.helpdesk.dto;
 
-import com.innowise.training.shablinskaya.helpdesk.entity.Category;
-import com.innowise.training.shablinskaya.helpdesk.entity.User;
-import com.innowise.training.shablinskaya.helpdesk.enums.State;
-import com.innowise.training.shablinskaya.helpdesk.enums.Urgency;
-
-import java.security.acl.Owner;
 import java.sql.Timestamp;
 import java.util.Objects;
 
@@ -21,7 +15,8 @@ public class TicketDto {
     private Long category;
     private String urgency;
 
-    public TicketDto(){}
+    public TicketDto() {
+    }
 
 
     public TicketDto(String name, String description, Timestamp resolutionDate, Long owner, Long assignee, Long approve, String state, Long category, String urgency) {
