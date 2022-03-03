@@ -12,14 +12,14 @@ public class Comment {
     @Column(name = "ID", nullable = false)
     private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.MERGE)
     @JoinColumn(name = "USER_ID")
     private User userId;
 
     @Column(name = "TEXT")
     private String text;
 
-    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.MERGE)
     @JoinColumn(name = "TICKET_ID", nullable = false)
     private Ticket ticketId;
 

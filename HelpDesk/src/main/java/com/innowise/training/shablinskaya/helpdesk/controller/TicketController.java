@@ -1,6 +1,7 @@
 package com.innowise.training.shablinskaya.helpdesk.controller;
 
 import com.innowise.training.shablinskaya.helpdesk.dto.TicketDto;
+import com.innowise.training.shablinskaya.helpdesk.entity.History;
 import com.innowise.training.shablinskaya.helpdesk.entity.Ticket;
 import com.innowise.training.shablinskaya.helpdesk.enums.State;
 import com.innowise.training.shablinskaya.helpdesk.enums.Urgency;
@@ -14,7 +15,6 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.net.URI;
 import java.util.List;
@@ -65,15 +65,16 @@ public class TicketController {
     }
 
     @GetMapping("/by-state/{state}")
-    public ResponseEntity<List<TicketDto>> getByState(@PathVariable(value = "state") State state) {
-        List<TicketDto> ticketDtos = ticketService.findByState(state);
+    public ResponseEntity<List<TicketDto>> getByState(@PathVariable(value = "state") String state) {
+
+        List<TicketDto> ticketDtos = ticketService.findByState(State.valueOf(state.toUpperCase()));
 
         return ResponseEntity.ok(ticketDtos);
     }
 
     @GetMapping("/by-urgency/{urgency}")
-    public ResponseEntity<List<TicketDto>> getByUrgency(@PathVariable(value = "urgency") Urgency urgency) {
-        List<TicketDto> ticketDtos = ticketService.findByUrgency(urgency);
+    public ResponseEntity<List<TicketDto>> getByUrgency(@PathVariable(value = "urgency") String urgency) {
+        List<TicketDto> ticketDtos = ticketService.findByUrgency(Urgency.valueOf(urgency.toUpperCase()));
 
         return ResponseEntity.ok(ticketDtos);
     }
@@ -88,13 +89,16 @@ public class TicketController {
 
     @PreAuthorize("@userServiceImpl.hasRole('EMPLOYEE', 'MANAGER')")
     @PostMapping("/ticket-create")
-    public ResponseEntity<Ticket> createTicket(@RequestBody TicketDto ticketDto) {
+    public ResponseEntity<TicketDto> createTicket(@RequestBody TicketDto ticketDto) {
         Ticket ticket = ticketService.save(ticketDto);
 
-        String currentUri = ServletUriComponentsBuilder.fromCurrentRequestUri().toString();
-        String savedTicketLocation = currentUri + "/" + ticket.getId();
-
-        return ResponseEntity.created(URI.create(savedTicketLocation)).build();
+        if (ticket != null) {
+            History history = historyService.create(ticket.getId());
+            String savedTicketLocation = "tickets/" + ticket.getId();
+            URI uri = URI.create(savedTicketLocation);
+            return ResponseEntity.created(uri).build();
+        }else {
+        return new ResponseEntity<>(HttpStatus.BAD_REQUEST);}
     }
 }
 
