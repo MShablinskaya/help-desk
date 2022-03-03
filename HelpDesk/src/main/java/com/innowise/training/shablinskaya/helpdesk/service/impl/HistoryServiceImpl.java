@@ -1,11 +1,10 @@
 package com.innowise.training.shablinskaya.helpdesk.service.impl;
 
+import com.innowise.training.shablinskaya.helpdesk.converter.TicketDtoConverter;
 import com.innowise.training.shablinskaya.helpdesk.dto.TicketDto;
 import com.innowise.training.shablinskaya.helpdesk.entity.History;
 import com.innowise.training.shablinskaya.helpdesk.entity.Ticket;
-import com.innowise.training.shablinskaya.helpdesk.entity.User;
 import com.innowise.training.shablinskaya.helpdesk.repository.HistoryRepository;
-import com.innowise.training.shablinskaya.helpdesk.repository.UserRepository;
 import com.innowise.training.shablinskaya.helpdesk.service.HistoryService;
 import com.innowise.training.shablinskaya.helpdesk.service.TicketService;
 import com.innowise.training.shablinskaya.helpdesk.service.UserService;
@@ -20,32 +19,39 @@ import java.util.List;
 @Service
 public class HistoryServiceImpl implements HistoryService {
     private final static String TICKET_CREATED = "Ticket is created";
+    private final static String TICKET_EDITED = "Ticket is edited";
+    private final static String NEW = "NEW";
+    private final static String DRAFT = "DRAFT";
 
     private HistoryRepository historyRepository;
     private UserService userService;
     private TicketService ticketService;
+    private TicketDtoConverter converter;
 
     @Autowired
-    public HistoryServiceImpl(HistoryRepository historyRepository, UserService userService, TicketService ticketService){
+    public HistoryServiceImpl(HistoryRepository historyRepository, UserService userService, TicketService ticketService, TicketDtoConverter converter) {
         this.historyRepository = historyRepository;
-        this.userService= userService;
+        this.userService = userService;
         this.ticketService = ticketService;
+        this.converter = converter;
     }
 
 
     @Override
     public History create(Long ticketId) {
-        History history = new History();
-        history.setTicketUploadDate(Timestamp.from(Instant.now()));
-        history.setUserId(userService.getCurrentUser());
-        history.setActionOnTicket(TICKET_CREATED);
-        history.setActionOnTicketDescription(TICKET_CREATED);
+        Ticket ticket = converter.toEntity(ticketService.findById(ticketId));
 
-        historyRepository.save(history);
-        User user = userService.getCurrentUser();
-        userService.refresh(user);
+        if (ticket != null && ticket.getState().name() == DRAFT) {
+            History history = new History();
+            history.setTicketId(ticket);
+            history.setTicketUploadDate(Timestamp.from(Instant.now()));
+            history.setUserId(userService.getCurrentUser());
+            history.setActionOnTicket(TICKET_CREATED);
+            history.setActionOnTicketDescription(TICKET_CREATED);
+            return historyRepository.save(history);
+        }else {
 
-        return history;
+        return null;}
     }
 
     @Override
@@ -62,9 +68,10 @@ public class HistoryServiceImpl implements HistoryService {
     public List<History> getByTicketId(Long id) {
         TicketDto ticket = ticketService.findById(id);
 
-        if(ticket != null){
-        List<History> histories = historyRepository.findByTicketId(id);
-        return histories;}
+        if (ticket != null) {
+            List<History> histories = historyRepository.findByTicketId(id);
+            return histories;
+        }
 
         return null;
     }

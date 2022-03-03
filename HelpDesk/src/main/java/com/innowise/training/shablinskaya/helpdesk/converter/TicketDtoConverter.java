@@ -50,7 +50,7 @@ public class TicketDtoConverter {
         ticket.setOwner(userService.getCurrentUser());
         ticket.setAssignee(userService.findById(dto.getAssignee()));
         ticket.setApprove(userService.findById(dto.getApprove()));
-        ticket.setState(State.valueOf(dto.getState().toUpperCase()));
+        ticket.setState(State.valueOf(dto.getState()));
         ticket.setCategory(categoryService.findById(dto.getCategory()));
         ticket.setUrgency(Urgency.valueOf(dto.getUrgency().toUpperCase()));
 

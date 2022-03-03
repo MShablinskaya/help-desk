@@ -23,6 +23,7 @@ public class TicketServiceImpl implements TicketService {
 
     private TicketRepository ticketRepository;
     private TicketDtoConverter ticketDtoConverter;
+    private final String CREATION = "DRAFT";
 
     @Autowired
     public TicketServiceImpl(TicketRepository ticketRepository, TicketDtoConverter ticketDtoConverter) {
@@ -96,7 +97,7 @@ public class TicketServiceImpl implements TicketService {
     @Override
     public List<TicketDto> findByState(State state) {
 
-        List<Ticket> tickets = ticketRepository.getByState(State.valueOf(state.name().toUpperCase()));
+        List<Ticket> tickets = ticketRepository.getByState(state);
 
         List<TicketDto> ticketDtos = new ArrayList<>();
 
@@ -110,7 +111,7 @@ public class TicketServiceImpl implements TicketService {
 
     @Override
     public List<TicketDto> findByUrgency(Urgency urgency) {
-        List<Ticket> tickets = ticketRepository.getByUrgency(Urgency.valueOf(urgency.name().toUpperCase()));
+        List<Ticket> tickets = ticketRepository.getByUrgency(urgency);
 
         List<TicketDto> ticketDtos = new ArrayList<>();
 
@@ -132,6 +133,7 @@ public class TicketServiceImpl implements TicketService {
         LocalDate resolutionDate = setTime.toLocalDateTime().toLocalDate();
 
         if(currentDate.compareTo(resolutionDate) <= 0){
+            dto.setState(CREATION);
         return ticketRepository.create(ticketDtoConverter.toEntity(dto));}
 
         return null;

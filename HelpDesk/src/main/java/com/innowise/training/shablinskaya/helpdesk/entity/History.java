@@ -28,7 +28,7 @@ public class History {
     @Column(name = "ACTION")
     private String actionOnTicket;
 
-    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.MERGE)
     @JoinColumn(name = "USER_ID", nullable = false)
     private User userId;
 
