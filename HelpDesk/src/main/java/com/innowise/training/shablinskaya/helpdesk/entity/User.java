@@ -10,7 +10,7 @@ import java.util.Objects;
 import java.util.Set;
 
 @Entity
-@Table(name = "USERS")
+@Table(name = "Users")
 public class User {
 
     @Id
@@ -37,7 +37,7 @@ public class User {
     @Column(name = "PASSWORD")
     @Pattern(regexp = "^(&=.*\\d).{6,20}$", flags = Pattern.Flag.UNICODE_CASE)
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
-    private transient String password;
+    private String password;
 
     @OneToMany(fetch = FetchType.LAZY)
     private Set<Ticket> ticketSet;
@@ -55,7 +55,8 @@ public class User {
     public User() {
     }
 
-    public User(String firstName, String lastName, Role roleId, String email, String password) {
+    public User(Long id, String firstName, String lastName, Role roleId, String email, String password) {
+        this.id = id;
         this.firstName = firstName;
         this.lastName = lastName;
         this.roleId = roleId;

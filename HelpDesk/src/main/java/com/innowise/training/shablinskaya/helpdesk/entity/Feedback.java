@@ -5,21 +5,21 @@ import java.sql.Timestamp;
 import java.util.Date;
 import java.util.Objects;
 
-@Entity(name = "PUBLIC.FEEDBACK")
-//@Table(name = "FEEDBACK")
+@Entity
+@Table(name = "Feedback")
 public class Feedback {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "ID")
-    private java.lang.Long feedbackId;
+    private Long feedbackId;
 
     @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.MERGE)
     @JoinColumn(name = "USER_ID")
     private User userId;
 
     @Column(name = "RATE")
-    private java.lang.Long feedbackRate;
+    private Long feedbackRate;
 
     @Column(name = "DATE")
     private Timestamp feedbackDate;

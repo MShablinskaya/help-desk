@@ -10,13 +10,13 @@ import java.util.Objects;
 import java.util.Set;
 
 @Entity
-@Table(name = "TICKET")
+@Table(name = "Ticket")
 public class Ticket {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "ID")
-    private java.lang.Long id;
+    private Long id;
 
     @Column(name = "NAME")
     private String name;
@@ -64,7 +64,7 @@ public class Ticket {
     public Ticket() {
     }
 
-    public Ticket(java.lang.Long id, String name, String description, Timestamp date, Timestamp resolutionDate, User owner, User assignee, User approve, State  state, Urgency urgency){
+    public Ticket(Long id, String name, String description, Timestamp date, Timestamp resolutionDate, User owner, User assignee, User approve, State  state, Urgency urgency){
         this.id = id;
         this.name = name;
         this.description = description;
@@ -77,7 +77,7 @@ public class Ticket {
         this.urgency = urgency;
     }
 
-    public java.lang.Long getId() {
+    public Long getId() {
         return id;
     }
 

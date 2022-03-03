@@ -3,14 +3,14 @@ package com.innowise.training.shablinskaya.helpdesk.entity;
 import javax.persistence.*;
 import java.util.Objects;
 
-@Entity(name = "PUBLIC.COMMENT")
-//@Table(name = "COMMENT")
+@Entity
+@Table(name = "Comment")
 public class Comment {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "ID", nullable = false)
-    private java.lang.Long id;
+    private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "USER_ID")

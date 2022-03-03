@@ -12,7 +12,7 @@ public interface UserService {
 
     User findByEmail(String email);
 
-    User findById(java.lang.Long id);
+    User findById(Long id);
 
     User getCurrentUser();
 

@@ -6,8 +6,8 @@ import javax.persistence.*;
 import java.util.Objects;
 
 
-@Entity(name = "PUBLIC.ATTACHMENT")
-//@Table(name = "ATTACHMENT")
+@Entity
+@Table(name = "Attachment")
 public class Attachment {
 
     @Id
@@ -15,7 +15,7 @@ public class Attachment {
     @Column(name = "ID", nullable = false)
     private Long attachmentId;
 
-    @Column(name = "BLOB", nullable = false)
+    @Column(name = "BLOB")
     private Long attachmentBlob;
 
     @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.MERGE)

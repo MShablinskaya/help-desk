@@ -8,15 +8,15 @@ import java.sql.Timestamp;
 import java.util.Date;
 import java.util.Objects;
 
-@Entity(name = "PUBLIC.HISTORY")
-//@Table(name = "HISTORY")
+@Entity
+@Table(name = "History")
 @Proxy(lazy = false)
 public class History {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "ID")
-    private java.lang.Long historyId;
+    private Long historyId;
 
     @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "TICKET_ID")

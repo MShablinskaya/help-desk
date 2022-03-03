@@ -15,7 +15,7 @@ public interface UserRepository {
 
     Optional<User> findByEmail(String email);
 
-    Optional<User> getById(java.lang.Long id);
+    Optional<User> getById(Long id);
 
     List<User> getAll();
 

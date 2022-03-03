@@ -1,6 +1,5 @@
 package com.innowise.training.shablinskaya.helpdesk.security;
 
-
 import com.innowise.training.shablinskaya.helpdesk.entity.User;
 import com.innowise.training.shablinskaya.helpdesk.enums.Role;
 import org.springframework.security.core.GrantedAuthority;
@@ -9,17 +8,14 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;
 import java.util.Collections;
-import java.util.List;
-import java.util.stream.Collectors;
 
 public class JwtUser implements UserDetails {
     private String email;
     private String password;
     private Role role;
     private Collection<? extends GrantedAuthority> grantedAuthorities;
-    private static String ROLE_= "ROLE_";
 
-    public JwtUser(){}
+    public JwtUser() {    }
 
     public JwtUser(String email, String password, Role role, Collection<? extends GrantedAuthority> grantedAuthorities) {
         this.email = email;
@@ -29,14 +25,12 @@ public class JwtUser implements UserDetails {
     }
 
     public static JwtUser fromUserToJwtUser(User user){
-
         return new JwtUser(
-        user.getEmail(),
-        user.getPassword(),
-        user.getRoleId(),
-        Collections.singletonList(new SimpleGrantedAuthority(user.getRoleId().name()))
+                user.getEmail(),
+                user.getPassword(),
+                user.getRoleId(),
+                Collections.singletonList(new SimpleGrantedAuthority(user.getRoleId().name()))
         );
-
     }
 
     @Override
@@ -81,12 +75,4 @@ public class JwtUser implements UserDetails {
     public boolean isEnabled() {
         return true;
     }
-
-//    private static List<GrantedAuthority> mapAuthorities(List<Role> roles){
-//        return roles.stream()
-//                .map(role ->
-//                        new SimpleGrantedAuthority(role.name())
-//                ).collect(Collectors.toList());
-//
-//    }
 }
