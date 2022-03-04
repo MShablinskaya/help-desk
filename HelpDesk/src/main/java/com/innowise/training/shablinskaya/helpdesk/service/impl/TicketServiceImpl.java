@@ -135,7 +135,6 @@ public class TicketServiceImpl implements TicketService {
         if(currentDate.compareTo(resolutionDate) <= 0){
             dto.setState(CREATION);
         return ticketRepository.create(ticketDtoConverter.toEntity(dto));}
-
         return null;
     }
 

@@ -5,10 +5,13 @@ import com.innowise.training.shablinskaya.helpdesk.entity.Ticket;
 import com.innowise.training.shablinskaya.helpdesk.enums.State;
 import com.innowise.training.shablinskaya.helpdesk.enums.Urgency;
 import com.innowise.training.shablinskaya.helpdesk.repository.TicketRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import javax.persistence.Query;
 import java.util.List;
 import java.util.Optional;
 
@@ -68,16 +71,11 @@ public class TicketRepositoryImpl implements TicketRepository {
 
     @Override
     public Ticket update(Ticket ticket) {
-        entityManager.merge(ticket);
+            entityManager.merge(ticket);
         return ticket;
     }
 
-//    @Override
-//    public void create(Ticket ticket) {
-//        entityManager.persist(ticket);
-//    }
-
-    @Override
+        @Override
     public Ticket create(Ticket ticket) {
         entityManager.persist(ticket);
         return ticket;
