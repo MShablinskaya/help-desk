@@ -93,10 +93,9 @@ public class TicketController {
         Ticket ticket = ticketService.save(ticketDto);
 
         if (ticket != null) {
-            History history = historyService.create(ticket.getId());
             String savedTicketLocation = "tickets/" + ticket.getId();
-            URI uri = URI.create(savedTicketLocation);
-            return ResponseEntity.created(uri).build();
+            //History history = historyService.create(ticket.getId());
+            return ResponseEntity.created(URI.create(savedTicketLocation)).build();
         }else {
         return new ResponseEntity<>(HttpStatus.BAD_REQUEST);}
     }

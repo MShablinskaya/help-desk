@@ -75,11 +75,6 @@ public class TicketRepositoryImpl implements TicketRepository {
         return ticket;
     }
 
-//    @Override
-//    public void create(Ticket ticket) {
-//        entityManager.persist(ticket);
-//    }
-
         @Override
     public Ticket create(Ticket ticket) {
         entityManager.persist(ticket);

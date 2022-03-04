@@ -41,17 +41,23 @@ public class HistoryServiceImpl implements HistoryService {
     public History create(Long ticketId) {
         Ticket ticket = converter.toEntity(ticketService.findById(ticketId));
 
-        if (ticket != null && ticket.getState().name() == DRAFT) {
+        if (ticket != null) {
             History history = new History();
             history.setTicketId(ticket);
             history.setTicketUploadDate(Timestamp.from(Instant.now()));
             history.setUserId(userService.getCurrentUser());
-            history.setActionOnTicket(TICKET_CREATED);
-            history.setActionOnTicketDescription(TICKET_CREATED);
-            return historyRepository.save(history);
-        }else {
+            if (ticket.getState().name().equals(DRAFT)) {
+                history.setActionOnTicket(TICKET_CREATED);
+                history.setActionOnTicketDescription(TICKET_CREATED);
+                return historyRepository.save(history);
+            } else if (ticket.getState().name().equals(NEW)) {
+                history.setActionOnTicket(TICKET_EDITED);
+                history.setActionOnTicketDescription(TICKET_EDITED);
+                return historyRepository.save(history);
+            }
+        }
 
-        return null;}
+        return null;
     }
 
     @Override
