@@ -75,8 +75,7 @@ public class HistoryServiceImpl implements HistoryService {
         TicketDto ticket = ticketService.findById(id);
 
         if (ticket != null) {
-            List<History> histories = historyRepository.findByTicketId(id);
-            return histories;
+            return historyRepository.findByTicketId(id);
         }
 
         return null;
