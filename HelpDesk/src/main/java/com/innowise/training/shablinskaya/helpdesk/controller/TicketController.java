@@ -1,7 +1,6 @@
 package com.innowise.training.shablinskaya.helpdesk.controller;
 
 import com.innowise.training.shablinskaya.helpdesk.dto.TicketDto;
-import com.innowise.training.shablinskaya.helpdesk.entity.History;
 import com.innowise.training.shablinskaya.helpdesk.entity.Ticket;
 import com.innowise.training.shablinskaya.helpdesk.enums.State;
 import com.innowise.training.shablinskaya.helpdesk.enums.Urgency;
@@ -92,12 +91,10 @@ public class TicketController {
     public ResponseEntity<TicketDto> createTicket(@RequestBody TicketDto ticketDto) {
         Ticket ticket = ticketService.save(ticketDto);
 
-        if (ticket != null) {
+        historyService.createTicket(ticket);
+
             String savedTicketLocation = "tickets/" + ticket.getId();
-            //History history = historyService.create(ticket.getId());
             return ResponseEntity.created(URI.create(savedTicketLocation)).build();
-        }else {
-        return new ResponseEntity<>(HttpStatus.BAD_REQUEST);}
     }
 }
 
