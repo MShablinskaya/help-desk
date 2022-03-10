@@ -2,10 +2,12 @@ package com.innowise.training.shablinskaya.helpdesk.service.impl;
 
 import com.innowise.training.shablinskaya.helpdesk.converter.TicketDtoConverter;
 import com.innowise.training.shablinskaya.helpdesk.dto.TicketDto;
+import com.innowise.training.shablinskaya.helpdesk.entity.History;
 import com.innowise.training.shablinskaya.helpdesk.entity.Ticket;
 import com.innowise.training.shablinskaya.helpdesk.enums.State;
 import com.innowise.training.shablinskaya.helpdesk.enums.Urgency;
 import com.innowise.training.shablinskaya.helpdesk.repository.TicketRepository;
+import com.innowise.training.shablinskaya.helpdesk.service.HistoryService;
 import com.innowise.training.shablinskaya.helpdesk.service.TicketService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -131,11 +133,16 @@ public class TicketServiceImpl implements TicketService {
 
         Timestamp setTime = dto.getResolutionDate();
         LocalDate resolutionDate = setTime.toLocalDateTime().toLocalDate();
-
+        Ticket ticket = null;
         if(currentDate.compareTo(resolutionDate) <= 0){
             dto.setState(CREATION);
-        return ticketRepository.create(ticketDtoConverter.toEntity(dto));}
-        return null;
+            ticket = ticketRepository.create(ticketDtoConverter.toEntity(dto));
+        }
+        if (ticket.getId() == null){
+            throw new EntityNotFoundException("Ticket does not create!");
+        }
+
+        return ticket;
     }
 
     @Transactional

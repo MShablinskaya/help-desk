@@ -71,7 +71,8 @@ public class TicketRepositoryImpl implements TicketRepository {
 
     @Override
     public Ticket update(Ticket ticket) {
-            entityManager.merge(ticket);
+        Ticket ticket1 = entityManager.find(Ticket.class, ticket.getId());
+        entityManager.merge(ticket1);
         return ticket;
     }
 

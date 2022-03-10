@@ -44,7 +44,7 @@ public class TicketDtoConverter {
 
         ticket.setName(dto.getName());
         ticket.setDescription(dto.getDescription());
-        ticket.setDate(Timestamp.from(Instant.now()));
+        ticket.setCreateDate(Timestamp.from(Instant.now()));
         ticket.setResolutionDate(dto.getResolutionDate());
         ticket.setOwner(userService.getCurrentUser());
         ticket.setAssignee(userService.findById(dto.getAssignee()));

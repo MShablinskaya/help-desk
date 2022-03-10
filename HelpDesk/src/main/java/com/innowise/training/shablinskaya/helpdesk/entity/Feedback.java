@@ -90,6 +90,10 @@ public class Feedback {
         this.ticket = ticket;
     }
 
+    public Ticket getTicket() {
+        return ticket;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

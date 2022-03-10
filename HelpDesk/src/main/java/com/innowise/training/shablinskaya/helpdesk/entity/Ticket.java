@@ -1,6 +1,5 @@
 package com.innowise.training.shablinskaya.helpdesk.entity;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import com.innowise.training.shablinskaya.helpdesk.enums.State;
 import com.innowise.training.shablinskaya.helpdesk.enums.Urgency;
 
@@ -15,60 +14,58 @@ public class Ticket {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "ID")
+    @Column(name = "id")
     private Long id;
 
-    @Column(name = "NAME")
+    @Column(name = "name")
     private String name;
 
-    @Column(name = "DESCRIPTION")
-    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+    @Column(name = "description")
     private String description;
 
-    @Column(name = "CREATED_ON")
-    private Timestamp date;
+    @Column(name = "create_Date")
+    private Timestamp createDate;
 
-    @Column(name = "DESIRED_RESOLUTION_DATE")
+    @Column(name = "resolution_Date")
     private Timestamp resolutionDate;
 
-    @JoinColumn(name = "OWNER_ID")
+    @JoinColumn(name = "owner_id")
     @ManyToOne(cascade = CascadeType.MERGE)
     private User owner;
 
-    @JoinColumn(name = "ASSIGNEE_ID")
+    @JoinColumn(name = "assignee_id")
     @ManyToOne(cascade = CascadeType.MERGE)
     private User assignee;
 
-    @JoinColumn(name = "APPROVE_ID")
+    @JoinColumn(name = "approve_id")
     @ManyToOne(cascade = CascadeType.MERGE)
     private User approve;
 
-    @Column(name = "STATE_ID")
+    @Column(name = "state_id")
     @Enumerated(EnumType.STRING)
     private State state;
 
-    @JoinColumn(name = "CATEGORY_ID")
-    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.MERGE)
+    @JoinColumn(name = "category_id")
+    @ManyToOne(cascade = CascadeType.MERGE)
     private Category category;
 
-    @Column(name = "URGENCY_ID")
+    @Column(name = "urgency_id")
     @Enumerated(EnumType.STRING)
     private Urgency urgency;
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "ticketId")
-    private Set<History> historySet;
+    @OneToMany(mappedBy = "ticket", fetch = FetchType.LAZY)
+    private Set<History> histories;
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "ticketId")
-    private Set<Attachment> attachmentSet;
+    @OneToMany(mappedBy = "ticket", fetch = FetchType.LAZY)
+    private Set<Attachment> attachments;
 
     public Ticket() {
     }
 
-    public Ticket(Long id, String name, String description, Timestamp date, Timestamp resolutionDate, User owner, User assignee, User approve, State state, Urgency urgency) {
-        this.id = id;
+    public Ticket(String name, String description, Timestamp createDate, Timestamp resolutionDate, User owner, User assignee, User approve, State state, Urgency urgency) {
         this.name = name;
         this.description = description;
-        this.date = date;
+        this.createDate = createDate;
         this.resolutionDate = resolutionDate;
         this.owner = owner;
         this.assignee = assignee;
@@ -97,12 +94,12 @@ public class Ticket {
         this.description = description;
     }
 
-    public Timestamp getDate() {
-        return date;
+    public Timestamp getCreateDate() {
+        return createDate;
     }
 
-    public void setDate(Timestamp date) {
-        this.date = date;
+    public void setCreateDate(Timestamp createDate) {
+        this.createDate = createDate;
     }
 
     public Timestamp getResolutionDate() {
@@ -161,45 +158,33 @@ public class Ticket {
         this.urgency = urgency;
     }
 
-    public Set<History> getHistorySet() {
-        return historySet;
+    public Set<History> getHistories() {
+        return histories;
     }
 
-    public void setHistorySet(Set<History> historySet) {
-        this.historySet = historySet;
+    public void setHistories(Set<History> histories) {
+        this.histories = histories;
     }
 
-    public Set<Attachment> getAttachmentSet() {
-        return attachmentSet;
+    public Set<Attachment> getAttachments() {
+        return attachments;
     }
 
-    public void setAttachmentSet(Set<Attachment> attachmentSet) {
-        this.attachmentSet = attachmentSet;
+    public void setAttachments(Set<Attachment> attachments) {
+        this.attachments = attachments;
     }
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof Ticket)) return false;
+        if (o == null || getClass() != o.getClass()) return false;
         Ticket ticket = (Ticket) o;
-        return getId().equals(ticket.getId()) &&
-                getName().equals(ticket.getName()) &&
-                getDescription().equals(ticket.getDescription()) &&
-                getDate().equals(ticket.getDate()) &&
-                Objects.equals(getResolutionDate(), ticket.getResolutionDate()) &&
-                getOwner().equals(ticket.getOwner()) &&
-                Objects.equals(getAssignee(), ticket.getAssignee()) &&
-                Objects.equals(getApprove(), ticket.getApprove()) &&
-                getState() == ticket.getState() &&
-                getCategory().equals(ticket.getCategory()) &&
-                getUrgency() == ticket.getUrgency() &&
-                Objects.equals(getHistorySet(), ticket.getHistorySet()) &&
-                Objects.equals(getAttachmentSet(), ticket.getAttachmentSet());
+        return Objects.equals(name, ticket.name) && Objects.equals(description, ticket.description) && Objects.equals(createDate, ticket.createDate) && Objects.equals(resolutionDate, ticket.resolutionDate) && Objects.equals(owner, ticket.owner) && Objects.equals(assignee, ticket.assignee) && Objects.equals(approve, ticket.approve) && state == ticket.state && Objects.equals(category, ticket.category) && urgency == ticket.urgency;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(getId(), getName(), getDescription(), getDate(), getResolutionDate(), getOwner(), getAssignee(), getApprove(), getState(), getCategory(), getUrgency(), getHistorySet(), getAttachmentSet());
+        return Objects.hash(name, description, createDate, resolutionDate, owner, assignee, approve, state, category, urgency);
     }
 
     @Override
@@ -208,7 +193,7 @@ public class Ticket {
                 "id=" + id +
                 ", name='" + name + '\'' +
                 ", description='" + description + '\'' +
-                ", date=" + date +
+                ", createDate=" + createDate +
                 ", resolutionDate=" + resolutionDate +
                 ", owner=" + owner +
                 ", assignee=" + assignee +
@@ -216,8 +201,8 @@ public class Ticket {
                 ", state=" + state +
                 ", category=" + category +
                 ", urgency=" + urgency +
-                ", historySet=" + historySet +
-                ", attachmentSet=" + attachmentSet +
+                ", histories=" + histories +
+                ", attachments=" + attachments +
                 '}';
     }
 }
