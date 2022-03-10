@@ -12,7 +12,7 @@ public class AttachmentDtoConverter {
 
         dto.setId(attachment.getAttachmentId());
         dto.setBlob(attachment.getAttachmentBlob());
-        dto.setTicketId(attachment.getTicketId());
+        dto.setTicketId(attachment.getTicket());
         dto.setName(attachment.getName());
 
         return dto;
@@ -22,7 +22,7 @@ public class AttachmentDtoConverter {
         Attachment attachment = new Attachment();
 
         attachment.setAttachmentBlob(dto.getBlob());
-        attachment.setTicketId(dto.getTicketId());
+        attachment.setTicket(dto.getTicketId());
         attachment.setName(dto.getName());
 
         return attachment;

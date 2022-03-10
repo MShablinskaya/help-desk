@@ -7,8 +7,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
-import java.sql.Timestamp;
-import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
 
@@ -20,7 +18,7 @@ public class HistoryRepositoryImpl implements HistoryRepository {
 
     @Override
     public List<History> findByTicketId(Long ticketId) {
-        return entityManager.createQuery("SELECT h FROM History h WHERE h.ticketId.id = :ticketId", History.class)
+        return entityManager.createQuery("SELECT h FROM History h WHERE h.ticket.id = :ticketId", History.class)
                 .setParameter("ticketId", History.class)
                 .getResultList();
     }
@@ -30,10 +28,14 @@ public class HistoryRepositoryImpl implements HistoryRepository {
         return Optional.of(entityManager.find(History.class, id));
     }
 
-    @Transactional
+
     @Override
     public History save(History history) {
-        entityManager.persist(history);
+        if(history.getId() == null){
+        entityManager.persist(history);}
+        else {
+            entityManager.merge(history);
+        }
         return history;
     }
 

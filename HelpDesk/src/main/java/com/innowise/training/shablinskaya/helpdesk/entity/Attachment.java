@@ -1,7 +1,5 @@
 package com.innowise.training.shablinskaya.helpdesk.entity;
 
-import com.innowise.training.shablinskaya.helpdesk.util.HibernateSessionFactory;
-
 import javax.persistence.*;
 import java.util.Objects;
 
@@ -20,7 +18,7 @@ public class Attachment {
 
     @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.MERGE)
     @JoinColumn(name = "TICKET_ID", nullable = false)
-    private Ticket ticketId;
+    private Ticket ticket;
 
     @Column(name = "NAME", nullable = false)
     private String name;
@@ -30,9 +28,9 @@ public class Attachment {
 
     public Attachment(){}
 
-    public Attachment(Long attachmentBlob, Ticket ticketId, String name){
+    public Attachment(Long attachmentBlob, Ticket ticket, String name){
         this.attachmentBlob = attachmentBlob;
-        this.ticketId = ticketId;
+        this.ticket = ticket;
         this.name = name;
     }
 
@@ -52,12 +50,12 @@ public class Attachment {
         this.attachmentBlob = attachmentBlob;
     }
 
-    public Ticket getTicketId() {
-        return ticketId;
+    public Ticket getTicket() {
+        return ticket;
     }
 
-    public void setTicketId(Ticket attachmentTicketId) {
-        this.ticketId = ticketId;
+    public void setTicket(Ticket attachmentTicketId) {
+        this.ticket = ticket;
     }
 
     public String getName() {
@@ -74,13 +72,13 @@ public class Attachment {
         if (!(o instanceof Attachment)) return false;
         Attachment that = (Attachment) o;
         return getAttachmentBlob().equals(that.getAttachmentBlob()) &&
-                getTicketId().equals(that.getTicketId()) &&
+                getTicket().equals(that.getTicket()) &&
                 getName().equals(that.getName());
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(getAttachmentBlob(), getTicketId(), getName());
+        return Objects.hash(getAttachmentBlob(), getTicket(), getName());
     }
 
     @Override
@@ -88,7 +86,7 @@ public class Attachment {
         return "Attachment{" +
                 "attachmentId=" + attachmentId +
                 ", attachmentBlob=" + attachmentBlob +
-                ", attachmentTicketId=" + ticketId +
+                ", attachmentTicketId=" + ticket +
                 ", attachmentName='" + name + '\'' +
                 '}';
     }

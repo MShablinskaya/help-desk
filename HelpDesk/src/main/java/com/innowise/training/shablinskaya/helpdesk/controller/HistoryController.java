@@ -2,9 +2,9 @@ package com.innowise.training.shablinskaya.helpdesk.controller;
 
 
 import com.innowise.training.shablinskaya.helpdesk.converter.TicketDtoConverter;
+import com.innowise.training.shablinskaya.helpdesk.dto.TicketDto;
 import com.innowise.training.shablinskaya.helpdesk.entity.History;
 import com.innowise.training.shablinskaya.helpdesk.entity.Ticket;
-import com.innowise.training.shablinskaya.helpdesk.enums.State;
 import com.innowise.training.shablinskaya.helpdesk.service.HistoryService;
 import com.innowise.training.shablinskaya.helpdesk.service.TicketService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,19 +37,13 @@ public class HistoryController {
         return new ResponseEntity<>(history, HttpStatus.OK);
     }
 
-    @GetMapping("/history-create/{ticketId}")
-    public ResponseEntity<History> createHistory(@PathVariable(name = "ticketId") Long ticketId) {
-        Ticket ticket = ticketDtoConverter.toEntity(ticketService.findById(ticketId));
-
-        if (ticket != null) {
-            if (ticket.getState().name().compareTo(String.valueOf(State.DRAFT)) == 0
-                    || ticket.getState().name().compareTo(String.valueOf(State.NEW)) == 0){
-                return ResponseEntity.ok(historyService.create(ticketId));
-            }else{
-                return null;
-            }
-        }else{
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-        }
-    }
+//    @GetMapping("/history-create/{ticketId}")
+//    public ResponseEntity<History> createHistory(@PathVariable(name = "ticketId") Long ticketId) {
+//        TicketDto ticket = ticketService.findById(ticketId);
+//        if (ticket != null) {
+//                return ResponseEntity.ok(historyService.createTicket(ticketId));
+//        }else{
+//            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+//        }
+//    }
 }

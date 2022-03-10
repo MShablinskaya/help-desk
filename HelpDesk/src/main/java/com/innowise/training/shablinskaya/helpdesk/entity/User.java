@@ -107,6 +107,37 @@ public class User {
         this.password = password;
     }
 
+    public Set<Ticket> getTicketSet() {
+        return ticketSet;
+    }
+
+    public void setTicketSet(Set<Ticket> ticketSet) {
+        this.ticketSet = ticketSet;
+    }
+
+    public Set<History> getHistorySet() {
+        return historySet;
+    }
+
+    public void setHistorySet(Set<History> historySet) {
+        this.historySet = historySet;
+    }
+
+    public Set<Comment> getCommentSet() {
+        return commentSet;
+    }
+
+    public void setCommentSet(Set<Comment> commentSet) {
+        this.commentSet = commentSet;
+    }
+
+    public Set<Feedback> getFeedbackSet() {
+        return feedbackSet;
+    }
+
+    public void setFeedbackSet(Set<Feedback> feedbackSet) {
+        this.feedbackSet = feedbackSet;
+    }
 
     @Override
     public boolean equals(Object o) {

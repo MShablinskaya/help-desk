@@ -1,82 +1,71 @@
 package com.innowise.training.shablinskaya.helpdesk.entity;
 
-
-import org.hibernate.annotations.Proxy;
-
 import javax.persistence.*;
 import java.sql.Timestamp;
-import java.util.Date;
 import java.util.Objects;
 
 @Entity
 @Table(name = "History")
-@Proxy(lazy = false)
 public class History {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "ID")
-    private Long historyId;
+    @Column(name = "id")
+    private Long id;
+    
+    @JoinColumn(name = "ticket_id", referencedColumnName = "id")
+    @ManyToOne
+    private Ticket ticket;
 
-    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    @JoinColumn(name = "TICKET_ID")
-    private Ticket ticketId;
-
-    @Column(name = "DATE")
-    private Timestamp ticketUploadDate;
-
-    @Column(name = "ACTION")
-    private String actionOnTicket;
-
-    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.MERGE)
-    @JoinColumn(name = "USER_ID", nullable = false)
+    @Column(name = "date")
+    private Timestamp date;
+    
+    @Column(name = "action")
+    private String action;
+    
+    @JoinColumn(name = "user_id")
+    @ManyToOne
     private User userId;
 
-    @Column(name = "DESCRIPTION")
-    private String actionOnTicketDescription;
-
+    @Column(name = "description")
+    private String description;
 
     public History() {
     }
 
-    public History(Ticket ticketId, Timestamp ticketUploadDate, String actionOnTicket, User userId, String actionOnTicketDescription) {
-        this.ticketId = ticketId;
-        this.ticketUploadDate = ticketUploadDate;
-        this.actionOnTicket = actionOnTicket;
+    public History(Ticket ticket, Timestamp date, String action, User userId, String description) {
+        this.ticket = ticket;
+        this.date = date;
+        this.action = action;
         this.userId = userId;
-        this.actionOnTicketDescription = actionOnTicketDescription;
+        this.description = description;
     }
 
-    public java.lang.Long getHistoryId() {
-        return historyId;
+    public Long getId() {
+        return id;
     }
 
-    public void setHistoryId(java.lang.Long historyId) {
-        this.historyId = historyId;
+    public Ticket getTicket() {
+        return ticket;
     }
 
-    public Ticket getTicketId() {
-        return ticketId;
+    public void setTicket(Ticket ticket) {
+        this.ticket = ticket;
     }
 
-    public void setTicketId(Ticket ticket) {
-        this.ticketId = ticket;
+    public Timestamp getDate() {
+        return date;
     }
 
-    public Date getTicketUploadDate() {
-        return ticketUploadDate;
+    public void setDate(Timestamp date) {
+        this.date = date;
     }
 
-    public void setTicketUploadDate(Timestamp ticketUploadDate) {
-        this.ticketUploadDate = ticketUploadDate;
+    public String getAction() {
+        return action;
     }
 
-    public String getActionOnTicket() {
-        return actionOnTicket;
-    }
-
-    public void setActionOnTicket(String actionOnTicket) {
-        this.actionOnTicket = actionOnTicket;
+    public void setAction(String action) {
+        this.action = action;
     }
 
     public User getUserId() {
@@ -87,42 +76,37 @@ public class History {
         this.userId = userId;
     }
 
-    public String getActionOnTicketDescription() {
-        return actionOnTicketDescription;
+    public String getDescription() {
+        return description;
     }
 
-    public void setActionOnTicketDescription(String actionOnTicketDescription) {
-        this.actionOnTicketDescription = actionOnTicketDescription;
+    public void setDescription(String description) {
+        this.description = description;
     }
+
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof History)) return false;
+        if (o == null || getClass() != o.getClass()) return false;
         History history = (History) o;
-        return getTicketId().equals(history.getTicketId()) &&
-                getTicketUploadDate().equals(history.getTicketUploadDate()) &&
-                getActionOnTicket().equals(history.getActionOnTicket()) &&
-                getUserId().equals(history.getUserId()) &&
-                getActionOnTicketDescription().equals(history.getActionOnTicketDescription());
+        return Objects.equals(ticket, history.ticket) && Objects.equals(date, history.date) && Objects.equals(action, history.action) && Objects.equals(userId, history.userId) && Objects.equals(description, history.description);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(getTicketId(), getTicketUploadDate(), getActionOnTicket(), getUserId(), getActionOnTicketDescription());
+        return Objects.hash(ticket, date, action, userId, description);
     }
 
     @Override
     public String toString() {
         return "History{" +
-                "historyId=" + historyId +
-                ", historyTicketId=" + ticketId +
-                ", ticketUploadDate=" + ticketUploadDate +
-                ", actionOnTicket='" + actionOnTicket + '\'' +
-                ", historyUserId=" + userId +
-                ", actionOnTicketDescription='" + actionOnTicketDescription + '\'' +
+                "id=" + id +
+                ", ticket=" + ticket +
+                ", date=" + date +
+                ", action='" + action + '\'' +
+                ", userId=" + userId +
+                ", description='" + description + '\'' +
                 '}';
     }
-
-
 }

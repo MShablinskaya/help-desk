@@ -10,6 +10,7 @@ import com.innowise.training.shablinskaya.helpdesk.service.TicketService;
 import com.innowise.training.shablinskaya.helpdesk.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityNotFoundException;
 import java.sql.Timestamp;
@@ -38,32 +39,23 @@ public class HistoryServiceImpl implements HistoryService {
 
 
     @Override
-    public History create(Long ticketId) {
-        Ticket ticket = converter.toEntity(ticketService.findById(ticketId));
-
-        if (ticket != null) {
+    @Transactional
+    public History createTicket(Ticket ticket){
+        if (ticket != null){
             History history = new History();
-            history.setTicketId(ticket);
-            history.setTicketUploadDate(Timestamp.from(Instant.now()));
+            history.setTicket(ticket);
+            history.setDate(Timestamp.from(Instant.now()));
             history.setUserId(userService.getCurrentUser());
-            if (ticket.getState().name().equals(DRAFT)) {
-                history.setActionOnTicket(TICKET_CREATED);
-                history.setActionOnTicketDescription(TICKET_CREATED);
-                return historyRepository.save(history);
-            } else if (ticket.getState().name().equals(NEW)) {
-                history.setActionOnTicket(TICKET_EDITED);
-                history.setActionOnTicketDescription(TICKET_EDITED);
-                return historyRepository.save(history);
+            if (ticket.getState().name().equals(DRAFT) || ticket.getState().name().equals(NEW)) {
+                history.setAction(TICKET_CREATED);
+                history.setDescription(TICKET_CREATED);
             }
+            return historyRepository.save(history);
+        }else {
+            throw new EntityNotFoundException("Ticket not found!");
         }
-
-        return null;
     }
 
-    @Override
-    public History update(History history) {
-        return null;
-    }
 
     @Override
     public History getById(Long id) {
