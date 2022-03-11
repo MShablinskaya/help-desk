@@ -138,7 +138,7 @@ public class TicketServiceImpl implements TicketService {
             dto.setState(CREATION);
             ticket = ticketRepository.create(ticketDtoConverter.toEntity(dto));
         }
-        if (ticket.getId() == null){
+        if (ticket == null){
             throw new EntityNotFoundException("Ticket does not create!");
         }
 
@@ -147,11 +147,8 @@ public class TicketServiceImpl implements TicketService {
 
     @Transactional
     @Override
-    public void update(TicketDto dto) {
-        Ticket ticket;
-        ticket = ticketDtoConverter.toEntity(dto);
-
-        ticketRepository.update(ticket);
+    public Ticket update(TicketDto dto) {
+        return ticketRepository.update(ticketDtoConverter.toEntity(dto));
     }
 
 }

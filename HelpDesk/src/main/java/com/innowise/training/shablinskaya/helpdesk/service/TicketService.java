@@ -4,11 +4,12 @@ import com.innowise.training.shablinskaya.helpdesk.dto.TicketDto;
 import com.innowise.training.shablinskaya.helpdesk.entity.Ticket;
 import com.innowise.training.shablinskaya.helpdesk.enums.State;
 import com.innowise.training.shablinskaya.helpdesk.enums.Urgency;
-import com.innowise.training.shablinskaya.helpdesk.exception.TicketStateException;
 
 import java.util.List;
 
 public interface TicketService {
+
+    //List<TicketDto> getAll();
 
     TicketDto findById(Long id);
 
@@ -24,5 +25,7 @@ public interface TicketService {
 
     Ticket save(TicketDto dto);
 
-    Ticket changeState(TicketDto ticketDto, State state) throws TicketStateException;
+//    void save(TicketDto dto);
+
+    Ticket update(TicketDto ticketDto);
 }

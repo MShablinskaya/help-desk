@@ -44,31 +44,24 @@ public class Ticket {
     @Enumerated(EnumType.STRING)
     private State state;
 
-    @JoinColumn(name = "category_id", referencedColumnName = "id")
-    @ManyToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "category_id")
+    @ManyToOne
     private Category category;
 
     @Column(name = "urgency_id")
     @Enumerated(EnumType.STRING)
     private Urgency urgency;
 
-    @OneToMany(mappedBy = "ticket")
+    @OneToMany(mappedBy = "ticket", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<History> histories = new ArrayList<>();
 
-    @OneToOne(mappedBy = "ticket")
-    private Feedback feedback;
-
-    @OneToMany(mappedBy = "ticket")
-    private List<Comment> comments = new ArrayList<>();
-
-    @OneToMany(mappedBy = "ticket")
-    private List<Attachment> attachments = new ArrayList<>();
+    @OneToMany(mappedBy = "ticket", fetch = FetchType.LAZY)
+    private Set<Attachment> attachments;
 
     public Ticket() {
     }
 
-    public Ticket(Long id, String name, String description, Timestamp createDate, Timestamp resolutionDate, User owner, User assignee, User approve, State state, Urgency urgency, Category category) {
-        this.id = id;
+    public Ticket(String name, String description, Timestamp createDate, Timestamp resolutionDate, User owner, User assignee, User approve, State state, Urgency urgency, Category category) {
         this.name = name;
         this.description = description;
         this.createDate = createDate;
@@ -177,28 +170,12 @@ public class Ticket {
         this.histories = histories;
     }
 
-    public List<Attachment> getAttachments() {
+    public Set<Attachment> getAttachments() {
         return attachments;
     }
 
-    public void setAttachments(List<Attachment> attachments) {
+    public void setAttachments(Set<Attachment> attachments) {
         this.attachments = attachments;
-    }
-
-    public Feedback getFeedback() {
-        return feedback;
-    }
-
-    public void setFeedback(Feedback feedback) {
-        this.feedback = feedback;
-    }
-
-    public List<Comment> getComments() {
-        return comments;
-    }
-
-    public void setComments(List<Comment> comments) {
-        this.comments = comments;
     }
 
     @Override
@@ -237,9 +214,7 @@ public class Ticket {
                 ", category=" + category +
                 ", urgency=" + urgency +
                 ", histories=" + histories +
-                ", feedback=" + feedback +
                 ", attachments=" + attachments +
                 '}';
     }
-
 }

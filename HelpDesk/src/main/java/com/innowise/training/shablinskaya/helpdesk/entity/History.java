@@ -13,7 +13,7 @@ public class History {
     private Long id;
     
     @JoinColumn(name = "ticket_id", referencedColumnName = "id")
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.MERGE)
     private Ticket ticket;
 
     @Column(name = "date")

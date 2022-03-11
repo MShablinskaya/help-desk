@@ -20,7 +20,11 @@ import java.util.List;
 @Service
 public class HistoryServiceImpl implements HistoryService {
     private final static String TICKET_CREATED = "Ticket is created";
-    private final static String TICKET_EDITED = "Ticket is edited";
+    private final static String TICKET_CHANGED = "Ticket Status is changed";
+    private final static String DRAFT_TO_NEW = "Ticket Status is changed from Draft to New";
+    private final static String NEW_TO_APPROVE = "Ticket Status is changed from New to Approve";
+    private final static String DECLINE_TO_DECLINED = "Ticket Status is changed from Decline to Declined";
+    private final static String ASSIGNEE_TO_IN_PROGRESS = "Ticket Status is changed Assignee to In Progress";
     private final static String NEW = "NEW";
     private final static String DRAFT = "DRAFT";
 
@@ -46,11 +50,17 @@ public class HistoryServiceImpl implements HistoryService {
             history.setTicket(ticket);
             history.setDate(Timestamp.from(Instant.now()));
             history.setUserId(userService.getCurrentUser());
-            if (ticket.getState().name().equals(DRAFT) || ticket.getState().name().equals(NEW)) {
+            if (ticket.getState().name().equals(DRAFT)) {
                 history.setAction(TICKET_CREATED);
                 history.setDescription(TICKET_CREATED);
+                return historyRepository.save(history);
+            }else if (ticket.getState().name().equals(NEW)){
+                history.setAction(TICKET_CHANGED);
+                history.setDescription(DRAFT_TO_NEW);
+                return historyRepository.save(history);
+            }else {
+                throw new EntityNotFoundException("Ticket not found!");
             }
-            return historyRepository.save(history);
         }else {
             throw new EntityNotFoundException("Ticket not found!");
         }
