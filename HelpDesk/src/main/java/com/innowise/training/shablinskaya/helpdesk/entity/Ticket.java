@@ -5,8 +5,7 @@ import com.innowise.training.shablinskaya.helpdesk.enums.Urgency;
 
 import javax.persistence.*;
 import java.sql.Timestamp;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 
 @Entity
 @Table(name = "Ticket")
@@ -30,15 +29,15 @@ public class Ticket {
     private Timestamp resolutionDate;
 
     @JoinColumn(name = "owner_id")
-    @ManyToOne(cascade = CascadeType.MERGE)
+    @ManyToOne
     private User owner;
 
     @JoinColumn(name = "assignee_id")
-    @ManyToOne(cascade = CascadeType.MERGE)
+    @ManyToOne
     private User assignee;
 
     @JoinColumn(name = "approve_id")
-    @ManyToOne(cascade = CascadeType.MERGE)
+    @ManyToOne
     private User approve;
 
     @Column(name = "state_id")
@@ -46,15 +45,15 @@ public class Ticket {
     private State state;
 
     @JoinColumn(name = "category_id")
-    @ManyToOne(cascade = CascadeType.MERGE)
+    @ManyToOne
     private Category category;
 
     @Column(name = "urgency_id")
     @Enumerated(EnumType.STRING)
     private Urgency urgency;
 
-    @OneToMany(mappedBy = "ticket", fetch = FetchType.LAZY)
-    private Set<History> histories;
+    @OneToMany(mappedBy = "ticket", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<History> histories = new ArrayList<>();
 
     @OneToMany(mappedBy = "ticket", fetch = FetchType.LAZY)
     private Set<Attachment> attachments;
@@ -62,7 +61,7 @@ public class Ticket {
     public Ticket() {
     }
 
-    public Ticket(String name, String description, Timestamp createDate, Timestamp resolutionDate, User owner, User assignee, User approve, State state, Urgency urgency) {
+    public Ticket(String name, String description, Timestamp createDate, Timestamp resolutionDate, User owner, User assignee, User approve, State state, Urgency urgency, Category category) {
         this.name = name;
         this.description = description;
         this.createDate = createDate;
@@ -72,6 +71,11 @@ public class Ticket {
         this.approve = approve;
         this.state = state;
         this.urgency = urgency;
+        this.category = category;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
     }
 
     public Long getId() {
@@ -158,11 +162,11 @@ public class Ticket {
         this.urgency = urgency;
     }
 
-    public Set<History> getHistories() {
+    public List<History> getHistories() {
         return histories;
     }
 
-    public void setHistories(Set<History> histories) {
+    public void setHistories(List<History> histories) {
         this.histories = histories;
     }
 
@@ -179,7 +183,15 @@ public class Ticket {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Ticket ticket = (Ticket) o;
-        return Objects.equals(name, ticket.name) && Objects.equals(description, ticket.description) && Objects.equals(createDate, ticket.createDate) && Objects.equals(resolutionDate, ticket.resolutionDate) && Objects.equals(owner, ticket.owner) && Objects.equals(assignee, ticket.assignee) && Objects.equals(approve, ticket.approve) && state == ticket.state && Objects.equals(category, ticket.category) && urgency == ticket.urgency;
+        return Objects.equals(name, ticket.name)
+                && Objects.equals(description, ticket.description)
+                && Objects.equals(createDate, ticket.createDate)
+                && Objects.equals(resolutionDate, ticket.resolutionDate)
+                && Objects.equals(owner, ticket.owner)
+                && Objects.equals(assignee, ticket.assignee)
+                && Objects.equals(approve, ticket.approve)
+                && state == ticket.state
+                && Objects.equals(category, ticket.category) && urgency == ticket.urgency;
     }
 
     @Override

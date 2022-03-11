@@ -1,6 +1,8 @@
 package com.innowise.training.shablinskaya.helpdesk.controller;
 
+import com.innowise.training.shablinskaya.helpdesk.converter.TicketDtoConverter;
 import com.innowise.training.shablinskaya.helpdesk.dto.TicketDto;
+import com.innowise.training.shablinskaya.helpdesk.entity.History;
 import com.innowise.training.shablinskaya.helpdesk.entity.Ticket;
 import com.innowise.training.shablinskaya.helpdesk.enums.State;
 import com.innowise.training.shablinskaya.helpdesk.enums.Urgency;
@@ -15,6 +17,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import javax.persistence.EntityNotFoundException;
 import java.net.URI;
 import java.util.List;
 
@@ -23,15 +26,19 @@ import java.util.List;
 @RequestMapping(value = "/tickets", produces = MediaType.APPLICATION_JSON_VALUE)
 public class TicketController {
     private static final Logger log = org.apache.log4j.Logger.getLogger(TicketController.class);
+    private final String CHANGED = "Ticket Status is changed";
+    private final String CREATED = "Ticket Status is changed from Created to Draft.";
 
     private final TicketService ticketService;
     private final UserService userService;
-    private final HistoryService historyService;
+    private final TicketDtoConverter converter;
+    private HistoryService historyService;
 
     @Autowired
-    public TicketController(TicketService ticketService, UserService userService, HistoryService historyService) {
+    public TicketController(TicketService ticketService, UserService userService, TicketDtoConverter converter, HistoryService historyService) {
         this.ticketService = ticketService;
         this.userService = userService;
+        this.converter = converter;
         this.historyService = historyService;
     }
 
@@ -90,11 +97,34 @@ public class TicketController {
     @PostMapping("/ticket-create")
     public ResponseEntity<TicketDto> createTicket(@RequestBody TicketDto ticketDto) {
         Ticket ticket = ticketService.save(ticketDto);
-
         historyService.createTicket(ticket);
+        String savedTicketLocation = "tickets/" + ticket.getId();
+        return ResponseEntity.created(URI.create(savedTicketLocation)).build();
+    }
 
-            String savedTicketLocation = "tickets/" + ticket.getId();
-            return ResponseEntity.created(URI.create(savedTicketLocation)).build();
+    @PreAuthorize("@userServiceImpl.hasRole('MANAGER')")
+    @GetMapping("/manager/{id}")
+    public ResponseEntity<TicketDto> manageTicket(@PathVariable(name = "id") Long id) {
+        TicketDto ticketDto = ticketService.findById(id);
+
+        if (ticketDto.getId() != null){
+            String str = "NEW";
+            Ticket tkt = converter.toEntity(ticketDto);
+            tkt.setId(id);
+            tkt.setState(State.valueOf(str));
+            ticketService.update(converter.toDto(tkt));
+            historyService.createTicket(tkt);
+
+            return new ResponseEntity<>(converter.toDto(tkt), HttpStatus.OK);
+        }else {
+            throw new EntityNotFoundException("Ticket is not exist");
+        }
+
+
+
+
+
+
     }
 }
 

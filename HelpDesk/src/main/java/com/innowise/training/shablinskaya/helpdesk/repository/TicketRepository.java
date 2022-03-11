@@ -28,4 +28,5 @@ public interface TicketRepository {
 
     List<Ticket> getByUrgency(Urgency urgency);
 
+
 }

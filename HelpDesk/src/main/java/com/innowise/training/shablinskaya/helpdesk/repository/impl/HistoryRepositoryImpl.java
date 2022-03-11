@@ -3,7 +3,6 @@ package com.innowise.training.shablinskaya.helpdesk.repository.impl;
 import com.innowise.training.shablinskaya.helpdesk.entity.History;
 import com.innowise.training.shablinskaya.helpdesk.repository.HistoryRepository;
 import org.springframework.stereotype.Repository;
-import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -31,9 +30,9 @@ public class HistoryRepositoryImpl implements HistoryRepository {
 
     @Override
     public History save(History history) {
-        if(history.getId() == null){
-        entityManager.persist(history);}
-        else {
+        if (history.getId() == null) {
+            entityManager.persist(history);
+        } else {
             entityManager.merge(history);
         }
         return history;

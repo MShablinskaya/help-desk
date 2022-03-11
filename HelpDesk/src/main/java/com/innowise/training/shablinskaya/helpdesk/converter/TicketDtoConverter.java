@@ -26,8 +26,10 @@ public class TicketDtoConverter {
     public TicketDto toDto(Ticket ticket) {
         TicketDto dto = new TicketDto();
 
+        dto.setId(ticket.getId());
         dto.setName(ticket.getName());
         dto.setDescription(ticket.getDescription());
+        dto.setCreationDate(ticket.getCreateDate());
         dto.setResolutionDate(ticket.getResolutionDate());
         dto.setOwner(ticket.getOwner().getId());
         dto.setAssignee(ticket.getAssignee().getId());
