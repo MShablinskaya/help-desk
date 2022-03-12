@@ -4,6 +4,7 @@ import com.innowise.training.shablinskaya.helpdesk.dto.TicketDto;
 import com.innowise.training.shablinskaya.helpdesk.entity.Ticket;
 import com.innowise.training.shablinskaya.helpdesk.enums.State;
 import com.innowise.training.shablinskaya.helpdesk.enums.Urgency;
+import com.innowise.training.shablinskaya.helpdesk.exception.TicketStateException;
 
 import java.util.List;
 
@@ -27,5 +28,5 @@ public interface TicketService {
 
 //    void save(TicketDto dto);
 
-    Ticket update(TicketDto ticketDto);
+    Ticket changeState(TicketDto ticketDto, State state) throws TicketStateException;
 }

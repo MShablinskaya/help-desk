@@ -52,7 +52,7 @@ public class Ticket {
     @Enumerated(EnumType.STRING)
     private Urgency urgency;
 
-    @OneToMany(mappedBy = "ticket", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "ticket", cascade = CascadeType.ALL)
     private List<History> histories = new ArrayList<>();
 
     @OneToMany(mappedBy = "ticket", fetch = FetchType.LAZY)

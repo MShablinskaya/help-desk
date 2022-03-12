@@ -2,7 +2,6 @@ package com.innowise.training.shablinskaya.helpdesk.controller;
 
 import com.innowise.training.shablinskaya.helpdesk.converter.TicketDtoConverter;
 import com.innowise.training.shablinskaya.helpdesk.dto.TicketDto;
-import com.innowise.training.shablinskaya.helpdesk.entity.History;
 import com.innowise.training.shablinskaya.helpdesk.entity.Ticket;
 import com.innowise.training.shablinskaya.helpdesk.enums.State;
 import com.innowise.training.shablinskaya.helpdesk.enums.Urgency;
@@ -103,19 +102,15 @@ public class TicketController {
     }
 
     @PreAuthorize("@userServiceImpl.hasRole('MANAGER')")
-    @GetMapping("/manager/{id}")
-    public ResponseEntity<TicketDto> manageTicket(@PathVariable(name = "id") Long id) {
+    @PutMapping("/manager/{id}")
+    public ResponseEntity<TicketDto> manageTicket(@PathVariable(name = "id") Long id, @RequestBody State state) {
         TicketDto ticketDto = ticketService.findById(id);
 
-        if (ticketDto.getId() != null){
-            String str = "NEW";
-            Ticket tkt = converter.toEntity(ticketDto);
-            tkt.setId(id);
-            tkt.setState(State.valueOf(str));
-            ticketService.update(converter.toDto(tkt));
-            historyService.createTicket(tkt);
+        if (ticketDto.getId() != null && state != null){
+         ticketService.changeState(ticketDto, state);
+         historyService.createTicket(converter.toUpdEntity(ticketDto));
 
-            return new ResponseEntity<>(converter.toDto(tkt), HttpStatus.OK);
+            return new ResponseEntity<>(ticketDto, HttpStatus.OK);
         }else {
             throw new EntityNotFoundException("Ticket is not exist");
         }

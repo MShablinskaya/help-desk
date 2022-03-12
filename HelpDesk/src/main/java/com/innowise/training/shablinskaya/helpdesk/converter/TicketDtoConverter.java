@@ -58,4 +58,23 @@ public class TicketDtoConverter {
         return ticket;
 
     }
+
+    public Ticket toUpdEntity(TicketDto dto) {
+        Ticket ticket = new Ticket();
+
+        ticket.setId(dto.getId());
+        ticket.setName(dto.getName());
+        ticket.setDescription(dto.getDescription());
+        ticket.setCreateDate(dto.getCreationDate());
+        ticket.setResolutionDate(dto.getResolutionDate());
+        ticket.setOwner(userService.getCurrentUser());
+        ticket.setAssignee(userService.findById(dto.getAssignee()));
+        ticket.setApprove(userService.findById(dto.getApprove()));
+        ticket.setState(State.valueOf(dto.getState()));
+        ticket.setCategory(categoryService.findById(dto.getCategory()));
+        ticket.setUrgency(Urgency.valueOf(dto.getUrgency().toUpperCase()));
+
+        return ticket;
+
+    }
 }

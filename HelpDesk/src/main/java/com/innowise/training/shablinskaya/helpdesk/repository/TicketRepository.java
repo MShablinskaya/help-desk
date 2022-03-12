@@ -16,8 +16,6 @@ public interface TicketRepository {
 
     Ticket create(Ticket ticket);
 
-    //void create(Ticket ticket);
-
     List<Ticket> getByOwnerId(Long ownerId);
 
     List<Ticket> getByApproveId(Long approveId);

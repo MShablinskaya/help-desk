@@ -2,12 +2,11 @@ package com.innowise.training.shablinskaya.helpdesk.service.impl;
 
 import com.innowise.training.shablinskaya.helpdesk.converter.TicketDtoConverter;
 import com.innowise.training.shablinskaya.helpdesk.dto.TicketDto;
-import com.innowise.training.shablinskaya.helpdesk.entity.History;
 import com.innowise.training.shablinskaya.helpdesk.entity.Ticket;
 import com.innowise.training.shablinskaya.helpdesk.enums.State;
 import com.innowise.training.shablinskaya.helpdesk.enums.Urgency;
+import com.innowise.training.shablinskaya.helpdesk.exception.TicketStateException;
 import com.innowise.training.shablinskaya.helpdesk.repository.TicketRepository;
-import com.innowise.training.shablinskaya.helpdesk.service.HistoryService;
 import com.innowise.training.shablinskaya.helpdesk.service.TicketService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -134,11 +133,11 @@ public class TicketServiceImpl implements TicketService {
         Timestamp setTime = dto.getResolutionDate();
         LocalDate resolutionDate = setTime.toLocalDateTime().toLocalDate();
         Ticket ticket = null;
-        if(currentDate.compareTo(resolutionDate) <= 0){
+        if (currentDate.compareTo(resolutionDate) <= 0) {
             dto.setState(CREATION);
             ticket = ticketRepository.create(ticketDtoConverter.toEntity(dto));
         }
-        if (ticket == null){
+        if (ticket == null) {
             throw new EntityNotFoundException("Ticket does not create!");
         }
 
@@ -147,8 +146,21 @@ public class TicketServiceImpl implements TicketService {
 
     @Transactional
     @Override
-    public Ticket update(TicketDto dto) {
-        return ticketRepository.update(ticketDtoConverter.toEntity(dto));
-    }
+    public Ticket changeState(TicketDto dto, State state) throws TicketStateException {
+        Long ticketId = dto.getId();
 
+        if (ticketId != null && state != null) {
+            dto.setId(ticketId);
+            if (!state.name().equals(dto.getState())) {
+                dto.setState(state.name());
+            } else {
+                throw new TicketStateException("It's nothing to change!");
+            }
+            return ticketRepository.update(ticketDtoConverter.toUpdEntity(dto));
+        } else {
+            throw new EntityNotFoundException("Ticket is not exist!");
+        }
+    }
 }
+
+

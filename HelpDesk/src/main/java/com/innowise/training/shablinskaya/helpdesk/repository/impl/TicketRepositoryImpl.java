@@ -68,12 +68,14 @@ public class TicketRepositoryImpl implements TicketRepository {
 
     @Override
     public Ticket update(Ticket ticket) {
+        ticket.setState(ticket.getState());
         entityManager.merge(ticket);
         return ticket;
     }
 
     @Override
     public Ticket create(Ticket ticket) {
+
         if (ticket.getId() == null){
             entityManager.persist(ticket);
         }else{
