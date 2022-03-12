@@ -5,6 +5,7 @@ import com.innowise.training.shablinskaya.helpdesk.dto.TicketDto;
 import com.innowise.training.shablinskaya.helpdesk.entity.Ticket;
 import com.innowise.training.shablinskaya.helpdesk.enums.State;
 import com.innowise.training.shablinskaya.helpdesk.enums.Urgency;
+import com.innowise.training.shablinskaya.helpdesk.exception.TicketStateException;
 import com.innowise.training.shablinskaya.helpdesk.service.HistoryService;
 import com.innowise.training.shablinskaya.helpdesk.service.TicketService;
 import com.innowise.training.shablinskaya.helpdesk.service.UserService;
@@ -94,16 +95,16 @@ public class TicketController {
 
     @PreAuthorize("@userServiceImpl.hasRole('EMPLOYEE', 'MANAGER')")
     @PostMapping("/ticket-create")
-    public ResponseEntity<TicketDto> createTicket(@RequestBody TicketDto ticketDto) {
+    public ResponseEntity<TicketDto> createTicket(@RequestBody TicketDto ticketDto) throws TicketStateException {
         Ticket ticket = ticketService.save(ticketDto);
         historyService.createTicket(ticket);
         String savedTicketLocation = "tickets/" + ticket.getId();
         return ResponseEntity.created(URI.create(savedTicketLocation)).build();
     }
 
-    @PreAuthorize("@userServiceImpl.hasRole('MANAGER')")
+
     @PutMapping("/manager/{id}")
-    public ResponseEntity<TicketDto> manageTicket(@PathVariable(name = "id") Long id, @RequestBody State state) {
+    public ResponseEntity<TicketDto> manageTicket(@PathVariable(name = "id") Long id, @RequestBody State state) throws TicketStateException {
         TicketDto ticketDto = ticketService.findById(id);
 
         if (ticketDto.getId() != null && state != null){

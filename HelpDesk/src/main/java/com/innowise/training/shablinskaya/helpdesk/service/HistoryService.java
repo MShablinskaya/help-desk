@@ -2,12 +2,13 @@ package com.innowise.training.shablinskaya.helpdesk.service;
 
 import com.innowise.training.shablinskaya.helpdesk.entity.History;
 import com.innowise.training.shablinskaya.helpdesk.entity.Ticket;
+import com.innowise.training.shablinskaya.helpdesk.exception.TicketStateException;
 
 import java.util.List;
 
 public interface HistoryService {
 
-    History createTicket(Ticket ticket);
+    History createTicket(Ticket ticket) throws TicketStateException;
 
     History getById(Long id);
 

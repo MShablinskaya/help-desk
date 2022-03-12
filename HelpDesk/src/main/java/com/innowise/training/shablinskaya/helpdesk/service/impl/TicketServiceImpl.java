@@ -9,6 +9,7 @@ import com.innowise.training.shablinskaya.helpdesk.exception.TicketStateExceptio
 import com.innowise.training.shablinskaya.helpdesk.repository.TicketRepository;
 import com.innowise.training.shablinskaya.helpdesk.service.TicketService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -24,7 +25,13 @@ public class TicketServiceImpl implements TicketService {
 
     private TicketRepository ticketRepository;
     private TicketDtoConverter ticketDtoConverter;
-    private final String CREATION = "DRAFT";
+    private final String DRAFT = "DRAFT";
+    private final String NEW = "NEW";
+    private final String APPROVE = "APPROVED";
+    private final String DECLINE = "DECLINED";
+    private final String CANCEL = "CANCELLED";
+    private final String IN_PROGRESS = "IN_PROGRESS";
+    private final String DONE = "DONE";
 
     @Autowired
     public TicketServiceImpl(TicketRepository ticketRepository, TicketDtoConverter ticketDtoConverter) {
@@ -134,7 +141,7 @@ public class TicketServiceImpl implements TicketService {
         LocalDate resolutionDate = setTime.toLocalDateTime().toLocalDate();
         Ticket ticket = null;
         if (currentDate.compareTo(resolutionDate) <= 0) {
-            dto.setState(CREATION);
+            dto.setState(DRAFT);
             ticket = ticketRepository.create(ticketDtoConverter.toEntity(dto));
         }
         if (ticket == null) {
@@ -151,16 +158,103 @@ public class TicketServiceImpl implements TicketService {
 
         if (ticketId != null && state != null) {
             dto.setId(ticketId);
-            if (!state.name().equals(dto.getState())) {
+            switch (dto.getState()) {
+                case DRAFT:
+                    changeStateFromDraft(dto, state);
+                    return ticketRepository.update(ticketDtoConverter.toUpdEntity(dto));
+                case NEW:
+                    changeStateFromNew(dto, state);
+                    return ticketRepository.update(ticketDtoConverter.toUpdEntity(dto));
+                case APPROVE:
+                    changeStateFromApprove(dto, state);
+                    return ticketRepository.update(ticketDtoConverter.toUpdEntity(dto));
+                case IN_PROGRESS:
+                    changeStateFromInProgress(dto, state);
+                    return ticketRepository.update(ticketDtoConverter.toUpdEntity(dto));
+                case DECLINE:
+                    changeStateFromeDecline(dto, state);
+                    return ticketRepository.update(ticketDtoConverter.toUpdEntity(dto));
+                default:
+                    throw new TicketStateException("There is no transition status");
+            }
+    } else
+
+    {
+        throw new EntityNotFoundException("Ticket is not exist!");
+    }
+
+}
+
+
+    @PreAuthorize("@userServiceImpl.hasRole('EMPLOYEE', 'MANAGER')")
+    private void changeStateFromDraft(TicketDto dto, State state) throws TicketStateException {
+        if (!state.name().equals(dto.getState())) {
+            if (state.name().equals(NEW) || state.name().equals(CANCEL)) {
                 dto.setState(state.name());
             } else {
-                throw new TicketStateException("It's nothing to change!");
+                throw new TicketStateException("You can't use it for Draft Ticket!");
             }
-            return ticketRepository.update(ticketDtoConverter.toUpdEntity(dto));
         } else {
-            throw new EntityNotFoundException("Ticket is not exist!");
+            throw new TicketStateException("It's nothing to change!");
+        }
+    }
+
+    @PreAuthorize("@userServiceImpl.hasRole('MANAGER')")
+    private void changeStateFromNew(TicketDto dto, State state) throws TicketStateException {
+        if (!state.name().equals(dto.getState())) {
+            if (state.name().equals(APPROVE) || state.name().equals(DECLINE) || state.name().equals(CANCEL)) {
+                dto.setState(state.name());
+            } else {
+                throw new TicketStateException("You can't use it for New Ticket!");
+            }
+        } else {
+            throw new TicketStateException("It's nothing to change!");
+        }
+    }
+
+    @PreAuthorize("@userServiceImpl.hasRole('ENGENEER')")
+    private void changeStateFromApprove(TicketDto dto, State state) throws TicketStateException {
+        if (!state.name().equals(dto.getState())) {
+            if (state.name().equals(IN_PROGRESS) || state.name().equals(CANCEL)) {
+                dto.setState(state.name());
+            } else {
+                throw new TicketStateException("You can't use it for Approved Ticket!");
+            }
+        } else {
+            throw new TicketStateException("It's nothing to change!");
+        }
+    }
+
+    @PreAuthorize("@userServiceImpl.hasRole('ENGENEER')")
+    private void changeStateFromInProgress(TicketDto dto, State state) throws TicketStateException {
+        if (!state.name().equals(dto.getState())) {
+            if (state.name().equals(DONE) || state.name().equals(CANCEL)) {
+                dto.setState(state.name());
+            } else {
+                throw new TicketStateException("You can't use it for In Progress Ticket!");
+            }
+        } else {
+            throw new TicketStateException("It's nothing to change!");
+        }
+
+    }
+
+    @PreAuthorize("@userServiceImpl.hasRole('EMPLOYEE', 'MANAGER')")
+    private void changeStateFromeDecline(TicketDto dto, State state) throws TicketStateException {
+        if (!state.name().equals(dto.getState())) {
+            if (state.name().equals(CANCEL)) {
+                dto.setState(state.name());
+            } else {
+                throw new TicketStateException("You can't use it For Done Ticket!");
+            }
+
+        } else {
+            throw new TicketStateException("It's nothing to change!");
         }
     }
 }
+
+
+
 
 
