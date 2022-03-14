@@ -26,8 +26,7 @@ import java.util.List;
 @RequestMapping(value = "/tickets", produces = MediaType.APPLICATION_JSON_VALUE)
 public class TicketController {
     private static final Logger log = org.apache.log4j.Logger.getLogger(TicketController.class);
-    private final String CHANGED = "Ticket Status is changed";
-    private final String CREATED = "Ticket Status is changed from Created to Draft.";
+
 
     private final TicketService ticketService;
     private final UserService userService;
@@ -97,29 +96,48 @@ public class TicketController {
     @PostMapping("/ticket-create")
     public ResponseEntity<TicketDto> createTicket(@RequestBody TicketDto ticketDto) throws TicketStateException {
         Ticket ticket = ticketService.save(ticketDto);
-        historyService.createTicket(ticket);
+        historyService.createTicketHistory(ticket);
         String savedTicketLocation = "tickets/" + ticket.getId();
         return ResponseEntity.created(URI.create(savedTicketLocation)).build();
     }
 
 
-    @PutMapping("/manager/{id}")
-    public ResponseEntity<TicketDto> manageTicket(@PathVariable(name = "id") Long id, @RequestBody State state) throws TicketStateException {
+    @PutMapping("/change-status/{id}")
+    public ResponseEntity<TicketDto> changeTicketState(@PathVariable(name = "id") Long id, @RequestBody State state) throws TicketStateException {
         TicketDto ticketDto = ticketService.findById(id);
 
-        if (ticketDto.getId() != null && state != null){
-         ticketService.changeState(ticketDto, state);
-         historyService.createTicket(converter.toUpdEntity(ticketDto));
+        if (ticketDto.getId() != null && state != null) {
+            ticketService.changeState(ticketDto, state);
+            historyService.createTicketHistory(converter.toUpdEntity(ticketDto));
 
             return new ResponseEntity<>(ticketDto, HttpStatus.OK);
-        }else {
+        } else {
             throw new EntityNotFoundException("Ticket is not exist");
         }
 
+    }
 
 
+    @PutMapping("/edit-ticket/{action}")
+    public ResponseEntity<TicketDto> editTicket(@PathVariable(name = "action") String action, @RequestBody TicketDto ticketDto)
+            throws TicketStateException {
+        if (ticketDto.getId() != null && ticketDto.getState().equals("DRAFT")) {
+            if (action.equalsIgnoreCase("submit")) {
+                ticketService.changeState(ticketDto, State.valueOf("NEW"));
+                historyService.ticketHistoryForEdit(converter.toUpdEntity(ticketDto));
 
+                return new ResponseEntity<>(ticketDto, HttpStatus.OK);
+            } else if (action.equalsIgnoreCase("cancel")) {
+                ticketService.changeState(ticketDto, State.valueOf("CANCELLED"));
+                historyService.createTicketHistory(converter.toUpdEntity(ticketDto));
 
+                return new ResponseEntity<>(ticketDto, HttpStatus.OK);
+            } else {
+                throw new TicketStateException("Incorrect action!");
+            }
+        } else {
+            throw new TicketStateException("You can't edit this Ticket anymore!");
+        }
 
     }
 }
