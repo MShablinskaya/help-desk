@@ -25,13 +25,12 @@ public class FeedbackServiceImpl implements FeedbackService {
 
     @Transactional
     @Override
-    public Feedback save(TicketDto ticketDto, FeedbackDto dto) throws TicketStateException {
-        Long ticketId = ticketDto.getId();
+    public Feedback save(FeedbackDto dto) throws TicketStateException {
 
-        if (ticketId != null && dto.getRate() != null){
+        if (dto.getRate() != null){
             return feedbackRepository.save(converter.toEntity(dto));
         }else{
-            throw new TicketStateException("Ticket doesn't exist");
+            throw new TicketStateException("You can't leave feedback without rate!");
         }
 
     }

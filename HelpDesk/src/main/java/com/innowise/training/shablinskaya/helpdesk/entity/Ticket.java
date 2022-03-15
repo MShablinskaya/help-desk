@@ -58,6 +58,9 @@ public class Ticket {
     @OneToOne(mappedBy = "ticket")
     private Feedback feedback;
 
+    @OneToMany(mappedBy = "ticket")
+    private List<Comment> comments = new ArrayList<>();
+
     @OneToMany(mappedBy = "ticket", fetch = FetchType.LAZY)
     private Set<Attachment> attachments;
 
@@ -187,6 +190,14 @@ public class Ticket {
 
     public void setFeedback(Feedback feedback) {
         this.feedback = feedback;
+    }
+
+    public List<Comment> getComments() {
+        return comments;
+    }
+
+    public void setComments(List<Comment> comments) {
+        this.comments = comments;
     }
 
     @Override

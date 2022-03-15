@@ -6,5 +6,5 @@ import com.innowise.training.shablinskaya.helpdesk.entity.Feedback;
 import com.innowise.training.shablinskaya.helpdesk.exception.TicketStateException;
 
 public interface FeedbackService {
-    Feedback save(TicketDto ticket, FeedbackDto feedbackDto) throws TicketStateException;
+    Feedback save(FeedbackDto feedbackDto) throws TicketStateException;
 }

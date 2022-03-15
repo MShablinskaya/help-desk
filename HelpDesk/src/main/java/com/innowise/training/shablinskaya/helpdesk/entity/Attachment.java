@@ -10,17 +10,17 @@ public class Attachment {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "ID", nullable = false)
+    @Column(name = "ID")
     private Long attachmentId;
 
     @Column(name = "BLOB")
     private Long attachmentBlob;
 
     @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.MERGE)
-    @JoinColumn(name = "TICKET_ID", nullable = false)
+    @JoinColumn(name = "TICKET_ID")
     private Ticket ticket;
 
-    @Column(name = "NAME", nullable = false)
+    @Column(name = "NAME")
     private String name;
 
 

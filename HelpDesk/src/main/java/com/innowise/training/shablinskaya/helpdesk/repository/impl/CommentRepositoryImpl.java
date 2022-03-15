@@ -20,8 +20,13 @@ public class CommentRepositoryImpl implements CommentRepository {
     }
 
     @Override
-    public void saveToTable(Comment comment) {
-        entityManager.persist(comment);
+    public Comment save(Comment comment) {
+        if (comment.getId() == null) {
+            entityManager.persist(comment);
+        } else {
+            entityManager.merge(comment);
+        }
+        return comment;
 
     }
 
