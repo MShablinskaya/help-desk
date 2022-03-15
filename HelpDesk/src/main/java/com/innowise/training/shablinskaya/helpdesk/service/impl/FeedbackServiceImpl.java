@@ -2,6 +2,7 @@ package com.innowise.training.shablinskaya.helpdesk.service.impl;
 
 import com.innowise.training.shablinskaya.helpdesk.converter.FeedBackDtoConverter;
 import com.innowise.training.shablinskaya.helpdesk.dto.FeedbackDto;
+import com.innowise.training.shablinskaya.helpdesk.dto.TicketDto;
 import com.innowise.training.shablinskaya.helpdesk.entity.Feedback;
 import com.innowise.training.shablinskaya.helpdesk.entity.Ticket;
 import com.innowise.training.shablinskaya.helpdesk.exception.TicketStateException;
@@ -24,11 +25,10 @@ public class FeedbackServiceImpl implements FeedbackService {
 
     @Transactional
     @Override
-    public Feedback save(Ticket ticket, FeedbackDto dto) throws TicketStateException {
-        if (ticket != null){
-            Feedback feedback = new Feedback();
+    public Feedback save(TicketDto ticketDto, FeedbackDto dto) throws TicketStateException {
+        Long ticketId = ticketDto.getId();
 
-
+        if (ticketId != null && dto.getRate() != null){
             return feedbackRepository.save(converter.toEntity(dto));
         }else{
             throw new TicketStateException("Ticket doesn't exist");

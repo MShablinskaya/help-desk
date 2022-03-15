@@ -68,7 +68,6 @@ public class TicketRepositoryImpl implements TicketRepository {
 
     @Override
     public Ticket update(Ticket ticket) {
-        ticket.setState(ticket.getState());
         entityManager.merge(ticket);
         return ticket;
     }

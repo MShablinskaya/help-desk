@@ -52,11 +52,11 @@ public class Ticket {
     @Enumerated(EnumType.STRING)
     private Urgency urgency;
 
-    @OneToOne(mappedBy = "ticket",cascade = CascadeType.ALL)
-    private Feedback feedbacks;
-
-    @OneToMany(mappedBy = "ticket", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "ticket")
     private List<History> histories = new ArrayList<>();
+
+    @OneToOne(mappedBy = "ticket")
+    private Feedback feedback;
 
     @OneToMany(mappedBy = "ticket", fetch = FetchType.LAZY)
     private Set<Attachment> attachments;
@@ -64,7 +64,7 @@ public class Ticket {
     public Ticket() {
     }
 
-    public Ticket(String name, String description, Timestamp createDate, Timestamp resolutionDate, User owner, User assignee, User approve, State state, Urgency urgency, Category category, Feedback feedbacks) {
+    public Ticket(String name, String description, Timestamp createDate, Timestamp resolutionDate, User owner, User assignee, User approve, State state, Urgency urgency, Category category) {
         this.name = name;
         this.description = description;
         this.createDate = createDate;
@@ -75,7 +75,6 @@ public class Ticket {
         this.state = state;
         this.urgency = urgency;
         this.category = category;
-        this.feedbacks = feedbacks;
     }
 
     public void setId(Long id) {
@@ -182,12 +181,12 @@ public class Ticket {
         this.attachments = attachments;
     }
 
-    public Feedback getFeedbacks() {
-        return feedbacks;
+    public Feedback getFeedback() {
+        return feedback;
     }
 
-    public void setFeedbacks(Feedback feedbacks) {
-        this.feedbacks = feedbacks;
+    public void setFeedback(Feedback feedback) {
+        this.feedback = feedback;
     }
 
     @Override
@@ -195,8 +194,7 @@ public class Ticket {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Ticket ticket = (Ticket) o;
-        return Objects.equals(id, ticket.id)
-                && Objects.equals(name, ticket.name)
+        return Objects.equals(name, ticket.name)
                 && Objects.equals(description, ticket.description)
                 && Objects.equals(createDate, ticket.createDate)
                 && Objects.equals(resolutionDate, ticket.resolutionDate)
@@ -204,16 +202,12 @@ public class Ticket {
                 && Objects.equals(assignee, ticket.assignee)
                 && Objects.equals(approve, ticket.approve)
                 && state == ticket.state
-                && Objects.equals(category, ticket.category)
-                && urgency == ticket.urgency
-                && Objects.equals(feedbacks, ticket.feedbacks)
-                && Objects.equals(histories, ticket.histories)
-                && Objects.equals(attachments, ticket.attachments);
+                && Objects.equals(category, ticket.category) && urgency == ticket.urgency;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, name, description, createDate, resolutionDate, owner, assignee, approve, state, category, urgency, feedbacks, histories, attachments);
+        return Objects.hash(name, description, createDate, resolutionDate, owner, assignee, approve, state, category, urgency);
     }
 
     @Override
@@ -230,8 +224,8 @@ public class Ticket {
                 ", state=" + state +
                 ", category=" + category +
                 ", urgency=" + urgency +
-                ", feedbacks=" + feedbacks +
                 ", histories=" + histories +
+                ", feedback=" + feedback +
                 ", attachments=" + attachments +
                 '}';
     }

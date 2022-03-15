@@ -14,7 +14,7 @@ public class Feedback {
     @Column(name = "ID")
     private Long feedbackId;
 
-    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.MERGE)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "USER_ID", referencedColumnName = "id")
     private User userId;
 
@@ -27,7 +27,7 @@ public class Feedback {
     @Column(name = "TEXT")
     private String text;
 
-    @OneToOne(cascade = CascadeType.ALL)
+    @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "TICKET_ID", referencedColumnName = "id")
     private Ticket ticket;
 

@@ -1,8 +1,9 @@
 package com.innowise.training.shablinskaya.helpdesk.controller;
 
-import com.innowise.training.shablinskaya.helpdesk.converter.TicketDtoConverter;
+import com.innowise.training.shablinskaya.helpdesk.converter.FeedBackDtoConverter;
 import com.innowise.training.shablinskaya.helpdesk.dto.FeedbackDto;
 import com.innowise.training.shablinskaya.helpdesk.dto.TicketDto;
+import com.innowise.training.shablinskaya.helpdesk.entity.Feedback;
 import com.innowise.training.shablinskaya.helpdesk.exception.TicketStateException;
 import com.innowise.training.shablinskaya.helpdesk.service.FeedbackService;
 import com.innowise.training.shablinskaya.helpdesk.service.TicketService;
@@ -13,17 +14,16 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import javax.persistence.EntityNotFoundException;
-import java.net.URI;
 
 @RestController
 @RequestMapping(value = "/", produces = MediaType.APPLICATION_JSON_VALUE)
 public class FeedbackController {
     private FeedbackService feedbackService;
     private TicketService ticketService;
-    private TicketDtoConverter converter;
+    private FeedBackDtoConverter converter;
 
     @Autowired
-    public FeedbackController(FeedbackService feedbackService, TicketService ticketService, TicketDtoConverter converter) {
+    public FeedbackController(FeedbackService feedbackService, TicketService ticketService, FeedBackDtoConverter converter) {
         this.feedbackService = feedbackService;
         this.ticketService = ticketService;
         this.converter = converter;
@@ -33,11 +33,14 @@ public class FeedbackController {
     @PutMapping("/feedback-create/{id}")
     public ResponseEntity<FeedbackDto> createTicket(@PathVariable(name = "id") Long id, @RequestBody FeedbackDto dto) throws TicketStateException {
         TicketDto ticket = ticketService.findById(id);
+        dto.setTicketId(id);
 
         if (ticket.getId() != null && ticket.getState().equals("DONE")) {
-            feedbackService.save(converter.toUpdEntity(ticket), dto);
-            String savedTicketLocation = "tickets/" + ticket.getId();
-            return ResponseEntity.created(URI.create(savedTicketLocation)).build();
+            Feedback feedback = feedbackService.save(ticket, dto);
+//            String savedTicketLocation = "tickets/" + ticket.getId();
+//            return ResponseEntity.created(URI.create(savedTicketLocation)).build();
+
+            return ResponseEntity.ok(converter.toDto(feedback));
         } else {
             throw new EntityNotFoundException("Ticket doesn't exist!");
         }

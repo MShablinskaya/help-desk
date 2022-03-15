@@ -2,6 +2,7 @@ package com.innowise.training.shablinskaya.helpdesk.converter;
 
 import com.innowise.training.shablinskaya.helpdesk.dto.FeedbackDto;
 import com.innowise.training.shablinskaya.helpdesk.entity.Feedback;
+import com.innowise.training.shablinskaya.helpdesk.entity.Ticket;
 import com.innowise.training.shablinskaya.helpdesk.service.TicketService;
 import com.innowise.training.shablinskaya.helpdesk.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,6 +15,7 @@ import java.time.Instant;
 public class FeedBackDtoConverter {
     private UserService userService;
     private TicketService ticketService;
+
     private TicketDtoConverter converter;
 
     @Autowired
@@ -28,6 +30,7 @@ public class FeedBackDtoConverter {
 
         dto.setId(feedback.getFeedbackId());
         dto.setUserId(feedback.getUserId().getId());
+        dto.setDate((Timestamp) feedback.getFeedbackDate());
         dto.setRate(feedback.getFeedbackRate());
         dto.setText(feedback.getText());
         dto.setTicketId(feedback.getFeedbackTicketId().getId());
@@ -42,7 +45,7 @@ public class FeedBackDtoConverter {
         feedback.setFeedbackRate(dto.getRate());
         feedback.setFeedbackDate(Timestamp.from(Instant.now()));
         feedback.setText(dto.getText());
-        feedback.setTicket(converter.toEntity(ticketService.findById(dto.getTicketId())));
+        feedback.setTicket(converter.toUpdEntity(ticketService.findById(dto.getTicketId())));
 
         return feedback;
     }
