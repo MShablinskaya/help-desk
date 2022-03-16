@@ -10,9 +10,7 @@ public interface AttachmentRepository {
 
     Optional<Attachment> getById(Long id);
 
-    List<Attachment> getByTicketId(Long id);
+    void remove(Attachment attachment);
 
-    Attachment update(Attachment attachment);
-
-    void save(Attachment entity);
+    Attachment save(Attachment attachment);
 }

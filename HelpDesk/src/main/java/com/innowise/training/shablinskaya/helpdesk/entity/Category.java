@@ -4,6 +4,8 @@ package com.innowise.training.shablinskaya.helpdesk.entity;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 
@@ -12,20 +14,21 @@ import java.util.Set;
 public class Category {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "ID", nullable = false)
+    @Column(name = "ID")
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private Long categoryId;
 
-    @Column(name = "NAME", nullable = false)
+    @Column(name = "NAME")
     private String categoryName;
 
-    @OneToMany(mappedBy = "category", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private Set<Ticket> ticketCategory;
+    @OneToMany(mappedBy = "category")
+    private List<Ticket> ticketCategories = new ArrayList<>();
 
     public Category() {
     }
 
-    public Category(String categoryName) {
+    public Category(Long categoryId, String categoryName) {
+        this.categoryId = categoryId;
         this.categoryName = categoryName;
     }
 
@@ -45,12 +48,12 @@ public class Category {
         this.categoryName = categoryName;
     }
 
-    public Set<Ticket> getTicketCategory() {
-        return ticketCategory;
+    public List<Ticket> getTicketCategories() {
+        return ticketCategories;
     }
 
-    public void setTicketCategory(Set<Ticket> ticketCategory) {
-        this.ticketCategory = ticketCategory;
+    public void setTicketCategories(List<Ticket> ticketCategories) {
+        this.ticketCategories = ticketCategories;
     }
 
     @Override
@@ -58,12 +61,12 @@ public class Category {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Category category = (Category) o;
-        return Objects.equals(categoryId, category.categoryId) && Objects.equals(categoryName, category.categoryName) && Objects.equals(ticketCategory, category.ticketCategory);
+        return Objects.equals(categoryId, category.categoryId) && Objects.equals(categoryName, category.categoryName);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(categoryId, categoryName, ticketCategory);
+        return Objects.hash(categoryId, categoryName);
     }
 
     @Override
@@ -71,7 +74,7 @@ public class Category {
         return "Category{" +
                 "categoryId=" + categoryId +
                 ", categoryName='" + categoryName + '\'' +
-                ", ticketCategory=" + ticketCategory +
+                ", ticketCategories=" + ticketCategories +
                 '}';
     }
 }

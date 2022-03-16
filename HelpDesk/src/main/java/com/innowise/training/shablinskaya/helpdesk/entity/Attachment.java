@@ -20,8 +20,8 @@ public class Attachment {
     @Column(name = "file")
     private byte[] attachment;
 
-    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.MERGE)
-    @JoinColumn(name = "ticket_id")
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "ticket_id", referencedColumnName = "id")
     private Ticket ticket;
 
     @Column(name = "file_name")

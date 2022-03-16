@@ -21,18 +21,20 @@ public class AttachmentRepositoryImpl implements AttachmentRepository {
     }
 
     @Override
-    public List<Attachment> getByTicketId(Long id) {
-        return null;
+    public void remove(Attachment attachment) {
+        if (attachment.getId() != null){
+            entityManager.remove(attachment);
+        }
+
     }
 
     @Override
-    public Attachment update(Attachment attachment) {
-        return entityManager.merge(attachment);
+    public Attachment save(Attachment attachment) {
+        if (attachment.getId() == null) {
+            entityManager.persist(attachment);
+        } else {
+            entityManager.merge(attachment);
+        }
+        return attachment;
     }
-
-    @Override
-    public void save(Attachment attachment) {
-        entityManager.persist(attachment);
-    }
-
 }
