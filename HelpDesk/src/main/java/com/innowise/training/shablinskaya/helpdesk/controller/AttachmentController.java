@@ -6,6 +6,7 @@ import com.innowise.training.shablinskaya.helpdesk.dto.TicketDto;
 import com.innowise.training.shablinskaya.helpdesk.entity.Attachment;
 import com.innowise.training.shablinskaya.helpdesk.exception.TicketStateException;
 import com.innowise.training.shablinskaya.helpdesk.service.AttachmentService;
+import com.innowise.training.shablinskaya.helpdesk.service.HistoryService;
 import com.innowise.training.shablinskaya.helpdesk.service.TicketService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -23,13 +24,15 @@ public class AttachmentController {
     private AttachmentService attachmentService;
     private TicketService ticketService;
     private AttachmentDtoConverter converter;
+    private HistoryService historyService;
 
 
     @Autowired
-    public AttachmentController(AttachmentService attachmentService, TicketService ticketService, AttachmentDtoConverter converter) {
+    public AttachmentController(AttachmentService attachmentService, TicketService ticketService, AttachmentDtoConverter converter, HistoryService historyService) {
         this.attachmentService = attachmentService;
         this.ticketService = ticketService;
         this.converter = converter;
+        this.historyService = historyService;
     }
 
     @PostMapping("/add-attachment/{id}")
@@ -37,6 +40,7 @@ public class AttachmentController {
         TicketDto ticketDto = ticketService.findById(id);
         if (ticketDto != null && file != null){
             Attachment attachment = attachmentService.downloadFile(ticketDto, file);
+            historyService.historyForAddAttachment(converter.toDto(attachment));
 
            return ResponseEntity.ok(converter.toDto(attachment));
         }else {
@@ -49,6 +53,7 @@ public class AttachmentController {
         AttachmentDto dto = attachmentService.findById(id);
 
         if (dto != null){
+            historyService.historyForDeletingAttachment(dto);
             attachmentService.deleteFile(dto);
 
             return new ResponseEntity(HttpStatus.OK);
