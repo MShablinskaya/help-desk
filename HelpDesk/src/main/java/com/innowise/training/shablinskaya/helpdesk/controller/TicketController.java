@@ -28,7 +28,6 @@ public class TicketController {
     private static final Logger log = org.apache.log4j.Logger.getLogger(TicketController.class);
     private final static String DRAFT = "DRAFT";
     private final static String NEW = "NEW";
-    private final static String CANCELLED = "CANCELLED";
 
 
     private final TicketService ticketService;
@@ -110,8 +109,6 @@ public class TicketController {
             historyService.createTicketHistory(ticket);
             String savedTicketLocation = "tickets/" + ticket.getId();
             return ResponseEntity.created(URI.create(savedTicketLocation)).build();
-        } else if (action.equalsIgnoreCase("cancel")) {
-            return new ResponseEntity<>(ticketDto, HttpStatus.NO_CONTENT);
         }else{
             throw new TicketStateException("Unacceptable action!");
         }
@@ -121,8 +118,6 @@ public class TicketController {
     @PutMapping("/change-status/{id}")
     public ResponseEntity<TicketDto> changeTicketState(@PathVariable(name = "id") Long id, @RequestBody State state) throws TicketStateException {
         TicketDto ticketDto = ticketService.findById(id);
-
-        //System.out.println("*************************" + ticketDto.getId());
 
         if (ticketDto.getId() != null && state != null) {
             ticketService.changeState(ticketDto, state);
