@@ -26,6 +26,9 @@ import java.util.List;
 @RequestMapping(value = "/tickets", produces = MediaType.APPLICATION_JSON_VALUE)
 public class TicketController {
     private static final Logger log = org.apache.log4j.Logger.getLogger(TicketController.class);
+    private final static String DRAFT = "DRAFT";
+    private final static String NEW = "NEW";
+    private final static String CANCELLED = "CANCELLED";
 
 
     private final TicketService ticketService;
@@ -93,18 +96,33 @@ public class TicketController {
 
 
     @PreAuthorize("@userServiceImpl.hasRole('EMPLOYEE', 'MANAGER')")
-    @PostMapping("/ticket-create")
-    public ResponseEntity<TicketDto> createTicket(@RequestBody TicketDto ticketDto) throws TicketStateException {
-        Ticket ticket = ticketService.save(ticketDto);
-        historyService.createTicketHistory(ticket);
-        String savedTicketLocation = "tickets/" + ticket.getId();
-        return ResponseEntity.created(URI.create(savedTicketLocation)).build();
+    @PostMapping("/ticket-create/{action}")
+    public ResponseEntity<TicketDto> createTicket(@PathVariable(name = "action") String action, @RequestBody TicketDto ticketDto) throws TicketStateException {
+        if (action.equalsIgnoreCase("draft")) {
+            ticketDto.setState(DRAFT);
+            Ticket ticket = ticketService.save(ticketDto);
+            historyService.createTicketHistory(ticket);
+            String savedTicketLocation = "tickets/" + ticket.getId();
+            return ResponseEntity.created(URI.create(savedTicketLocation)).build();
+        } else if (action.equalsIgnoreCase("submit")) {
+            ticketDto.setState(NEW);
+            Ticket ticket = ticketService.save(ticketDto);
+            historyService.createTicketHistory(ticket);
+            String savedTicketLocation = "tickets/" + ticket.getId();
+            return ResponseEntity.created(URI.create(savedTicketLocation)).build();
+        } else if (action.equalsIgnoreCase("cancel")) {
+            return new ResponseEntity<>(ticketDto, HttpStatus.NO_CONTENT);
+        }else{
+            throw new TicketStateException("Unacceptable action!");
+        }
     }
 
 
     @PutMapping("/change-status/{id}")
     public ResponseEntity<TicketDto> changeTicketState(@PathVariable(name = "id") Long id, @RequestBody State state) throws TicketStateException {
         TicketDto ticketDto = ticketService.findById(id);
+
+        //System.out.println("*************************" + ticketDto.getId());
 
         if (ticketDto.getId() != null && state != null) {
             ticketService.changeState(ticketDto, state);

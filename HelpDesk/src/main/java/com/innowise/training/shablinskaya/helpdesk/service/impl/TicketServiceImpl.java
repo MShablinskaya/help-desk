@@ -145,7 +145,7 @@ public class TicketServiceImpl implements TicketService {
         LocalDate resolutionDate = setTime.toLocalDateTime().toLocalDate();
         Ticket ticket = null;
         if (currentDate.compareTo(resolutionDate) <= 0) {
-            dto.setState(DRAFT);
+           // dto.setState(DRAFT);
             ticket = ticketRepository.create(ticketDtoConverter.toEntity(dto));
         }
         if (ticket == null) {
@@ -159,6 +159,7 @@ public class TicketServiceImpl implements TicketService {
     @Override
     public Ticket changeState(TicketDto dto, State state) throws TicketStateException {
         Long ticketId = dto.getId();
+        System.out.println("*************** ID::: " + ticketId);
 
         if (ticketId != null && state != null) {
             dto.setId(ticketId);
@@ -168,12 +169,15 @@ public class TicketServiceImpl implements TicketService {
                     return ticketRepository.update(ticketDtoConverter.toUpdEntity(dto));
                 case NEW:
                     changeStateFromNew(dto, state);
+                    dto.setApprove(userService.getCurrentUser().getId());
                     return ticketRepository.update(ticketDtoConverter.toUpdEntity(dto));
                 case APPROVE:
                     changeStateFromApprove(dto, state);
+                    dto.setAssignee(userService.getCurrentUser().getId());
                     return ticketRepository.update(ticketDtoConverter.toUpdEntity(dto));
                 case IN_PROGRESS:
                     changeStateFromInProgress(dto, state);
+                    dto.setAssignee(userService.getCurrentUser().getId());
                     return ticketRepository.update(ticketDtoConverter.toUpdEntity(dto));
                 case DECLINE:
                     changeStateFromeDecline(dto, state);
@@ -213,6 +217,7 @@ public class TicketServiceImpl implements TicketService {
             if (!state.name().equals(dto.getState())) {
                 if (state.name().equals(APPROVE) || state.name().equals(DECLINE) || state.name().equals(CANCEL)) {
                     dto.setState(state.name());
+                   // dto.setApprove(userService.getCurrentUser().getId());
                 } else {
                     throw new TicketStateException("You can't use it for New Ticket!");
                 }
@@ -229,6 +234,7 @@ public class TicketServiceImpl implements TicketService {
         if (!state.name().equals(dto.getState())) {
             if (state.name().equals(IN_PROGRESS) || state.name().equals(CANCEL)) {
                 dto.setState(state.name());
+               // dto.setAssignee(userService.getCurrentUser().getId());
             } else {
                 throw new TicketStateException("You can't use it for Approved Ticket!");
             }
@@ -242,6 +248,7 @@ public class TicketServiceImpl implements TicketService {
         if (!state.name().equals(dto.getState())) {
             if (state.name().equals(DONE) || state.name().equals(CANCEL)) {
                 dto.setState(state.name());
+               // dto.setAssignee(userService.getCurrentUser().getId());
             } else {
                 throw new TicketStateException("You can't use it for In Progress Ticket!");
             }
