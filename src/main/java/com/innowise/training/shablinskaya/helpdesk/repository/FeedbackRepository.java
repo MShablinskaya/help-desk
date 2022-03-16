@@ -9,7 +9,7 @@ public interface FeedbackRepository {
 
     Optional<Feedback> getById(Long id);
 
-    void save(Feedback feedback);
+    Feedback save(Feedback feedback);
 
     //getByTicketId
 }

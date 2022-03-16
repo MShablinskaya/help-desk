@@ -3,11 +3,13 @@ package com.innowise.training.shablinskaya.helpdesk.service.impl;
 import com.innowise.training.shablinskaya.helpdesk.converter.TicketDtoConverter;
 import com.innowise.training.shablinskaya.helpdesk.dto.TicketDto;
 import com.innowise.training.shablinskaya.helpdesk.entity.Ticket;
+import com.innowise.training.shablinskaya.helpdesk.entity.User;
 import com.innowise.training.shablinskaya.helpdesk.enums.State;
 import com.innowise.training.shablinskaya.helpdesk.enums.Urgency;
 import com.innowise.training.shablinskaya.helpdesk.exception.TicketStateException;
 import com.innowise.training.shablinskaya.helpdesk.repository.TicketRepository;
 import com.innowise.training.shablinskaya.helpdesk.service.TicketService;
+import com.innowise.training.shablinskaya.helpdesk.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
@@ -25,6 +27,7 @@ public class TicketServiceImpl implements TicketService {
 
     private TicketRepository ticketRepository;
     private TicketDtoConverter ticketDtoConverter;
+    private UserService userService;
     private final String DRAFT = "DRAFT";
     private final String NEW = "NEW";
     private final String APPROVE = "APPROVED";
@@ -34,9 +37,10 @@ public class TicketServiceImpl implements TicketService {
     private final String DONE = "DONE";
 
     @Autowired
-    public TicketServiceImpl(TicketRepository ticketRepository, TicketDtoConverter ticketDtoConverter) {
+    public TicketServiceImpl(TicketRepository ticketRepository, TicketDtoConverter ticketDtoConverter, UserService userService) {
         this.ticketRepository = ticketRepository;
         this.ticketDtoConverter = ticketDtoConverter;
+        this.userService = userService;
     }
 
 //    @Override
@@ -141,7 +145,7 @@ public class TicketServiceImpl implements TicketService {
         LocalDate resolutionDate = setTime.toLocalDateTime().toLocalDate();
         Ticket ticket = null;
         if (currentDate.compareTo(resolutionDate) <= 0) {
-            dto.setState(DRAFT);
+           // dto.setState(DRAFT);
             ticket = ticketRepository.create(ticketDtoConverter.toEntity(dto));
         }
         if (ticket == null) {
@@ -155,6 +159,7 @@ public class TicketServiceImpl implements TicketService {
     @Override
     public Ticket changeState(TicketDto dto, State state) throws TicketStateException {
         Long ticketId = dto.getId();
+        System.out.println("*************** ID::: " + ticketId);
 
         if (ticketId != null && state != null) {
             dto.setId(ticketId);
@@ -164,12 +169,15 @@ public class TicketServiceImpl implements TicketService {
                     return ticketRepository.update(ticketDtoConverter.toUpdEntity(dto));
                 case NEW:
                     changeStateFromNew(dto, state);
+                    dto.setApprove(userService.getCurrentUser().getId());
                     return ticketRepository.update(ticketDtoConverter.toUpdEntity(dto));
                 case APPROVE:
                     changeStateFromApprove(dto, state);
+                    dto.setAssignee(userService.getCurrentUser().getId());
                     return ticketRepository.update(ticketDtoConverter.toUpdEntity(dto));
                 case IN_PROGRESS:
                     changeStateFromInProgress(dto, state);
+                    dto.setAssignee(userService.getCurrentUser().getId());
                     return ticketRepository.update(ticketDtoConverter.toUpdEntity(dto));
                 case DECLINE:
                     changeStateFromeDecline(dto, state);
@@ -188,27 +196,36 @@ public class TicketServiceImpl implements TicketService {
 
     @PreAuthorize("@userServiceImpl.hasRole('EMPLOYEE', 'MANAGER')")
     private void changeStateFromDraft(TicketDto dto, State state) throws TicketStateException {
-        if (!state.name().equals(dto.getState())) {
-            if (state.name().equals(NEW) || state.name().equals(CANCEL)) {
-                dto.setState(state.name());
+        if (dto.getOwner().equals(userService.getCurrentUser().getId())) {
+            if (!state.name().equals(dto.getState())) {
+                if (state.name().equals(NEW) || state.name().equals(CANCEL)) {
+                    dto.setState(state.name());
+                } else {
+                    throw new TicketStateException("You can't use it for Draft Ticket!");
+                }
             } else {
-                throw new TicketStateException("You can't use it for Draft Ticket!");
+                throw new TicketStateException("It's nothing to change!");
             }
-        } else {
-            throw new TicketStateException("It's nothing to change!");
+        }else{
+            throw new TicketStateException("You don't own this ticket!");
         }
     }
 
     @PreAuthorize("@userServiceImpl.hasRole('MANAGER')")
     private void changeStateFromNew(TicketDto dto, State state) throws TicketStateException {
-        if (!state.name().equals(dto.getState())) {
-            if (state.name().equals(APPROVE) || state.name().equals(DECLINE) || state.name().equals(CANCEL)) {
-                dto.setState(state.name());
+        if (!dto.getOwner().equals(userService.getCurrentUser().getId())) {
+            if (!state.name().equals(dto.getState())) {
+                if (state.name().equals(APPROVE) || state.name().equals(DECLINE) || state.name().equals(CANCEL)) {
+                    dto.setState(state.name());
+                   // dto.setApprove(userService.getCurrentUser().getId());
+                } else {
+                    throw new TicketStateException("You can't use it for New Ticket!");
+                }
             } else {
-                throw new TicketStateException("You can't use it for New Ticket!");
+                throw new TicketStateException("It's nothing to change!");
             }
-        } else {
-            throw new TicketStateException("It's nothing to change!");
+        }else{
+            throw new TicketStateException("You can't approve your own Ticket");
         }
     }
 
@@ -217,6 +234,7 @@ public class TicketServiceImpl implements TicketService {
         if (!state.name().equals(dto.getState())) {
             if (state.name().equals(IN_PROGRESS) || state.name().equals(CANCEL)) {
                 dto.setState(state.name());
+               // dto.setAssignee(userService.getCurrentUser().getId());
             } else {
                 throw new TicketStateException("You can't use it for Approved Ticket!");
             }
@@ -230,6 +248,7 @@ public class TicketServiceImpl implements TicketService {
         if (!state.name().equals(dto.getState())) {
             if (state.name().equals(DONE) || state.name().equals(CANCEL)) {
                 dto.setState(state.name());
+               // dto.setAssignee(userService.getCurrentUser().getId());
             } else {
                 throw new TicketStateException("You can't use it for In Progress Ticket!");
             }
@@ -241,15 +260,19 @@ public class TicketServiceImpl implements TicketService {
 
     @PreAuthorize("@userServiceImpl.hasRole('EMPLOYEE', 'MANAGER')")
     private void changeStateFromeDecline(TicketDto dto, State state) throws TicketStateException {
-        if (!state.name().equals(dto.getState())) {
-            if (state.name().equals(CANCEL)) {
-                dto.setState(state.name());
-            } else {
-                throw new TicketStateException("You can't use it For Done Ticket!");
-            }
+        if (dto.getOwner().equals(userService.getCurrentUser().getId())) {
+            if (!state.name().equals(dto.getState())) {
+                if (state.name().equals(CANCEL)) {
+                    dto.setState(state.name());
+                } else {
+                    throw new TicketStateException("You can't use it For Done Ticket!");
+                }
 
-        } else {
-            throw new TicketStateException("It's nothing to change!");
+            } else {
+                throw new TicketStateException("It's nothing to change!");
+            }
+        }else{
+            throw new TicketStateException("You don't own this ticket!");
         }
     }
 }

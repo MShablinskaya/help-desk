@@ -1,6 +1,9 @@
 package com.innowise.training.shablinskaya.helpdesk.entity;
 
+import org.springframework.web.multipart.MultipartFile;
+
 import javax.persistence.*;
+import java.util.Arrays;
 import java.util.Objects;
 
 
@@ -10,17 +13,18 @@ public class Attachment {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "ID", nullable = false)
-    private Long attachmentId;
+    @Column(name = "id")
+    private Long id;
 
-    @Column(name = "BLOB")
-    private Long attachmentBlob;
+    @Lob
+    @Column(name = "file")
+    private byte[] attachment;
 
     @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.MERGE)
-    @JoinColumn(name = "TICKET_ID", nullable = false)
+    @JoinColumn(name = "ticket_id")
     private Ticket ticket;
 
-    @Column(name = "NAME", nullable = false)
+    @Column(name = "file_name")
     private String name;
 
 
@@ -28,33 +32,34 @@ public class Attachment {
 
     public Attachment(){}
 
-    public Attachment(Long attachmentBlob, Ticket ticket, String name){
-        this.attachmentBlob = attachmentBlob;
+    public Attachment(Long id, byte[] attachment, Ticket ticket, String name) {
+        this.id = id;
+        this.attachment = attachment;
         this.ticket = ticket;
         this.name = name;
     }
 
-    public Long getAttachmentId() {
-        return attachmentId;
+    public Long getId() {
+        return id;
     }
 
-    public void setAttachmentId(Long attachmentId) {
-        this.attachmentId = attachmentId;
+    public void setId(Long id) {
+        this.id = id;
     }
 
-    public Long getAttachmentBlob() {
-        return attachmentBlob;
+    public byte[] getAttachment() {
+        return attachment;
     }
 
-    public void setAttachmentBlob(Long attachmentBlob) {
-        this.attachmentBlob = attachmentBlob;
+    public void setAttachment(byte[] attachment) {
+        this.attachment = attachment;
     }
 
     public Ticket getTicket() {
         return ticket;
     }
 
-    public void setTicket(Ticket attachmentTicketId) {
+    public void setTicket(Ticket ticket) {
         this.ticket = ticket;
     }
 
@@ -62,32 +67,32 @@ public class Attachment {
         return name;
     }
 
-    public void setName(String attachmentName) {
-        this.name = attachmentName;
+    public void setName(String name) {
+        this.name = name;
     }
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof Attachment)) return false;
+        if (o == null || getClass() != o.getClass()) return false;
         Attachment that = (Attachment) o;
-        return getAttachmentBlob().equals(that.getAttachmentBlob()) &&
-                getTicket().equals(that.getTicket()) &&
-                getName().equals(that.getName());
+        return Objects.equals(id, that.id) && Arrays.equals(attachment, that.attachment) && Objects.equals(ticket, that.ticket) && Objects.equals(name, that.name);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(getAttachmentBlob(), getTicket(), getName());
+        int result = Objects.hash(id, ticket, name);
+        result = 31 * result + Arrays.hashCode(attachment);
+        return result;
     }
 
     @Override
     public String toString() {
         return "Attachment{" +
-                "attachmentId=" + attachmentId +
-                ", attachmentBlob=" + attachmentBlob +
-                ", attachmentTicketId=" + ticket +
-                ", attachmentName='" + name + '\'' +
+                "id=" + id +
+                ", attachment=" + Arrays.toString(attachment) +
+                ", ticket=" + ticket +
+                ", name='" + name + '\'' +
                 '}';
     }
 }

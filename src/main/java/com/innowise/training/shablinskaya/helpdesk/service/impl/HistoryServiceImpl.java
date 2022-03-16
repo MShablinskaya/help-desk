@@ -35,6 +35,7 @@ public class HistoryServiceImpl implements HistoryService {
     private final static String CANCEL = "CANCELLED";
     private final static String IN_PROGRESS = "IN_PROGRESS";
     private final static String DONE = "DONE";
+    private final static String EDIT = "Ticket is edited";
 
     private HistoryRepository historyRepository;
     private UserService userService;
@@ -51,7 +52,7 @@ public class HistoryServiceImpl implements HistoryService {
 
     @Override
     @Transactional
-    public History createTicket(Ticket ticket) throws TicketStateException {
+    public History createTicketHistory(Ticket ticket) throws TicketStateException {
         if (ticket != null) {
             History history = new History();
             history.setTicket(ticket);
@@ -88,6 +89,25 @@ public class HistoryServiceImpl implements HistoryService {
                     throw new TicketStateException("Incorrect transition!");
             }
         } else {
+            throw new EntityNotFoundException("Ticket not found!");
+        }
+    }
+
+    @Override
+    @Transactional
+    public History ticketHistoryForEdit(Ticket ticket) throws TicketStateException {
+        if (ticket != null) {
+            History history = new History();
+            history.setTicket(ticket);
+            history.setDate(Timestamp.from(Instant.now()));
+            history.setUserId(userService.getCurrentUser());
+            if (ticket.getState().name().equals(NEW)){
+                edit(history);
+                return historyRepository.save(history);
+            }else{
+                throw new TicketStateException("Incorrect transition!");
+            }
+        }else {
             throw new EntityNotFoundException("Ticket not found!");
         }
     }
@@ -148,6 +168,12 @@ public class HistoryServiceImpl implements HistoryService {
     private void historyForDone(History history){
         history.setAction(TICKET_CHANGED);
         history.setDescription(I_PROGRESS_TO_DONE);
+        historyRepository.save(history);
+    }
+
+    private void edit(History history){
+        history.setAction(EDIT);
+        history.setDescription(EDIT);
         historyRepository.save(history);
     }
 }

@@ -52,8 +52,14 @@ public class Ticket {
     @Enumerated(EnumType.STRING)
     private Urgency urgency;
 
-    @OneToMany(mappedBy = "ticket", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "ticket")
     private List<History> histories = new ArrayList<>();
+
+    @OneToOne(mappedBy = "ticket")
+    private Feedback feedback;
+
+    @OneToMany(mappedBy = "ticket")
+    private List<Comment> comments = new ArrayList<>();
 
     @OneToMany(mappedBy = "ticket", fetch = FetchType.LAZY)
     private Set<Attachment> attachments;
@@ -178,6 +184,22 @@ public class Ticket {
         this.attachments = attachments;
     }
 
+    public Feedback getFeedback() {
+        return feedback;
+    }
+
+    public void setFeedback(Feedback feedback) {
+        this.feedback = feedback;
+    }
+
+    public List<Comment> getComments() {
+        return comments;
+    }
+
+    public void setComments(List<Comment> comments) {
+        this.comments = comments;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -214,6 +236,7 @@ public class Ticket {
                 ", category=" + category +
                 ", urgency=" + urgency +
                 ", histories=" + histories +
+                ", feedback=" + feedback +
                 ", attachments=" + attachments +
                 '}';
     }

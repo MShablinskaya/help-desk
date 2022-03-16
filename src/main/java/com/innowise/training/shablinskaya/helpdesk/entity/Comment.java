@@ -9,28 +9,28 @@ public class Comment {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "ID", nullable = false)
+    @Column(name = "ID")
     private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.MERGE)
-    @JoinColumn(name = "USER_ID")
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "USER_ID", referencedColumnName = "id")
     private User userId;
 
-    @Column(name = "TEXT")
-    private String text;
+    @Column(name = "TEXT", length = 500)
+    private String comment;
 
-    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.MERGE)
-    @JoinColumn(name = "TICKET_ID", nullable = false)
-    private Ticket ticketId;
+    @JoinColumn(name = "ticket_id", referencedColumnName = "id")
+    @ManyToOne(fetch = FetchType.LAZY)
+    private Ticket ticket;
 
 
     public Comment() {
     }
 
-    public Comment(User userId, String text, Ticket ticketId) {
+    public Comment(User userId, String comment, Ticket ticket) {
         this.userId = userId;
-        this.text = text;
-        this.ticketId = ticketId;
+        this.comment = comment;
+        this.ticket = ticket;
     }
 
     public java.lang.Long getId() {
@@ -46,20 +46,20 @@ public class Comment {
         this.userId = userId;
     }
 
-    public String getText() {
-        return text;
+    public String getComment() {
+        return comment;
     }
 
-    public void setText(String text) {
-        this.text = text;
+    public void setComment(String text) {
+        this.comment = text;
     }
 
-    public Ticket getTicketId() {
-        return ticketId;
+    public Ticket getTicket() {
+        return ticket;
     }
 
-    public void setTicketId(Ticket ticket) {
-        this.ticketId = ticket;
+    public void setTicket(Ticket ticket) {
+        this.ticket = ticket;
     }
 
     @Override
@@ -68,13 +68,13 @@ public class Comment {
         if (!(o instanceof Comment)) return false;
         Comment comment = (Comment) o;
         return getUserId().equals(comment.getUserId()) &&
-                getText().equals(comment.getText()) &&
-                getTicketId().equals(comment.getTicketId());
+                getComment().equals(comment.getComment()) &&
+                getTicket().equals(comment.getTicket());
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(getUserId(), getText(), getTicketId());
+        return Objects.hash(getUserId(), getComment(), getTicket());
     }
 
     @Override
@@ -82,8 +82,8 @@ public class Comment {
         return "Comment{" +
                 "commentId=" + id +
                 ", commentUserId=" + userId +
-                ", commentText='" + text + '\'' +
-                ", commentTicketId=" + ticketId +
+                ", commentText='" + comment + '\'' +
+                ", commentTicketId=" + ticket +
                 '}';
     }
 }

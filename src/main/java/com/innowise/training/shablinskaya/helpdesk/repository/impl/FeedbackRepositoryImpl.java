@@ -20,8 +20,14 @@ public class FeedbackRepositoryImpl implements FeedbackRepository {
     }
 
     @Override
-    public void save(Feedback feedback) {
-        entityManager.persist(feedback);
+    public Feedback save(Feedback feedback) {
+        if (feedback.getFeedbackId() == null){
+            entityManager.persist(feedback);
+        }else{
+            entityManager.merge(feedback);
+        }
+        return feedback;
     }
+
 
 }

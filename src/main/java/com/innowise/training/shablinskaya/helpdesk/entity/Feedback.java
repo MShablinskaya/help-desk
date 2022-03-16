@@ -14,8 +14,8 @@ public class Feedback {
     @Column(name = "ID")
     private Long feedbackId;
 
-    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.MERGE)
-    @JoinColumn(name = "USER_ID")
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "USER_ID", referencedColumnName = "id")
     private User userId;
 
     @Column(name = "RATE")
@@ -27,8 +27,8 @@ public class Feedback {
     @Column(name = "TEXT")
     private String text;
 
-    @OneToOne
-    @JoinColumn(name = "TICKET_ID", unique = true)
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "TICKET_ID", referencedColumnName = "id")
     private Ticket ticket;
 
     public Feedback() {
@@ -97,18 +97,19 @@ public class Feedback {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof Feedback)) return false;
+        if (o == null || getClass() != o.getClass()) return false;
         Feedback feedback = (Feedback) o;
-        return getUserId().equals(feedback.getUserId()) &&
-                getFeedbackRate().equals(feedback.getFeedbackRate()) &&
-                getFeedbackDate().equals(feedback.getFeedbackDate()) &&
-                getText().equals(feedback.getText()) &&
-                getFeedbackTicketId().equals(feedback.getFeedbackTicketId());
+        return Objects.equals(feedbackId, feedback.feedbackId)
+                && Objects.equals(userId, feedback.userId)
+                && Objects.equals(feedbackRate, feedback.feedbackRate)
+                && Objects.equals(feedbackDate, feedback.feedbackDate)
+                && Objects.equals(text, feedback.text)
+                && Objects.equals(ticket, feedback.ticket);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(getUserId(), getFeedbackRate(), getFeedbackDate(), getText(), getFeedbackTicketId());
+        return Objects.hash(feedbackId, userId, feedbackRate, feedbackDate, text, ticket);
     }
 
     @Override

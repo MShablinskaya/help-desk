@@ -130,7 +130,17 @@ public class TicketDto {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         TicketDto ticketDto = (TicketDto) o;
-        return Objects.equals(id, ticketDto.id) && Objects.equals(name, ticketDto.name) && Objects.equals(description, ticketDto.description) && Objects.equals(creationDate, ticketDto.creationDate) && Objects.equals(resolutionDate, ticketDto.resolutionDate) && Objects.equals(owner, ticketDto.owner) && Objects.equals(assignee, ticketDto.assignee) && Objects.equals(approve, ticketDto.approve) && Objects.equals(state, ticketDto.state) && Objects.equals(category, ticketDto.category) && Objects.equals(urgency, ticketDto.urgency);
+        return Objects.equals(id, ticketDto.id)
+                && Objects.equals(name, ticketDto.name)
+                && Objects.equals(description, ticketDto.description)
+                && Objects.equals(creationDate, ticketDto.creationDate)
+                && Objects.equals(resolutionDate, ticketDto.resolutionDate)
+                && Objects.equals(owner, ticketDto.owner)
+                && Objects.equals(assignee, ticketDto.assignee)
+                && Objects.equals(approve, ticketDto.approve)
+                && Objects.equals(state, ticketDto.state)
+                && Objects.equals(category, ticketDto.category)
+                && Objects.equals(urgency, ticketDto.urgency);
     }
 
     @Override

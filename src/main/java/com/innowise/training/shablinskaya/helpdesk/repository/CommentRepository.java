@@ -8,7 +8,7 @@ import java.util.Optional;
 public interface CommentRepository {
     Optional<Comment> getById(Long id);
 
-    void saveToTable(Comment comment);
+    Comment save(Comment comment);
 
     //getByTicketId
 }

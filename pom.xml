@@ -29,6 +29,7 @@
         <javax.persistence.version>2.2</javax.persistence.version>
         <javax.servlet.version>4.0.1</javax.servlet.version>
         <javax.validation.version>2.0.1.Final</javax.validation.version>
+        <commons.fileupload.version>1.4</commons.fileupload.version>
     </properties>
 
     <dependencies>
@@ -188,6 +189,14 @@
             <artifactId>javax.persistence-api</artifactId>
             <version>${javax.persistence.version}</version>
         </dependency>
+
+        <!-- commons-fileupload -->
+        <dependency>
+            <groupId>commons-fileupload</groupId>
+            <artifactId>commons-fileupload</artifactId>
+            <version>${commons.fileupload.version}</version>
+        </dependency>
+
 
 
 

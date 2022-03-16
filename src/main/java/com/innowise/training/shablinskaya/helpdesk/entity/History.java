@@ -11,17 +11,17 @@ public class History {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
     private Long id;
-    
+
     @JoinColumn(name = "ticket_id", referencedColumnName = "id")
-    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.MERGE)
+    @ManyToOne(fetch = FetchType.LAZY)
     private Ticket ticket;
 
     @Column(name = "date")
     private Timestamp date;
-    
+
     @Column(name = "action")
     private String action;
-    
+
     @JoinColumn(name = "user_id")
     @ManyToOne
     private User userId;
@@ -90,7 +90,11 @@ public class History {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         History history = (History) o;
-        return Objects.equals(ticket, history.ticket) && Objects.equals(date, history.date) && Objects.equals(action, history.action) && Objects.equals(userId, history.userId) && Objects.equals(description, history.description);
+        return Objects.equals(ticket, history.ticket)
+                && Objects.equals(date, history.date)
+                && Objects.equals(action, history.action)
+                && Objects.equals(userId, history.userId)
+                && Objects.equals(description, history.description);
     }
 
     @Override

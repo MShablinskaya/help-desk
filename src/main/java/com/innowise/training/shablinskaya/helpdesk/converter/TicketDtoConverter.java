@@ -32,8 +32,8 @@ public class TicketDtoConverter {
         dto.setCreationDate(ticket.getCreateDate());
         dto.setResolutionDate(ticket.getResolutionDate());
         dto.setOwner(ticket.getOwner().getId());
-        dto.setAssignee(ticket.getAssignee().getId());
-        dto.setApprove(ticket.getApprove().getId());
+        dto.setAssignee(ticket.getAssignee() == null ? null : ticket.getAssignee().getId());
+        dto.setApprove(ticket.getApprove() == null ? null : ticket.getApprove().getId());
         dto.setState(ticket.getState().name());
         dto.setCategory(ticket.getCategory().getCategoryId());
         dto.setUrgency(ticket.getUrgency().name());
@@ -49,8 +49,8 @@ public class TicketDtoConverter {
         ticket.setCreateDate(Timestamp.from(Instant.now()));
         ticket.setResolutionDate(dto.getResolutionDate());
         ticket.setOwner(userService.getCurrentUser());
-        ticket.setAssignee(userService.findById(dto.getAssignee()));
-        ticket.setApprove(userService.findById(dto.getApprove()));
+        ticket.setAssignee(null);
+        ticket.setApprove(null);
         ticket.setState(State.valueOf(dto.getState()));
         ticket.setCategory(categoryService.findById(dto.getCategory()));
         ticket.setUrgency(Urgency.valueOf(dto.getUrgency().toUpperCase()));
@@ -67,9 +67,9 @@ public class TicketDtoConverter {
         ticket.setDescription(dto.getDescription());
         ticket.setCreateDate(dto.getCreationDate());
         ticket.setResolutionDate(dto.getResolutionDate());
-        ticket.setOwner(userService.getCurrentUser());
-        ticket.setAssignee(userService.findById(dto.getAssignee()));
-        ticket.setApprove(userService.findById(dto.getApprove()));
+        ticket.setOwner(userService.findById(dto.getId()));
+        ticket.setAssignee(dto.getAssignee() == null ? null : userService.findById(dto.getAssignee()));
+        ticket.setApprove(dto.getApprove() == null ? null : userService.findById(dto.getApprove()));
         ticket.setState(State.valueOf(dto.getState()));
         ticket.setCategory(categoryService.findById(dto.getCategory()));
         ticket.setUrgency(Urgency.valueOf(dto.getUrgency().toUpperCase()));

@@ -8,7 +8,9 @@ import java.util.List;
 
 public interface HistoryService {
 
-    History createTicket(Ticket ticket) throws TicketStateException;
+    History createTicketHistory(Ticket ticket) throws TicketStateException;
+
+    History ticketHistoryForEdit(Ticket ticket) throws TicketStateException;
 
     History getById(Long id);
 
