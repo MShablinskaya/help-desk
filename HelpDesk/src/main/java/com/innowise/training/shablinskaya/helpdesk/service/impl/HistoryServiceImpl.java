@@ -7,6 +7,7 @@ import com.innowise.training.shablinskaya.helpdesk.entity.History;
 import com.innowise.training.shablinskaya.helpdesk.entity.Ticket;
 import com.innowise.training.shablinskaya.helpdesk.exception.TicketStateException;
 import com.innowise.training.shablinskaya.helpdesk.repository.HistoryRepository;
+import com.innowise.training.shablinskaya.helpdesk.service.EmailService;
 import com.innowise.training.shablinskaya.helpdesk.service.HistoryService;
 import com.innowise.training.shablinskaya.helpdesk.service.TicketService;
 import com.innowise.training.shablinskaya.helpdesk.service.UserService;
@@ -21,37 +22,39 @@ import java.util.List;
 
 @Service
 public class HistoryServiceImpl implements HistoryService {
-    private final static String TICKET_CREATED = "Ticket is created";
-    private final static String TICKET_CHANGED = "Ticket Status is changed";
-    private final static String DRAFT_TO_NEW = "Ticket Status is changed from Draft to New";
-    private final static String DRAFT_TO_CANCELLED = "Ticket was Cancelled";
-    private final static String NEW_TO_APPROVE = "Ticket Status is changed from New to Approve";
-    private final static String NEW_TO_DECLINED = "Ticket Status is changed from New to Declined";
-    private final static String APPROVE_TO_IN_PROGRESS = "Ticket Status is changed Assignee to In Progress";
-    private final static String I_PROGRESS_TO_DONE = "Ticket Status is changed In Progress to Done";
-    private final static String NEW = "NEW";
-    private final static String DRAFT = "DRAFT";
-    private final static String APPROVE = "APPROVED";
-    private final static String DECLINE = "DECLINED";
-    private final static String CANCEL = "CANCELLED";
-    private final static String IN_PROGRESS = "IN_PROGRESS";
-    private final static String DONE = "DONE";
-    private final static String EDIT = "Ticket is edited";
-    private final static String ADD = "File is attached ";
-    private final static String DELETE = "File is removed ";
+    private static final  String TICKET_CREATED = "Ticket is created";
+    private static final String TICKET_CHANGED = "Ticket Status is changed";
+    private static final String DRAFT_TO_NEW = "Ticket Status is changed from Draft to New";
+    private static final String DRAFT_TO_CANCELLED = "Ticket was Cancelled";
+    private static final String NEW_TO_APPROVE = "Ticket Status is changed from New to Approve";
+    private static final String NEW_TO_DECLINED = "Ticket Status is changed from New to Declined";
+    private static final String APPROVE_TO_IN_PROGRESS = "Ticket Status is changed Assignee to In Progress";
+    private static final String I_PROGRESS_TO_DONE = "Ticket Status is changed In Progress to Done";
+    private static final String NEW = "NEW";
+    private static final String DRAFT = "DRAFT";
+    private static final String APPROVE = "APPROVED";
+    private static final String DECLINE = "DECLINED";
+    private static final String CANCEL = "CANCELLED";
+    private static final String IN_PROGRESS = "IN_PROGRESS";
+    private static final String DONE = "DONE";
+    private static final String EDIT = "Ticket is edited";
+    private static final String ADD = "File is attached ";
+    private static final String DELETE = "File is removed ";
 
     private HistoryRepository historyRepository;
     private UserService userService;
     private TicketService ticketService;
     private TicketDtoConverter converter;
+    private EmailService emailService;
 
 
     @Autowired
-    public HistoryServiceImpl(HistoryRepository historyRepository, UserService userService, TicketService ticketService, TicketDtoConverter converter) {
+    public HistoryServiceImpl(HistoryRepository historyRepository, UserService userService, TicketService ticketService, TicketDtoConverter converter, EmailService emailService) {
         this.historyRepository = historyRepository;
         this.userService = userService;
         this.ticketService = ticketService;
         this.converter = converter;
+        this.emailService = emailService;
     }
 
 
@@ -181,6 +184,7 @@ public class HistoryServiceImpl implements HistoryService {
     private void historyForApprove(History history) {
         history.setAction(TICKET_CHANGED);
         history.setDescription(NEW_TO_APPROVE);
+        emailService.sendSimpleMailMessage(NEW);
         historyRepository.save(history);
     }
 

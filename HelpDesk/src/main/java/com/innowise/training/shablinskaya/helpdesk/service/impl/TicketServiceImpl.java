@@ -24,16 +24,16 @@ import java.util.List;
 @Service
 public class TicketServiceImpl implements TicketService {
 
-    private TicketRepository ticketRepository;
-    private TicketDtoConverter ticketDtoConverter;
-    private UserService userService;
-    private final String DRAFT = "DRAFT";
-    private final String NEW = "NEW";
-    private final String APPROVE = "APPROVED";
-    private final String DECLINE = "DECLINED";
-    private final String CANCEL = "CANCELLED";
-    private final String IN_PROGRESS = "IN_PROGRESS";
-    private final String DONE = "DONE";
+    private final TicketRepository ticketRepository;
+    private final TicketDtoConverter ticketDtoConverter;
+    private final UserService userService;
+    private static final String DRAFT = "DRAFT";
+    private static final String NEW = "NEW";
+    private static final String APPROVE = "APPROVED";
+    private static final String DECLINE = "DECLINED";
+    private static final String CANCEL = "CANCELLED";
+    private static final String IN_PROGRESS = "IN_PROGRESS";
+    private static final String DONE = "DONE";
 
     @Autowired
     public TicketServiceImpl(TicketRepository ticketRepository, TicketDtoConverter ticketDtoConverter, UserService userService) {
@@ -256,7 +256,7 @@ public class TicketServiceImpl implements TicketService {
     private void changeStateFromeDecline(TicketDto dto, State state) throws TicketStateException {
         if (dto.getOwner().equals(userService.getCurrentUser().getId())) {
             if (!state.name().equals(dto.getState())) {
-                if (state.name().equals(CANCEL)) {
+                if (state.name().equals(CANCEL) || state.name().equals(NEW)) {
                     dto.setState(state.name());
                 } else {
                     throw new TicketStateException("You can't use it For Done Ticket!");
