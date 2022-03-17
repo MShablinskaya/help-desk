@@ -38,26 +38,28 @@ public class AttachmentController {
     @PostMapping("/add-attachment/{id}")
     public ResponseEntity<AttachmentDto> uploadFile(@PathVariable(name = "id") Long id, @RequestParam("file") MultipartFile file) throws TicketStateException, IOException {
         TicketDto ticketDto = ticketService.findById(id);
-        if (ticketDto != null && file != null){
+
+        if (ticketDto != null && file != null) {
+
             Attachment attachment = attachmentService.downloadFile(ticketDto, file);
             historyService.historyForAddAttachment(converter.toDto(attachment));
 
-           return ResponseEntity.ok(converter.toDto(attachment));
-        }else {
+            return ResponseEntity.ok(converter.toDto(attachment));
+        } else {
             throw new TicketStateException("Ticket or file not found!");
         }
     }
 
     @DeleteMapping("/delete_attachment/{id}")
-    public ResponseEntity deleteFile(@PathVariable(name = "id")Long id) throws TicketStateException {
+    public ResponseEntity deleteFile(@PathVariable(name = "id") Long id) throws TicketStateException {
         AttachmentDto dto = attachmentService.findById(id);
 
-        if (dto != null){
+        if (dto != null) {
             historyService.historyForDeletingAttachment(dto);
             attachmentService.deleteFile(dto);
 
             return new ResponseEntity(HttpStatus.OK);
-        }else{
+        } else {
             throw new TicketStateException("Wrong ID");
         }
     }

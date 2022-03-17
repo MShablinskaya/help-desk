@@ -8,6 +8,7 @@ import com.innowise.training.shablinskaya.helpdesk.entity.Attachment;
 import com.innowise.training.shablinskaya.helpdesk.exception.TicketStateException;
 import com.innowise.training.shablinskaya.helpdesk.repository.AttachmentRepository;
 import com.innowise.training.shablinskaya.helpdesk.service.AttachmentService;
+import org.apache.commons.io.FilenameUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -15,9 +16,13 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.persistence.EntityNotFoundException;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 @Service
 public class AttachmentServiceImpl implements AttachmentService {
+    private final static int MAX_FILE_SIZE = 5000000;
+
     private AttachmentRepository attachmentRepository;
     private TicketDtoConverter converter;
     private AttachmentDtoConverter attachmentDtoConverter;
@@ -32,16 +37,26 @@ public class AttachmentServiceImpl implements AttachmentService {
     @Override
     @Transactional
     public Attachment downloadFile(TicketDto ticket, MultipartFile file) throws IOException, TicketStateException {
-        if (ticket.getId() != null){
-        Attachment attachment = new Attachment();
-        attachment.setName(file.getOriginalFilename());
-        attachment.setTicket(converter.toUpdEntity(ticket));
-        attachment.setAttachment(file.getBytes());
+        if (ticket.getId() != null) {
+            if (file.getSize() <= MAX_FILE_SIZE) {
+                String type = FilenameUtils.getExtension(file.getOriginalFilename());
+                if (!allowedFileTypes(type)) {
+                    Attachment attachment = new Attachment();
+                    attachment.setName(file.getOriginalFilename());
+                    attachment.setTicket(converter.toUpdEntity(ticket));
+                    attachment.setAttachment(file.getBytes());
 
-        return attachmentRepository.save(attachment);}
-        else {
-            throw new TicketStateException("Ticket not found!");
+                    return attachmentRepository.save(attachment);
+                } else {
+                    throw new TicketStateException("The selected file type is not allowed. Please select a file of one of the following types: pdf, png, doc, docx, jpg, jpeg.");
+                }
+            } else {
+                throw new TicketStateException("The size of attached file should not be greater than 5 Mb. Please select another file.");
+            }
+        } else {
+            throw new TicketStateException("Ticket not fount!");
         }
+
     }
 
 
@@ -50,9 +65,9 @@ public class AttachmentServiceImpl implements AttachmentService {
     public void deleteFile(AttachmentDto dto) throws TicketStateException {
         Long id = dto.getId();
 
-        if (id != null){
+        if (id != null) {
             attachmentRepository.remove(attachmentRepository.getById(id).orElseThrow(EntityNotFoundException::new));
-        }else {
+        } else {
             throw new TicketStateException("File doesn't exist!");
         }
 
@@ -63,5 +78,19 @@ public class AttachmentServiceImpl implements AttachmentService {
         return attachmentDtoConverter.toDto(attachmentRepository.getById(id).orElseThrow(EntityNotFoundException::new));
     }
 
+    private boolean allowedFileTypes(String type) {
+        List<String> allowed = new ArrayList<>();
 
+        allowed.add("pdf");
+        allowed.add("doc");
+        allowed.add("docx");
+        allowed.add("png");
+        allowed.add("jpeg");
+        allowed.add("jpg");
+
+        for (String s : allowed) {
+            return type.equals(s);
+        }
+        return false;
+    }
 }
