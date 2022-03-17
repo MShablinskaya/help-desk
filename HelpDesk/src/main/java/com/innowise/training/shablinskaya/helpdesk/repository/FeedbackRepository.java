@@ -11,5 +11,4 @@ public interface FeedbackRepository {
 
     Feedback save(Feedback feedback);
 
-    //getByTicketId
 }

@@ -3,7 +3,6 @@ package com.innowise.training.shablinskaya.helpdesk.service.impl;
 import com.innowise.training.shablinskaya.helpdesk.converter.TicketDtoConverter;
 import com.innowise.training.shablinskaya.helpdesk.dto.AttachmentDto;
 import com.innowise.training.shablinskaya.helpdesk.dto.TicketDto;
-import com.innowise.training.shablinskaya.helpdesk.entity.Attachment;
 import com.innowise.training.shablinskaya.helpdesk.entity.History;
 import com.innowise.training.shablinskaya.helpdesk.entity.Ticket;
 import com.innowise.training.shablinskaya.helpdesk.exception.TicketStateException;

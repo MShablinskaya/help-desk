@@ -1,20 +1,15 @@
 package com.innowise.training.shablinskaya.helpdesk.controller;
 
 import com.innowise.training.shablinskaya.helpdesk.converter.CommentDtoConverter;
-import com.innowise.training.shablinskaya.helpdesk.converter.FeedBackDtoConverter;
 import com.innowise.training.shablinskaya.helpdesk.dto.CommentDto;
-import com.innowise.training.shablinskaya.helpdesk.dto.FeedbackDto;
 import com.innowise.training.shablinskaya.helpdesk.dto.TicketDto;
 import com.innowise.training.shablinskaya.helpdesk.entity.Comment;
-import com.innowise.training.shablinskaya.helpdesk.entity.Feedback;
 import com.innowise.training.shablinskaya.helpdesk.exception.TicketStateException;
 import com.innowise.training.shablinskaya.helpdesk.service.CommentService;
-import com.innowise.training.shablinskaya.helpdesk.service.FeedbackService;
 import com.innowise.training.shablinskaya.helpdesk.service.TicketService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import javax.persistence.EntityNotFoundException;

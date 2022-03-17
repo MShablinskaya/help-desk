@@ -7,6 +7,7 @@ import com.innowise.training.shablinskaya.helpdesk.entity.Feedback;
 import com.innowise.training.shablinskaya.helpdesk.exception.TicketStateException;
 import com.innowise.training.shablinskaya.helpdesk.service.FeedbackService;
 import com.innowise.training.shablinskaya.helpdesk.service.TicketService;
+import com.innowise.training.shablinskaya.helpdesk.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -21,12 +22,14 @@ public class FeedbackController {
     private FeedbackService feedbackService;
     private TicketService ticketService;
     private FeedBackDtoConverter converter;
+    private UserService userService;
 
     @Autowired
-    public FeedbackController(FeedbackService feedbackService, TicketService ticketService, FeedBackDtoConverter converter) {
+    public FeedbackController(FeedbackService feedbackService, TicketService ticketService, FeedBackDtoConverter converter, UserService userService) {
         this.feedbackService = feedbackService;
         this.ticketService = ticketService;
         this.converter = converter;
+        this.userService = userService;
     }
 
     @PreAuthorize("@userServiceImpl.hasRole('EMPLOYEE', 'MANAGER')")
@@ -35,7 +38,7 @@ public class FeedbackController {
         TicketDto ticket = ticketService.findById(id);
         dto.setTicketId(id);
 
-        if (ticket.getId() != null && ticket.getState().equals("DONE")) {
+        if (ticket.getId() != null && ticket.getState().equals("DONE") && ticket.getOwner().equals(userService.getCurrentUser().getId())) {
             Feedback feedback = feedbackService.save(dto);
 //            String savedTicketLocation = "tickets/" + ticket.getId();
 //            return ResponseEntity.created(URI.create(savedTicketLocation)).build();

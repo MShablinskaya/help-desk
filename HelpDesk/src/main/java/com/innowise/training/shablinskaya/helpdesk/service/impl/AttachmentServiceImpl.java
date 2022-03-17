@@ -40,7 +40,7 @@ public class AttachmentServiceImpl implements AttachmentService {
         if (ticket.getId() != null) {
             if (file.getSize() <= MAX_FILE_SIZE) {
                 String type = FilenameUtils.getExtension(file.getOriginalFilename());
-                if (!allowedFileTypes(type)) {
+                if (allowedFileTypes(type)) {
                     Attachment attachment = new Attachment();
                     attachment.setName(file.getOriginalFilename());
                     attachment.setTicket(converter.toUpdEntity(ticket));
@@ -88,9 +88,6 @@ public class AttachmentServiceImpl implements AttachmentService {
         allowed.add("jpeg");
         allowed.add("jpg");
 
-        for (String s : allowed) {
-            return type.equals(s);
-        }
-        return false;
+        return allowed.contains(type);
     }
 }
