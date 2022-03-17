@@ -1,6 +1,7 @@
 package com.innowise.training.shablinskaya.helpdesk.service.impl;
 
 import com.innowise.training.shablinskaya.helpdesk.converter.TicketDtoConverter;
+import com.innowise.training.shablinskaya.helpdesk.dto.AttachmentDto;
 import com.innowise.training.shablinskaya.helpdesk.dto.TicketDto;
 import com.innowise.training.shablinskaya.helpdesk.entity.History;
 import com.innowise.training.shablinskaya.helpdesk.entity.Ticket;
@@ -36,17 +37,21 @@ public class HistoryServiceImpl implements HistoryService {
     private final static String IN_PROGRESS = "IN_PROGRESS";
     private final static String DONE = "DONE";
     private final static String EDIT = "Ticket is edited";
+    private final static String ADD = "File is attached ";
+    private final static String DELETE = "File is removed ";
 
     private HistoryRepository historyRepository;
     private UserService userService;
     private TicketService ticketService;
+    private TicketDtoConverter converter;
 
 
     @Autowired
-    public HistoryServiceImpl(HistoryRepository historyRepository, UserService userService, TicketService ticketService) {
+    public HistoryServiceImpl(HistoryRepository historyRepository, UserService userService, TicketService ticketService, TicketDtoConverter converter) {
         this.historyRepository = historyRepository;
         this.userService = userService;
         this.ticketService = ticketService;
+        this.converter = converter;
     }
 
 
@@ -127,6 +132,38 @@ public class HistoryServiceImpl implements HistoryService {
         }
 
         return null;
+    }
+
+    @Override
+    @Transactional
+    public History historyForAddAttachment(AttachmentDto dto) throws TicketStateException {
+        if (dto != null){
+            History history = new History();
+            history.setTicket(converter.toUpdEntity(ticketService.findById(dto.getTicketId())));
+            history.setDate(Timestamp.from(Instant.now()));
+            history.setUserId(userService.getCurrentUser());
+            history.setAction(ADD);
+            history.setDescription(ADD + dto.getName());
+            return historyRepository.save(history);
+        }else {
+            throw new TicketStateException("File doesn't exist!");
+        }
+    }
+
+    @Override
+    @Transactional
+    public History historyForDeletingAttachment(AttachmentDto dto) throws TicketStateException {
+        if (dto != null){
+            History history = new History();
+            history.setTicket(converter.toUpdEntity(ticketService.findById(dto.getTicketId())));
+            history.setDate(Timestamp.from(Instant.now()));
+            history.setUserId(userService.getCurrentUser());
+            history.setAction(DELETE);
+            history.setDescription(DELETE + dto.getName());
+            return historyRepository.save(history);
+        }else {
+            throw new TicketStateException("File doesn't exist!");
+        }
     }
 
     private void creation(History history) {

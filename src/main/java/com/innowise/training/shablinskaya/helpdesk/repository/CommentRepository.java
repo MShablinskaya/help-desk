@@ -10,5 +10,4 @@ public interface CommentRepository {
 
     Comment save(Comment comment);
 
-    //getByTicketId
 }

@@ -2,24 +2,25 @@ package com.innowise.training.shablinskaya.helpdesk.dto;
 
 
 import com.innowise.training.shablinskaya.helpdesk.entity.Ticket;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.Objects;
 
 public class AttachmentDto {
 
     private Long id;
-    private Long blob;
-    private Ticket ticketId;
-    private String name;
+    private String Name;
+    private Long ticketId;
+    private Long userId;
 
     public AttachmentDto() {
     }
 
-    public AttachmentDto(Long id, Long blob, Ticket ticketId, String name) {
+    public AttachmentDto(Long id, String name, Long ticketId, Long userId) {
         this.id = id;
-        this.blob = blob;
+        Name = name;
         this.ticketId = ticketId;
-        this.name = name;
+        this.userId = userId;
     }
 
     public Long getId() {
@@ -30,53 +31,50 @@ public class AttachmentDto {
         this.id = id;
     }
 
-    public Long getBlob() {
-        return blob;
-    }
-
-    public void setBlob(Long blob) {
-        this.blob = blob;
-    }
-
-    public Ticket getTicketId() {
-        return ticketId;
-    }
-
-    public void setTicketId(Ticket ticketId) {
-        this.ticketId = ticketId;
-    }
-
     public String getName() {
-        return name;
+        return Name;
     }
 
     public void setName(String name) {
-        this.name = name;
+        Name = name;
+    }
+
+    public Long getTicketId() {
+        return ticketId;
+    }
+
+    public void setTicketId(Long ticketId) {
+        this.ticketId = ticketId;
+    }
+
+    public Long getUserId() {
+        return userId;
+    }
+
+    public void setUserId(Long userId) {
+        this.userId = userId;
     }
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        AttachmentDto that = (AttachmentDto) o;
-        return id.equals(that.id) &&
-                Objects.equals(blob, that.blob) &&
-                Objects.equals(ticketId, that.ticketId) &&
-                Objects.equals(name, that.name);
+        AttachmentDto dto = (AttachmentDto) o;
+        return Objects.equals(id, dto.id) && Objects.equals(Name, dto.Name) && Objects.equals(ticketId, dto.ticketId) && Objects.equals(userId, dto.userId);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, blob, ticketId, name);
+        return Objects.hash(id, Name, ticketId, userId);
     }
 
     @Override
     public String toString() {
         return "AttachmentDto{" +
                 "id=" + id +
-                ", blob=" + blob +
+                ", Name='" + Name + '\'' +
                 ", ticketId=" + ticketId +
-                ", name='" + name + '\'' +
+                ", userId=" + userId +
                 '}';
     }
 }

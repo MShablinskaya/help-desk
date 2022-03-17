@@ -26,7 +26,5 @@ public interface TicketService {
 
     Ticket save(TicketDto dto);
 
-//    void save(TicketDto dto);
-
     Ticket changeState(TicketDto ticketDto, State state) throws TicketStateException;
 }

@@ -44,8 +44,8 @@ public class Ticket {
     @Enumerated(EnumType.STRING)
     private State state;
 
-    @JoinColumn(name = "category_id")
-    @ManyToOne
+    @JoinColumn(name = "category_id", referencedColumnName = "id")
+    @ManyToOne(fetch = FetchType.LAZY)
     private Category category;
 
     @Column(name = "urgency_id")
@@ -61,8 +61,8 @@ public class Ticket {
     @OneToMany(mappedBy = "ticket")
     private List<Comment> comments = new ArrayList<>();
 
-    @OneToMany(mappedBy = "ticket", fetch = FetchType.LAZY)
-    private Set<Attachment> attachments;
+    @OneToMany(mappedBy = "ticket")
+    private List<Attachment> attachments = new ArrayList<>();
 
     public Ticket() {
     }
@@ -176,11 +176,11 @@ public class Ticket {
         this.histories = histories;
     }
 
-    public Set<Attachment> getAttachments() {
+    public List<Attachment> getAttachments() {
         return attachments;
     }
 
-    public void setAttachments(Set<Attachment> attachments) {
+    public void setAttachments(List<Attachment> attachments) {
         this.attachments = attachments;
     }
 
