@@ -42,7 +42,6 @@ public class UserRepositoryImpl implements UserRepository {
 
     @Override
     public List<User> findByRole(Role role) {
-        //String roleId = role.name();
         return entityManager.createQuery(
                 "SELECT u FROM User u WHERE u.roleId = : role", User.class)
                 .setParameter("role", role).getResultList();

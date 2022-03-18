@@ -72,6 +72,7 @@ public class HistoryServiceImpl implements HistoryService {
                     return historyRepository.save(history);
                 case NEW:
                     historyForNew(history);
+                    emailService.sendAllManagerMessage(converter.toDto(ticket));
                     return historyRepository.save(history);
                 case CANCEL:
                     historyForCancelled(history);
@@ -184,7 +185,6 @@ public class HistoryServiceImpl implements HistoryService {
     private void historyForApprove(History history) {
         history.setAction(TICKET_CHANGED);
         history.setDescription(NEW_TO_APPROVE);
-        emailService.sendSimpleMailMessage(NEW);
         historyRepository.save(history);
     }
 

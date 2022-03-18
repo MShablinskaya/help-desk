@@ -19,7 +19,6 @@ public class EmailConfig {
 
         javaMailSender.setHost("smtp.gmail.com");
         javaMailSender.setPort(587);
-
         javaMailSender.setUsername(NOREPLY_ADRESS);
         javaMailSender.setPassword("MarieMacheri&22&04&1992");
 
