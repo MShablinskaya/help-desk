@@ -10,4 +10,8 @@ public interface EmailService {
 
     void sendCreatorMessage(TicketDto dto);
 
+    void sendApproverMessage(TicketDto dto);
+
+    void sendAssigneMessage(TicketDto dto);
+
 }

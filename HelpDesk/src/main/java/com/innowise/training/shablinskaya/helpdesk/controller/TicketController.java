@@ -6,6 +6,7 @@ import com.innowise.training.shablinskaya.helpdesk.entity.Ticket;
 import com.innowise.training.shablinskaya.helpdesk.enums.State;
 import com.innowise.training.shablinskaya.helpdesk.enums.Urgency;
 import com.innowise.training.shablinskaya.helpdesk.exception.TicketStateException;
+import com.innowise.training.shablinskaya.helpdesk.service.EmailService;
 import com.innowise.training.shablinskaya.helpdesk.service.HistoryService;
 import com.innowise.training.shablinskaya.helpdesk.service.TicketService;
 import com.innowise.training.shablinskaya.helpdesk.service.UserService;
@@ -33,14 +34,16 @@ public class TicketController {
     private final TicketService ticketService;
     private final UserService userService;
     private final TicketDtoConverter converter;
-    private HistoryService historyService;
+    private final HistoryService historyService;
+    private final EmailService emailService;
 
     @Autowired
-    public TicketController(TicketService ticketService, UserService userService, TicketDtoConverter converter, HistoryService historyService) {
+    public TicketController(TicketService ticketService, UserService userService, TicketDtoConverter converter, HistoryService historyService, EmailService emailService) {
         this.ticketService = ticketService;
         this.userService = userService;
         this.converter = converter;
         this.historyService = historyService;
+        this.emailService = emailService;
     }
 
     @GetMapping("/{id}")
@@ -106,6 +109,7 @@ public class TicketController {
         } else if (action.equalsIgnoreCase("submit")) {
             ticketDto.setState(NEW);
             Ticket ticket = ticketService.save(ticketDto);
+            emailService.sendAllManagerMessage(converter.toDto(ticket));
             historyService.createTicketHistory(ticket);
             String savedTicketLocation = "tickets/" + ticket.getId();
             return ResponseEntity.created(URI.create(savedTicketLocation)).build();
@@ -122,6 +126,7 @@ public class TicketController {
         if (ticketDto.getId() != null && state != null) {
             ticketService.changeState(ticketDto, state);
             historyService.createTicketHistory(converter.toUpdEntity(ticketDto));
+            emailService.sendCreatorMessage(ticketDto);
 
             return new ResponseEntity<>(ticketDto, HttpStatus.OK);
         } else {

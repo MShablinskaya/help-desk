@@ -72,14 +72,16 @@ public class HistoryServiceImpl implements HistoryService {
                     return historyRepository.save(history);
                 case NEW:
                     historyForNew(history);
-                    emailService.sendAllManagerMessage(converter.toDto(ticket));
                     return historyRepository.save(history);
                 case CANCEL:
                     historyForCancelled(history);
+                    emailService.sendCreatorMessage(converter.toDto(ticket));
                     return historyRepository.save(history);
 
                 case APPROVE:
                     historyForApprove(history);
+                    emailService.sendCreatorMessage(converter.toDto(ticket));
+                    emailService.sendAllEngineerMessage(converter.toDto(ticket));
                     return historyRepository.save(history);
 
                 case DECLINE:

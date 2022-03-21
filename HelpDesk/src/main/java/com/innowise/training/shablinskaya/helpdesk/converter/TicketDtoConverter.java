@@ -67,7 +67,7 @@ public class TicketDtoConverter {
         ticket.setDescription(dto.getDescription());
         ticket.setCreateDate(dto.getCreationDate());
         ticket.setResolutionDate(dto.getResolutionDate());
-        ticket.setOwner(userService.findById(dto.getId()));
+        ticket.setOwner(userService.findById(dto.getOwner()));
         ticket.setAssignee(dto.getAssignee() == null ? null : userService.findById(dto.getAssignee()));
         ticket.setApprove(dto.getApprove() == null ? null : userService.findById(dto.getApprove()));
         ticket.setState(State.valueOf(dto.getState()));
