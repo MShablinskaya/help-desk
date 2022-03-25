@@ -10,7 +10,7 @@ import org.springframework.web.multipart.commons.CommonsMultipartResolver;
 
 @Component
 public class AttachmentDtoConverter {
-    private UserService userService;
+    private final UserService userService;
 
     @Autowired
     public AttachmentDtoConverter(UserService userService) {

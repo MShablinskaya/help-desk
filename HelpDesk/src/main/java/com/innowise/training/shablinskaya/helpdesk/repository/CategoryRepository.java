@@ -9,5 +9,7 @@ public interface CategoryRepository {
 
     Optional<Category> getById(Long id);
 
+    Category getByName(String name);
+
     List<Category> getAllFromTable();
 }

@@ -29,21 +29,20 @@ public class TicketController {
     private static final Logger log = org.apache.log4j.Logger.getLogger(TicketController.class);
     private final static String DRAFT = "DRAFT";
     private final static String NEW = "NEW";
+    private final static String SUBMIT = "SUBMIT";
 
 
     private final TicketService ticketService;
     private final UserService userService;
     private final TicketDtoConverter converter;
     private final HistoryService historyService;
-    private final EmailService emailService;
 
     @Autowired
-    public TicketController(TicketService ticketService, UserService userService, TicketDtoConverter converter, HistoryService historyService, EmailService emailService) {
+    public TicketController(TicketService ticketService, UserService userService, TicketDtoConverter converter, HistoryService historyService) {
         this.ticketService = ticketService;
         this.userService = userService;
         this.converter = converter;
         this.historyService = historyService;
-        this.emailService = emailService;
     }
 
     @GetMapping("/{id}")
@@ -100,20 +99,23 @@ public class TicketController {
     @PreAuthorize("@userServiceImpl.hasRole('EMPLOYEE', 'MANAGER')")
     @PostMapping("/ticket-create/{action}")
     public ResponseEntity<TicketDto> createTicket(@PathVariable(name = "action") String action, @RequestBody TicketDto ticketDto) throws TicketStateException {
-        if (action.equalsIgnoreCase("draft")) {
+        if (action.equalsIgnoreCase(DRAFT)) {
             ticketDto.setState(DRAFT);
             Ticket ticket = ticketService.save(ticketDto);
+
             historyService.createTicketHistory(ticket);
             String savedTicketLocation = "tickets/" + ticket.getId();
+
             return ResponseEntity.created(URI.create(savedTicketLocation)).build();
-        } else if (action.equalsIgnoreCase("submit")) {
+        } else if (action.equalsIgnoreCase(SUBMIT)) {
             ticketDto.setState(NEW);
             Ticket ticket = ticketService.save(ticketDto);
-            emailService.sendAllManagerMessage(converter.toDto(ticket));
+
             historyService.createTicketHistory(ticket);
             String savedTicketLocation = "tickets/" + ticket.getId();
+
             return ResponseEntity.created(URI.create(savedTicketLocation)).build();
-        }else{
+        } else {
             throw new TicketStateException("Unacceptable action!");
         }
     }
@@ -127,7 +129,6 @@ public class TicketController {
             ticketService.changeState(ticketDto, state);
             historyService.createTicketHistory(converter.toUpdEntity(ticketDto));
 
-
             return new ResponseEntity<>(ticketDto, HttpStatus.OK);
         } else {
             throw new EntityNotFoundException("Ticket is not exist");
@@ -139,15 +140,10 @@ public class TicketController {
     @PutMapping("/edit-ticket/{action}")
     public ResponseEntity<TicketDto> editTicket(@PathVariable(name = "action") String action, @RequestBody TicketDto ticketDto)
             throws TicketStateException {
-        if (ticketDto.getId() != null && ticketDto.getState().equals("DRAFT")) {
-            if (action.equalsIgnoreCase("submit")) {
-                ticketService.changeState(ticketDto, State.valueOf("NEW"));
+        if (ticketDto.getId() != null && ticketDto.getState().equals(DRAFT)) {
+            if (action.equalsIgnoreCase(SUBMIT)) {
+                ticketService.changeState(ticketDto, State.valueOf(NEW));
                 historyService.ticketHistoryForEdit(converter.toUpdEntity(ticketDto));
-
-                return new ResponseEntity<>(ticketDto, HttpStatus.OK);
-            } else if (action.equalsIgnoreCase("cancel")) {
-                ticketService.changeState(ticketDto, State.valueOf("CANCELLED"));
-                historyService.createTicketHistory(converter.toUpdEntity(ticketDto));
 
                 return new ResponseEntity<>(ticketDto, HttpStatus.OK);
             } else {

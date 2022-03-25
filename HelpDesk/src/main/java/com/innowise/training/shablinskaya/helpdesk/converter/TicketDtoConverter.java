@@ -31,11 +31,11 @@ public class TicketDtoConverter {
         dto.setDescription(ticket.getDescription());
         dto.setCreationDate(ticket.getCreateDate());
         dto.setResolutionDate(ticket.getResolutionDate());
-        dto.setOwner(ticket.getOwner().getId());
-        dto.setAssignee(ticket.getAssignee() == null ? null : ticket.getAssignee().getId());
-        dto.setApprove(ticket.getApprove() == null ? null : ticket.getApprove().getId());
+        dto.setOwner(ticket.getOwner().getEmail());
+        dto.setAssignee(ticket.getAssignee() == null ? null : ticket.getAssignee().getEmail());
+        dto.setApprove(ticket.getApprove() == null ? null : ticket.getApprove().getEmail());
         dto.setState(ticket.getState().name());
-        dto.setCategory(ticket.getCategory().getCategoryId());
+        dto.setCategory(ticket.getCategory().getCategoryName());
         dto.setUrgency(ticket.getUrgency().name());
 
         return dto;
@@ -52,7 +52,7 @@ public class TicketDtoConverter {
         ticket.setAssignee(null);
         ticket.setApprove(null);
         ticket.setState(State.valueOf(dto.getState()));
-        ticket.setCategory(categoryService.findById(dto.getCategory()));
+        ticket.setCategory(categoryService.findByName(dto.getCategory()));
         ticket.setUrgency(Urgency.valueOf(dto.getUrgency().toUpperCase()));
 
         return ticket;
@@ -67,11 +67,11 @@ public class TicketDtoConverter {
         ticket.setDescription(dto.getDescription());
         ticket.setCreateDate(dto.getCreationDate());
         ticket.setResolutionDate(dto.getResolutionDate());
-        ticket.setOwner(userService.findById(dto.getOwner()));
-        ticket.setAssignee(dto.getAssignee() == null ? null : userService.findById(dto.getAssignee()));
-        ticket.setApprove(dto.getApprove() == null ? null : userService.findById(dto.getApprove()));
+        ticket.setOwner(userService.findByEmail(dto.getOwner()));
+        ticket.setAssignee(dto.getAssignee() == null ? null : userService.findByEmail(dto.getAssignee()));
+        ticket.setApprove(dto.getApprove() == null ? null : userService.findByEmail(dto.getApprove()));
         ticket.setState(State.valueOf(dto.getState()));
-        ticket.setCategory(categoryService.findById(dto.getCategory()));
+        ticket.setCategory(categoryService.findByName(dto.getCategory()));
         ticket.setUrgency(Urgency.valueOf(dto.getUrgency().toUpperCase()));
 
         return ticket;

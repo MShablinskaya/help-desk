@@ -45,7 +45,7 @@ public class Ticket {
     private State state;
 
     @JoinColumn(name = "category_id", referencedColumnName = "id")
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(cascade = CascadeType.ALL)
     private Category category;
 
     @Column(name = "urgency_id")

@@ -137,8 +137,7 @@ public class EmailServiceImpl implements EmailService {
                 emails.add(user.getEmail());
             });
         }
-        User user = userService.findById(dto.getOwner());
-        String email = user.getEmail();
+        String email = dto.getOwner();
 
         emails.add(email);
 
@@ -201,8 +200,8 @@ public class EmailServiceImpl implements EmailService {
     }
 
     private void templateForCreatorMails(TicketDto dto) {
-        User user = userService.findById(dto.getOwner());
-        String creator = user.getEmail();
+        User user = userService.findByEmail(dto.getOwner());
+        String creator = dto.getOwner();
         String firstName = user.getFirstName();
         String lastName = user.getLastName();
         Long ticketName = dto.getId();
@@ -222,10 +221,8 @@ public class EmailServiceImpl implements EmailService {
     }
 
     private void templateForApproveMails(TicketDto dto) {
-        User approve = userService.findById(dto.getApprove());
-        User owner = userService.findById(dto.getOwner());
-        String approveEmail = approve.getEmail();
-        String ownerEmail = owner.getEmail();
+        String approveEmail = dto.getApprove();
+        String ownerEmail = dto.getOwner();
         Long ticketName = dto.getId();
         Context context = new Context();
         context.setVariable("ticketName", ticketName);
@@ -236,8 +233,8 @@ public class EmailServiceImpl implements EmailService {
     }
 
     private void templateForAssignee(TicketDto dto) {
-        User user = userService.findById(dto.getAssignee());
-        String assignee = user.getEmail();
+        User user = userService.findByEmail(dto.getAssignee());
+        String assignee = dto.getAssignee();
         String firstName = user.getFirstName();
         String lastName = user.getLastName();
         Long ticketName = dto.getId();

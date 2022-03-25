@@ -24,11 +24,11 @@ import java.io.IOException;
 @RequestMapping(value = "/", produces = MediaType.APPLICATION_JSON_VALUE)
 public class AttachmentController {
 
-    private AttachmentService attachmentService;
-    private TicketService ticketService;
-    private UserService userService;
-    private AttachmentDtoConverter converter;
-    private HistoryService historyService;
+    private final AttachmentService attachmentService;
+    private final TicketService ticketService;
+    private final UserService userService;
+    private final AttachmentDtoConverter converter;
+    private final HistoryService historyService;
 
 
     @Autowired
@@ -46,7 +46,7 @@ public class AttachmentController {
         TicketDto ticketDto = ticketService.findById(id);
         User user = userService.getCurrentUser();
 
-        if (ticketDto != null && file != null && ticketDto.getId().equals(user.getId())) {
+        if (ticketDto != null && file != null && ticketDto.getOwner().equals(user.getEmail())) {
 
             Attachment attachment = attachmentService.downloadFile(ticketDto, file);
             historyService.historyForAddAttachment(converter.toDto(attachment));
@@ -65,7 +65,7 @@ public class AttachmentController {
         if (dto != null) {
             TicketDto ticketDto = ticketService.findById(dto.getTicketId());
             User user = userService.getCurrentUser();
-            if (ticketDto.getOwner().equals(user.getId())) {
+            if (ticketDto.getOwner().equals(user.getEmail())) {
                 historyService.historyForDeletingAttachment(dto);
                 attachmentService.deleteFile(dto);
 

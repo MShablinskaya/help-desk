@@ -17,9 +17,9 @@ import javax.persistence.EntityNotFoundException;
 @RestController
 @RequestMapping(value = "/", produces = MediaType.APPLICATION_JSON_VALUE)
 public class CommentController {
-    private CommentService commentService;
-    private TicketService ticketService;
-    private CommentDtoConverter converter;
+    private final CommentService commentService;
+    private final TicketService ticketService;
+    private final CommentDtoConverter converter;
 
     @Autowired
     public CommentController(CommentService commentService, TicketService ticketService, CommentDtoConverter converter) {

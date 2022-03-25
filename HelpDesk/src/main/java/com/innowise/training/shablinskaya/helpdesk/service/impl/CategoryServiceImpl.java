@@ -22,4 +22,9 @@ public class CategoryServiceImpl implements CategoryService {
     public Category findById(Long id) {
         return categoryRepository.getById(id).orElseThrow(EntityNotFoundException::new);
     }
+
+    @Override
+    public Category findByName(String name) {
+        return categoryRepository.getByName(name);
+    }
 }

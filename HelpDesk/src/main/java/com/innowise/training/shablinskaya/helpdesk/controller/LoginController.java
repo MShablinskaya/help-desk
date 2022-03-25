@@ -29,14 +29,12 @@ public class LoginController {
     private final AuthenticationManager authenticationManager;
     private final UserService userService;
     private final JwtProvider jwtProvider;
-    private final PasswordEncoder passwordEncoder;
 
     @Autowired
-    public LoginController(AuthenticationManager authenticationManager, UserService userService, JwtProvider jwtProvider, PasswordEncoder passwordEncoder) {
+    public LoginController(AuthenticationManager authenticationManager, UserService userService, JwtProvider jwtProvider) {
         this.authenticationManager = authenticationManager;
         this.userService = userService;
         this.jwtProvider = jwtProvider;
-        this.passwordEncoder = passwordEncoder;
     }
 
 

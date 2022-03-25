@@ -9,9 +9,9 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class CommentDtoConverter {
-    private UserService userService;
-    private TicketService ticketService;
-    private TicketDtoConverter converter;
+    private final UserService userService;
+    private final TicketService ticketService;
+    private final TicketDtoConverter converter;
 
     @Autowired
     public CommentDtoConverter(UserService userService, TicketService ticketService, TicketDtoConverter converter) {

@@ -5,7 +5,7 @@ import java.util.Objects;
 
 public class FeedbackDto {
     private Long id;
-    private Long userId;
+    private String userId;
     private Long rate;
     private Timestamp date;
     private String text;
@@ -14,7 +14,7 @@ public class FeedbackDto {
     public FeedbackDto() {
     }
 
-    public FeedbackDto(Long id, Long userId, Long rate, Timestamp date, String text, Long ticketId) {
+    public FeedbackDto(Long id, String userId, Long rate, Timestamp date, String text, Long ticketId) {
         this.id = id;
         this.userId = userId;
         this.rate = rate;
@@ -31,11 +31,11 @@ public class FeedbackDto {
         this.id = id;
     }
 
-    public Long getUserId() {
+    public String getUserId() {
         return userId;
     }
 
-    public void setUserId(Long userId) {
+    public void setUserId(String userId) {
         this.userId = userId;
     }
 
@@ -75,13 +75,13 @@ public class FeedbackDto {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        FeedbackDto that = (FeedbackDto) o;
-        return Objects.equals(id, that.id)
-                && Objects.equals(userId, that.userId)
-                && Objects.equals(rate, that.rate)
-                && Objects.equals(date, that.date)
-                && Objects.equals(text, that.text)
-                && Objects.equals(ticketId, that.ticketId);
+        FeedbackDto dto = (FeedbackDto) o;
+        return Objects.equals(id, dto.id)
+                && Objects.equals(userId, dto.userId)
+                && Objects.equals(rate, dto.rate)
+                && Objects.equals(date, dto.date)
+                && Objects.equals(text, dto.text)
+                && Objects.equals(ticketId, dto.ticketId);
     }
 
     @Override
@@ -93,7 +93,7 @@ public class FeedbackDto {
     public String toString() {
         return "FeedbackDto{" +
                 "id=" + id +
-                ", userId=" + userId +
+                ", userId='" + userId + '\'' +
                 ", rate=" + rate +
                 ", date=" + date +
                 ", text='" + text + '\'' +

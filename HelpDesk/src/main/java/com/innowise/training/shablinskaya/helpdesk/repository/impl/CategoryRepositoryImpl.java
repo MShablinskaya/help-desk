@@ -21,6 +21,13 @@ public class CategoryRepositoryImpl implements CategoryRepository {
     }
 
     @Override
+    public Category getByName(String name) {
+        return (Category) entityManager.createQuery("SELECT c FROM Category c WHERE c.categoryName = :name")
+                .setParameter("name", name)
+                .getSingleResult();
+    }
+
+    @Override
     public List<Category> getAllFromTable() {
         return entityManager.createQuery("SELECT c FROM Category c", Category.class)
                 .getResultList();

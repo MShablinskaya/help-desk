@@ -19,10 +19,11 @@ import javax.persistence.EntityNotFoundException;
 @RestController
 @RequestMapping(value = "/", produces = MediaType.APPLICATION_JSON_VALUE)
 public class FeedbackController {
-    private FeedbackService feedbackService;
-    private TicketService ticketService;
-    private FeedBackDtoConverter converter;
-    private UserService userService;
+    private final static String DONE = "DONE";
+    private final FeedbackService feedbackService;
+    private final TicketService ticketService;
+    private final FeedBackDtoConverter converter;
+    private final UserService userService;
 
     @Autowired
     public FeedbackController(FeedbackService feedbackService, TicketService ticketService, FeedBackDtoConverter converter, UserService userService) {
@@ -38,7 +39,7 @@ public class FeedbackController {
         TicketDto ticket = ticketService.findById(id);
         dto.setTicketId(id);
 
-        if (ticket.getId() != null && ticket.getState().equals("DONE") && ticket.getOwner().equals(userService.getCurrentUser().getId())) {
+        if (ticket.getId() != null && ticket.getState().equals(DONE) && ticket.getOwner().equals(userService.getCurrentUser().getEmail())) {
             Feedback feedback = feedbackService.save(dto);
 //            String savedTicketLocation = "tickets/" + ticket.getId();
 //            return ResponseEntity.created(URI.create(savedTicketLocation)).build();

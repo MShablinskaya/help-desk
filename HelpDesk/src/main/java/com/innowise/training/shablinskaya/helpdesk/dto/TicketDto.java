@@ -12,18 +12,17 @@ public class TicketDto {
     private String description;
     private Timestamp creationDate;
     private Timestamp resolutionDate;
-    private Long owner;
-    private Long assignee;
-    private Long approve;
+    private String owner;
+    private String assignee;
+    private String approve;
     private String state;
-    private Long category;
+    private String category;
     private String urgency;
 
     public TicketDto() {
     }
 
-
-    public TicketDto(Long id, String name, String description, Timestamp creationDate, Timestamp resolutionDate, Long owner, Long assignee, Long approve, String state, Long category, String urgency) {
+    public TicketDto(Long id, String name, String description, Timestamp creationDate, Timestamp resolutionDate, String owner, String assignee, String approve, String state, String category, String urgency) {
         this.id = id;
         this.name = name;
         this.description = description;
@@ -77,27 +76,27 @@ public class TicketDto {
         this.resolutionDate = resolutionDate;
     }
 
-    public Long getOwner() {
+    public String getOwner() {
         return owner;
     }
 
-    public void setOwner(Long owner) {
+    public void setOwner(String owner) {
         this.owner = owner;
     }
 
-    public Long getAssignee() {
+    public String getAssignee() {
         return assignee;
     }
 
-    public void setAssignee(Long assignee) {
+    public void setAssignee(String assignee) {
         this.assignee = assignee;
     }
 
-    public Long getApprove() {
+    public String getApprove() {
         return approve;
     }
 
-    public void setApprove(Long approve) {
+    public void setApprove(String approve) {
         this.approve = approve;
     }
 
@@ -109,11 +108,11 @@ public class TicketDto {
         this.state = state;
     }
 
-    public Long getCategory() {
+    public String getCategory() {
         return category;
     }
 
-    public void setCategory(Long category) {
+    public void setCategory(String category) {
         this.category = category;
     }
 
@@ -156,11 +155,11 @@ public class TicketDto {
                 ", description='" + description + '\'' +
                 ", creationDate=" + creationDate +
                 ", resolutionDate=" + resolutionDate +
-                ", owner=" + owner +
-                ", assignee=" + assignee +
-                ", approve=" + approve +
+                ", owner='" + owner + '\'' +
+                ", assignee='" + assignee + '\'' +
+                ", approve='" + approve + '\'' +
                 ", state='" + state + '\'' +
-                ", category=" + category +
+                ", category='" + category + '\'' +
                 ", urgency='" + urgency + '\'' +
                 '}';
     }

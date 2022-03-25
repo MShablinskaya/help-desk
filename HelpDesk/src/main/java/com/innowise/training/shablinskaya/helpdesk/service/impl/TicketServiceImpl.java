@@ -198,7 +198,7 @@ public class TicketServiceImpl implements TicketService {
 
     @PreAuthorize("@userServiceImpl.hasRole('EMPLOYEE', 'MANAGER')")
     private void changeStateFromDraft(TicketDto dto, State state) throws TicketStateException {
-        if (dto.getOwner().equals(userService.getCurrentUser().getId())) {
+        if (dto.getOwner().equals(userService.getCurrentUser().getEmail())) {
             if (!state.name().equals(dto.getState())) {
                 if (state.name().equals(NEW) || state.name().equals(CANCEL)) {
                     dto.setState(state.name());
@@ -215,11 +215,11 @@ public class TicketServiceImpl implements TicketService {
 
     @PreAuthorize("@userServiceImpl.hasRole('MANAGER')")
     private void changeStateFromNew(TicketDto dto, State state) throws TicketStateException {
-        if (!dto.getOwner().equals(userService.getCurrentUser().getId())) {
+        if (!dto.getOwner().equals(userService.getCurrentUser().getEmail())) {
             if (!state.name().equals(dto.getState())) {
                 if (state.name().equals(APPROVE) || state.name().equals(DECLINE) || state.name().equals(CANCEL)) {
                     dto.setState(state.name());
-                    dto.setApprove(userService.getCurrentUser().getId());
+                    dto.setApprove(userService.getCurrentUser().getEmail());
                 } else {
                     throw new TicketStateException("You can't use it for New Ticket!");
                 }
@@ -236,7 +236,7 @@ public class TicketServiceImpl implements TicketService {
         if (!state.name().equals(dto.getState())) {
             if (state.name().equals(IN_PROGRESS) || state.name().equals(CANCEL)) {
                 dto.setState(state.name());
-                dto.setAssignee(userService.getCurrentUser().getId());
+                dto.setAssignee(userService.getCurrentUser().getEmail());
             } else {
                 throw new TicketStateException("You can't use it for Approved Ticket!");
             }
@@ -250,7 +250,7 @@ public class TicketServiceImpl implements TicketService {
         if (!state.name().equals(dto.getState())) {
             if (state.name().equals(DONE) || state.name().equals(CANCEL)) {
                 dto.setState(state.name());
-                dto.setAssignee(userService.getCurrentUser().getId());
+                dto.setAssignee(userService.getCurrentUser().getEmail());
             } else {
                 throw new TicketStateException("You can't use it for In Progress Ticket!");
             }
@@ -262,7 +262,7 @@ public class TicketServiceImpl implements TicketService {
 
     @PreAuthorize("@userServiceImpl.hasRole('EMPLOYEE', 'MANAGER')")
     private void changeStateFromeDecline(TicketDto dto, State state) throws TicketStateException {
-        if (dto.getOwner().equals(userService.getCurrentUser().getId())) {
+        if (dto.getOwner().equals(userService.getCurrentUser().getEmail())) {
             if (!state.name().equals(dto.getState())) {
                 if (state.name().equals(CANCEL) || state.name().equals(NEW)) {
                     dto.setState(state.name());
