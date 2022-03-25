@@ -7,7 +7,6 @@ import com.innowise.training.shablinskaya.helpdesk.entity.History;
 import com.innowise.training.shablinskaya.helpdesk.entity.Ticket;
 import com.innowise.training.shablinskaya.helpdesk.exception.TicketStateException;
 import com.innowise.training.shablinskaya.helpdesk.repository.HistoryRepository;
-import com.innowise.training.shablinskaya.helpdesk.service.EmailService;
 import com.innowise.training.shablinskaya.helpdesk.service.HistoryService;
 import com.innowise.training.shablinskaya.helpdesk.service.TicketService;
 import com.innowise.training.shablinskaya.helpdesk.service.UserService;
@@ -22,7 +21,7 @@ import java.util.List;
 
 @Service
 public class HistoryServiceImpl implements HistoryService {
-    private static final  String TICKET_CREATED = "Ticket is created";
+    private static final String TICKET_CREATED = "Ticket is created";
     private static final String TICKET_CHANGED = "Ticket Status is changed";
     private static final String DRAFT_TO_NEW = "Ticket Status is changed from Draft to New";
     private static final String DRAFT_TO_CANCELLED = "Ticket was Cancelled";
@@ -41,20 +40,18 @@ public class HistoryServiceImpl implements HistoryService {
     private static final String ADD = "File is attached ";
     private static final String DELETE = "File is removed ";
 
-    private HistoryRepository historyRepository;
-    private UserService userService;
-    private TicketService ticketService;
-    private TicketDtoConverter converter;
-    private EmailService emailService;
+    private final HistoryRepository historyRepository;
+    private final UserService userService;
+    private final TicketService ticketService;
+    private final TicketDtoConverter converter;
 
 
     @Autowired
-    public HistoryServiceImpl(HistoryRepository historyRepository, UserService userService, TicketService ticketService, TicketDtoConverter converter, EmailService emailService) {
+    public HistoryServiceImpl(HistoryRepository historyRepository, UserService userService, TicketService ticketService, TicketDtoConverter converter) {
         this.historyRepository = historyRepository;
         this.userService = userService;
         this.ticketService = ticketService;
         this.converter = converter;
-        this.emailService = emailService;
     }
 
 
@@ -75,13 +72,10 @@ public class HistoryServiceImpl implements HistoryService {
                     return historyRepository.save(history);
                 case CANCEL:
                     historyForCancelled(history);
-                    emailService.sendCreatorMessage(converter.toDto(ticket));
                     return historyRepository.save(history);
 
                 case APPROVE:
                     historyForApprove(history);
-                    emailService.sendCreatorMessage(converter.toDto(ticket));
-                    emailService.sendAllEngineerMessage(converter.toDto(ticket));
                     return historyRepository.save(history);
 
                 case DECLINE:
@@ -112,13 +106,13 @@ public class HistoryServiceImpl implements HistoryService {
             history.setTicket(ticket);
             history.setDate(Timestamp.from(Instant.now()));
             history.setUserId(userService.getCurrentUser());
-            if (ticket.getState().name().equals(NEW)){
+            if (ticket.getState().name().equals(NEW)) {
                 edit(history);
                 return historyRepository.save(history);
-            }else{
+            } else {
                 throw new TicketStateException("Incorrect transition!");
             }
-        }else {
+        } else {
             throw new EntityNotFoundException("Ticket not found!");
         }
     }
@@ -143,31 +137,25 @@ public class HistoryServiceImpl implements HistoryService {
     @Override
     @Transactional
     public History historyForAddAttachment(AttachmentDto dto) throws TicketStateException {
-        if (dto != null){
-            History history = new History();
-            history.setTicket(converter.toUpdEntity(ticketService.findById(dto.getTicketId())));
-            history.setDate(Timestamp.from(Instant.now()));
-            history.setUserId(userService.getCurrentUser());
-            history.setAction(ADD);
-            history.setDescription(ADD + dto.getName());
-            return historyRepository.save(history);
-        }else {
-            throw new TicketStateException("File doesn't exist!");
-        }
+        return getHistory(dto, ADD);
     }
 
     @Override
     @Transactional
     public History historyForDeletingAttachment(AttachmentDto dto) throws TicketStateException {
-        if (dto != null){
+        return getHistory(dto, DELETE);
+    }
+
+    private History getHistory(AttachmentDto dto, String action) throws TicketStateException {
+        if (dto != null) {
             History history = new History();
             history.setTicket(converter.toUpdEntity(ticketService.findById(dto.getTicketId())));
             history.setDate(Timestamp.from(Instant.now()));
             history.setUserId(userService.getCurrentUser());
-            history.setAction(DELETE);
-            history.setDescription(DELETE + dto.getName());
+            history.setAction(action);
+            history.setDescription(action + dto.getName());
             return historyRepository.save(history);
-        }else {
+        } else {
             throw new TicketStateException("File doesn't exist!");
         }
     }
@@ -202,19 +190,19 @@ public class HistoryServiceImpl implements HistoryService {
         historyRepository.save(history);
     }
 
-    private void historyForInProgress(History history){
+    private void historyForInProgress(History history) {
         history.setAction(TICKET_CHANGED);
         history.setDescription(APPROVE_TO_IN_PROGRESS);
         historyRepository.save(history);
     }
 
-    private void historyForDone(History history){
+    private void historyForDone(History history) {
         history.setAction(TICKET_CHANGED);
         history.setDescription(I_PROGRESS_TO_DONE);
         historyRepository.save(history);
     }
 
-    private void edit(History history){
+    private void edit(History history) {
         history.setAction(EDIT);
         history.setDescription(EDIT);
         historyRepository.save(history);

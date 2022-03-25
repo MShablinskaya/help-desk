@@ -12,8 +12,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class CommentServiceImpl implements CommentService {
-    private CommentRepository commentRepository;
-    private CommentDtoConverter converter;
+    private final CommentRepository commentRepository;
+    private final CommentDtoConverter converter;
 
     @Autowired
     public CommentServiceImpl(CommentRepository commentRepository, CommentDtoConverter converter) {

@@ -22,10 +22,12 @@ import java.util.List;
 @Service
 public class AttachmentServiceImpl implements AttachmentService {
     private final static int MAX_FILE_SIZE = 5000000;
+    private final static String WRONG_SELECTED_TYPE = "The selected file type is not allowed. Please select a file of one of the following types: pdf, png, doc, docx, jpg, jpeg.";
+    private final static String WRONG_SIZE = "The size of attached file should not be greater than 5 Mb. Please select another file.";
 
-    private AttachmentRepository attachmentRepository;
-    private TicketDtoConverter converter;
-    private AttachmentDtoConverter attachmentDtoConverter;
+    private final AttachmentRepository attachmentRepository;
+    private final TicketDtoConverter converter;
+    private final AttachmentDtoConverter attachmentDtoConverter;
 
     @Autowired
     public AttachmentServiceImpl(AttachmentRepository attachmentRepository, TicketDtoConverter converter, AttachmentDtoConverter attachmentDtoConverter) {
@@ -48,10 +50,10 @@ public class AttachmentServiceImpl implements AttachmentService {
 
                     return attachmentRepository.save(attachment);
                 } else {
-                    throw new TicketStateException("The selected file type is not allowed. Please select a file of one of the following types: pdf, png, doc, docx, jpg, jpeg.");
+                    throw new TicketStateException(WRONG_SELECTED_TYPE);
                 }
             } else {
-                throw new TicketStateException("The size of attached file should not be greater than 5 Mb. Please select another file.");
+                throw new TicketStateException(WRONG_SIZE);
             }
         } else {
             throw new TicketStateException("Ticket not fount!");

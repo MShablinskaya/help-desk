@@ -2,6 +2,7 @@ package com.innowise.training.shablinskaya.helpdesk.service;
 
 import com.innowise.training.shablinskaya.helpdesk.dto.TicketDto;
 
+
 public interface EmailService {
 
     void sendAllManagerMessage(TicketDto dto);
@@ -10,8 +11,10 @@ public interface EmailService {
 
     void sendCreatorMessage(TicketDto dto);
 
-    void sendApproverMessage(TicketDto dto);
+    void sendEmailsForNewTickets(TicketDto dto);
 
-    void sendAssigneMessage(TicketDto dto);
+    void sendApproveMessage(TicketDto dto);
+
+    void sendAssigneeMessage(TicketDto dto);
 
 }

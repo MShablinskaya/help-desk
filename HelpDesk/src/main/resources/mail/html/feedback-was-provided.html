@@ -10,9 +10,9 @@
 
 </head>
 <body>
-<div>Dear Users!, </div>
+<div>Dear <b th:text="${firstName}"></b> <b th:text="${lastName}"></b>, </div>
 
-<div> Ticket <a href="#">#<b th:text="${ticketName}"></b></a> was approved by Manager.</div>
+<div> The feedback was provided on ticket  <a href="#"> # <b th:text="${ticketName}"></b></a>.</div>
 
 </body>
 </html>

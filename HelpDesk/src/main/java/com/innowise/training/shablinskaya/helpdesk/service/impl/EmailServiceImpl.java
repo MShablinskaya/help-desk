@@ -7,8 +7,6 @@ import com.innowise.training.shablinskaya.helpdesk.exception.TicketStateExceptio
 import com.innowise.training.shablinskaya.helpdesk.service.EmailService;
 import com.innowise.training.shablinskaya.helpdesk.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.mail.MailException;
-import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
@@ -19,19 +17,38 @@ import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.LinkedBlockingDeque;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 
 @Service
 public class EmailServiceImpl implements EmailService {
     private static final String NOREPLY_ADRESS = "pr.mogilev.shablinskaya@gmail.com";
     private static final String SBJ_CREATOR_DECLINED = "Ticket was declined";
     private static final String SBJ_CREATOR_CANCELLED = "Ticket was cancelled";
+    private static final String SBJ_CREATOR_DONE = "Ticket was done";
     private static final String SBJ_FOR_MANAGERS = "New ticket for approval";
     private static final String SBJ_FOR_ENGINEERS = "Ticket was approved";
+    private static final String SBJ_FOR_ASSIGNEE = "Feedback was provided";
+    private static final String NEW_TICKET = "html/new-ticket.html";
+    private static final String TICKET_APPROVED = "html/ticket-was-approved.html";
+    private static final String TICKET_DECLINED = "html/ticket-declined.html";
+    private static final String TICKET_CANCELLED_BY_MANAGER = "html/cancelled-by-manager.html";
+    private static final String TICKET_CANCELLED_BY_ENGINEER = "html/approved-to-cancel.html";
+    private static final String TICKET_WAS_DONE = "html/ticket-was-done.html";
+    private static final String FEEDBACK_WAS_PROVIDED = "html/feedback-was-provided.html";
+
+    private static final String APPROVED = "APPROVED";
+    private static final String CANCELLED = "CANCELLED";
+    private static final String DECLINED = "DECLINED";
+    private static final String NEW = "NEW";
+    private static final String DONE = "DONE";
 
 
     private final JavaMailSender javaMailSender;
     private final TemplateEngine templateEngine;
     private final UserService userService;
+    private final ThreadPoolExecutor emailExecutor = new ThreadPoolExecutor(10, 10, 1, TimeUnit.SECONDS, new LinkedBlockingDeque<Runnable>());
 
     @Autowired
     public EmailServiceImpl(JavaMailSender javaMailSender, TemplateEngine templateEngine, UserService userService) {
@@ -42,117 +59,75 @@ public class EmailServiceImpl implements EmailService {
 
     @Override
     public void sendAllManagerMessage(TicketDto dto) {
-        try {
-            if (dto != null && dto.getState().equals("NEW")) {
-                SimpleMailMessage simpleMailMessage = new SimpleMailMessage();
-
-                simpleMailMessage.setFrom(NOREPLY_ADRESS);
-                simpleMailMessage.setTo(managerRecipients());
-                simpleMailMessage.setSubject(SBJ_FOR_MANAGERS);
-                simpleMailMessage.setText(BODY);
-
-                javaMailSender.send(simpleMailMessage);
+        emailExecutor.execute(() -> {
+            try {
+                templateForManagerMails(dto);
+            } catch (MessagingException | TicketStateException e) {
+                e.printStackTrace();
             }
-        } catch (MailException | TicketStateException exception) {
-            exception.printStackTrace();
-        }
-
+        });
     }
 
     @Override
     public void sendAllEngineerMessage(TicketDto dto) {
-        try {
-            if (dto != null && dto.getState().equals("APPROVED")) {
-
-                SimpleMailMessage simpleMailMessage = new SimpleMailMessage();
-
-                simpleMailMessage.setFrom(NOREPLY_ADRESS);
-                simpleMailMessage.setTo(engineersRecipients());
-                simpleMailMessage.setSubject(SBJ_FOR_MANAGERS);
-                simpleMailMessage.setText(BODY);
-
-                javaMailSender.send(simpleMailMessage);
+        emailExecutor.execute(() -> {
+            try {
+                templateForEngineerMails(dto);
+            } catch (MessagingException | TicketStateException e) {
+                e.printStackTrace();
             }
-        } catch (MailException | TicketStateException exception) {
-            exception.printStackTrace();
-        }
+        });
 
     }
 
     @Override
     public void sendCreatorMessage(TicketDto dto) {
-        User user = userService.findById(dto.getOwner());
-        String creator = user.getEmail();
-        String firstName = user.getFirstName();
-        String lastName = user.getLastName();
-        String ticketName = "Ticket #" + dto.getId();
-
-        Context context = new Context();
-        context.setVariable("firstName", firstName);
-        context.setVariable("lastName", lastName);
-        context.setVariable("ticketName", ticketName);
-
-
-        try {
-            if (creator != null) {
-
-
-                MimeMessage mimeMessage = javaMailSender.createMimeMessage();
-                MimeMessageHelper message = new MimeMessageHelper(mimeMessage, true, "UTF-8");
-
-                message.setFrom(NOREPLY_ADRESS);
-                message.setTo(creator);
-                message.setSubject(SBJ_CREATOR_CANCELLED);
-
-                String htmlContent = templateEngine.process("html/new-to-cancel.html", context);
-                message.setText(htmlContent, true);
-                javaMailSender.send(mimeMessage);
-
-            } else {
-                throw new TicketStateException("Ticket doesn't exist");
+        emailExecutor.execute(() -> {
+            try {
+                templateForCreatorMails(dto);
+            } catch (Exception e) {
+                e.printStackTrace();
             }
+        });
 
-        } catch (TicketStateException | MessagingException e) {
-            e.printStackTrace();
+    }
+
+    @Override
+    public void sendEmailsForNewTickets(TicketDto dto) {
+        if (dto.getState().equals(APPROVED)) {
+            sendAllEngineerMessage(dto);
+        } else {
+            sendCreatorMessage(dto);
         }
 
     }
 
     @Override
-    public void sendApproverMessage(TicketDto dto) {
-        User user = userService.findById(dto.getApprove());
-        String approve = user.getEmail();
-        Context context = new Context();
-        try {
-            if (approve != null) {
-
-                MimeMessage mimeMessage = javaMailSender.createMimeMessage();
-                MimeMessageHelper message = new MimeMessageHelper(mimeMessage, true, "UTF-8");
-
-                message.setFrom(NOREPLY_ADRESS);
-                message.setTo(approve);
-                message.setSubject(SBJ_CREATOR_CANCELLED);
-                String htmlContent = templateEngine.process("html/forCreator", context);
-                message.setText(htmlContent, true);
-                javaMailSender.send(mimeMessage);
-
-            } else {
-                throw new TicketStateException("Ticket doesn't exist");
+    public void sendApproveMessage(TicketDto dto) {
+        emailExecutor.execute(() -> {
+            try {
+                templateForApproveMails(dto);
+            } catch (Exception e) {
+                e.printStackTrace();
             }
-
-        } catch (TicketStateException | MessagingException e) {
-            e.printStackTrace();
-        }
+        });
 
     }
 
     @Override
-    public void sendAssigneMessage(TicketDto dto) {
+    public void sendAssigneeMessage(TicketDto dto) {
+        emailExecutor.execute(() -> {
+            try {
+                templateForAssignee(dto);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        });
 
     }
 
 
-    private String[] engineersRecipients() throws TicketStateException {
+    private String[] engineersRecipients(TicketDto dto) throws TicketStateException {
         List<User> users = userService.getAllByRole(Role.valueOf("ENGINEER"));
 
         List<String> emails = new ArrayList<>();
@@ -162,6 +137,10 @@ public class EmailServiceImpl implements EmailService {
                 emails.add(user.getEmail());
             });
         }
+        User user = userService.findById(dto.getOwner());
+        String email = user.getEmail();
+
+        emails.add(email);
 
         return emails.toArray(new String[0]);
     }
@@ -180,9 +159,116 @@ public class EmailServiceImpl implements EmailService {
         return emails.toArray(new String[0]);
     }
 
+    private void templateForManagerMails(TicketDto dto) throws MessagingException, TicketStateException {
+        Long ticketName = dto.getId();
 
-    private static final String BODY = "Dear [Recipient First Name] [Recipient Last Name],\n" +
-            "\n" +
-            "Ticket [Ticket ID via link] was cancelled by the Manager.";
+        Context context = new Context();
+        context.setVariable("ticketName", ticketName);
+        if (dto.getState().equals(NEW)) {
+            MimeMessage mimeMessage = javaMailSender.createMimeMessage();
+            MimeMessageHelper message = new MimeMessageHelper(mimeMessage, true, "UTF-8");
+
+            message.setFrom(NOREPLY_ADRESS);
+            message.setTo(managerRecipients());
+            message.setSubject(SBJ_FOR_MANAGERS);
+
+            String htmlContent = templateEngine.process(NEW_TICKET, context);
+            message.setText(htmlContent, true);
+            javaMailSender.send(mimeMessage);
+        }
+
+
+    }
+
+    private void templateForEngineerMails(TicketDto dto) throws MessagingException, TicketStateException {
+        Long ticketName = dto.getId();
+
+        Context context = new Context();
+        context.setVariable("ticketName", ticketName);
+        if (dto.getState().equals(APPROVED)) {
+
+            MimeMessage mimeMessage = javaMailSender.createMimeMessage();
+            MimeMessageHelper message = new MimeMessageHelper(mimeMessage, true, "UTF-8");
+
+            message.setFrom(NOREPLY_ADRESS);
+            message.setTo(engineersRecipients(dto));
+            message.setSubject(SBJ_FOR_ENGINEERS);
+
+            String htmlContent = templateEngine.process(TICKET_APPROVED, context);
+            message.setText(htmlContent, true);
+            javaMailSender.send(mimeMessage);
+        }
+    }
+
+    private void templateForCreatorMails(TicketDto dto) {
+        User user = userService.findById(dto.getOwner());
+        String creator = user.getEmail();
+        String firstName = user.getFirstName();
+        String lastName = user.getLastName();
+        Long ticketName = dto.getId();
+
+        Context context = new Context();
+        context.setVariable("firstName", firstName);
+        context.setVariable("lastName", lastName);
+        context.setVariable("ticketName", ticketName);
+
+        if (dto.getState().equals(DECLINED)) {
+            sendEmail(creator, context, SBJ_CREATOR_DECLINED, TICKET_DECLINED);
+        } else if (dto.getState().equals(DONE)) {
+            sendEmail(creator, context, SBJ_CREATOR_DONE, TICKET_WAS_DONE);
+        } else {
+            sendEmail(creator, context, SBJ_CREATOR_CANCELLED, TICKET_CANCELLED_BY_MANAGER);
+        }
+    }
+
+    private void templateForApproveMails(TicketDto dto) {
+        User approve = userService.findById(dto.getApprove());
+        User owner = userService.findById(dto.getOwner());
+        String approveEmail = approve.getEmail();
+        String ownerEmail = owner.getEmail();
+        Long ticketName = dto.getId();
+        Context context = new Context();
+        context.setVariable("ticketName", ticketName);
+        if (dto.getState().equals(CANCELLED)) {
+            sendEmail(approveEmail, context, SBJ_CREATOR_CANCELLED, TICKET_CANCELLED_BY_ENGINEER);
+            sendEmail(ownerEmail, context, SBJ_CREATOR_CANCELLED, TICKET_CANCELLED_BY_ENGINEER);
+        }
+    }
+
+    private void templateForAssignee(TicketDto dto) {
+        User user = userService.findById(dto.getAssignee());
+        String assignee = user.getEmail();
+        String firstName = user.getFirstName();
+        String lastName = user.getLastName();
+        Long ticketName = dto.getId();
+        Context context = new Context();
+        context.setVariable("firstName", firstName);
+        context.setVariable("lastName", lastName);
+        context.setVariable("ticketName", ticketName);
+        sendEmail(assignee, context, SBJ_FOR_ASSIGNEE, FEEDBACK_WAS_PROVIDED);
+    }
+
+    private void sendEmail(String recipient, Context context, String sbjForRecipient, String messageBody) {
+        try {
+            if (recipient != null) {
+
+                MimeMessage mimeMessage = javaMailSender.createMimeMessage();
+                MimeMessageHelper message = new MimeMessageHelper(mimeMessage, true, "UTF-8");
+
+                message.setFrom(NOREPLY_ADRESS);
+                message.setTo(recipient);
+                message.setSubject(sbjForRecipient);
+                String htmlContent = templateEngine.process(messageBody, context);
+                message.setText(htmlContent, true);
+                javaMailSender.send(mimeMessage);
+
+            } else {
+                throw new TicketStateException("Ticket doesn't exist");
+            }
+
+        } catch (TicketStateException | MessagingException e) {
+            e.printStackTrace();
+        }
+    }
 
 }

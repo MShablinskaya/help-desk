@@ -7,6 +7,7 @@ import com.innowise.training.shablinskaya.helpdesk.enums.State;
 import com.innowise.training.shablinskaya.helpdesk.enums.Urgency;
 import com.innowise.training.shablinskaya.helpdesk.exception.TicketStateException;
 import com.innowise.training.shablinskaya.helpdesk.repository.TicketRepository;
+import com.innowise.training.shablinskaya.helpdesk.service.EmailService;
 import com.innowise.training.shablinskaya.helpdesk.service.TicketService;
 import com.innowise.training.shablinskaya.helpdesk.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,6 +28,7 @@ public class TicketServiceImpl implements TicketService {
     private final TicketRepository ticketRepository;
     private final TicketDtoConverter ticketDtoConverter;
     private final UserService userService;
+    private final EmailService emailService;
     private static final String DRAFT = "DRAFT";
     private static final String NEW = "NEW";
     private static final String APPROVE = "APPROVED";
@@ -36,10 +38,11 @@ public class TicketServiceImpl implements TicketService {
     private static final String DONE = "DONE";
 
     @Autowired
-    public TicketServiceImpl(TicketRepository ticketRepository, TicketDtoConverter ticketDtoConverter, UserService userService) {
+    public TicketServiceImpl(TicketRepository ticketRepository, TicketDtoConverter ticketDtoConverter, UserService userService, EmailService emailService) {
         this.ticketRepository = ticketRepository;
         this.ticketDtoConverter = ticketDtoConverter;
         this.userService = userService;
+        this.emailService = emailService;
     }
 
 //    @Override
@@ -163,18 +166,23 @@ public class TicketServiceImpl implements TicketService {
             switch (dto.getState()) {
                 case DRAFT:
                     changeStateFromDraft(dto, state);
+                    emailService.sendAllManagerMessage(dto);
                     return ticketRepository.update(ticketDtoConverter.toUpdEntity(dto));
                 case NEW:
                     changeStateFromNew(dto, state);
+                    emailService.sendEmailsForNewTickets(dto);
                     return ticketRepository.update(ticketDtoConverter.toUpdEntity(dto));
                 case APPROVE:
                     changeStateFromApprove(dto, state);
+                    emailService.sendApproveMessage(dto);
                     return ticketRepository.update(ticketDtoConverter.toUpdEntity(dto));
                 case IN_PROGRESS:
                     changeStateFromInProgress(dto, state);
+                    emailService.sendCreatorMessage(dto);
                     return ticketRepository.update(ticketDtoConverter.toUpdEntity(dto));
                 case DECLINE:
                     changeStateFromeDecline(dto, state);
+                    emailService.sendAllManagerMessage(dto);
                     return ticketRepository.update(ticketDtoConverter.toUpdEntity(dto));
                 default:
                     throw new TicketStateException("There is no transition status");

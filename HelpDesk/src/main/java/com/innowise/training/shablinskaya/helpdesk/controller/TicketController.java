@@ -126,7 +126,7 @@ public class TicketController {
         if (ticketDto.getId() != null && state != null) {
             ticketService.changeState(ticketDto, state);
             historyService.createTicketHistory(converter.toUpdEntity(ticketDto));
-            emailService.sendCreatorMessage(ticketDto);
+
 
             return new ResponseEntity<>(ticketDto, HttpStatus.OK);
         } else {
