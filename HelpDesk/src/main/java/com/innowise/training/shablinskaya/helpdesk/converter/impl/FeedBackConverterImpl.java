@@ -1,5 +1,6 @@
-package com.innowise.training.shablinskaya.helpdesk.converter;
+package com.innowise.training.shablinskaya.helpdesk.converter.impl;
 
+import com.innowise.training.shablinskaya.helpdesk.converter.FeedbackConverter;
 import com.innowise.training.shablinskaya.helpdesk.dto.FeedbackDto;
 import com.innowise.training.shablinskaya.helpdesk.entity.Feedback;
 import com.innowise.training.shablinskaya.helpdesk.service.TicketService;
@@ -11,19 +12,20 @@ import java.sql.Timestamp;
 import java.time.Instant;
 
 @Component
-public class FeedBackDtoConverter {
+public class FeedBackConverterImpl implements FeedbackConverter {
 
     private final UserService userService;
     private final TicketService ticketService;
-    private final TicketDtoConverter converter;
+    private final TicketConverterImpl converter;
 
     @Autowired
-    public FeedBackDtoConverter(UserService userService, TicketService ticketService, TicketDtoConverter converter) {
+    public FeedBackConverterImpl(UserService userService, TicketService ticketService, TicketConverterImpl converter) {
         this.userService = userService;
         this.ticketService = ticketService;
         this.converter = converter;
     }
 
+    @Override
     public FeedbackDto toDto(Feedback feedback) {
         FeedbackDto dto = new FeedbackDto();
 
@@ -37,6 +39,7 @@ public class FeedBackDtoConverter {
         return dto;
     }
 
+    @Override
     public Feedback toEntity(FeedbackDto dto) {
         Feedback feedback = new Feedback();
 

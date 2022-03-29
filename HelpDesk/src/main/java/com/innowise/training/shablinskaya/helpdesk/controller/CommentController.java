@@ -1,6 +1,6 @@
 package com.innowise.training.shablinskaya.helpdesk.controller;
 
-import com.innowise.training.shablinskaya.helpdesk.converter.CommentDtoConverter;
+import com.innowise.training.shablinskaya.helpdesk.converter.impl.CommentConverterImpl;
 import com.innowise.training.shablinskaya.helpdesk.dto.CommentDto;
 import com.innowise.training.shablinskaya.helpdesk.dto.TicketDto;
 import com.innowise.training.shablinskaya.helpdesk.entity.Comment;
@@ -19,10 +19,10 @@ import javax.persistence.EntityNotFoundException;
 public class CommentController {
     private final CommentService commentService;
     private final TicketService ticketService;
-    private final CommentDtoConverter converter;
+    private final CommentConverterImpl converter;
 
     @Autowired
-    public CommentController(CommentService commentService, TicketService ticketService, CommentDtoConverter converter) {
+    public CommentController(CommentService commentService, TicketService ticketService, CommentConverterImpl converter) {
         this.commentService = commentService;
         this.ticketService = ticketService;
         this.converter = converter;

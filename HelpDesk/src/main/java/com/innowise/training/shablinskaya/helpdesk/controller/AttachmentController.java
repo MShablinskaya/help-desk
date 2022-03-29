@@ -1,6 +1,6 @@
 package com.innowise.training.shablinskaya.helpdesk.controller;
 
-import com.innowise.training.shablinskaya.helpdesk.converter.AttachmentDtoConverter;
+import com.innowise.training.shablinskaya.helpdesk.converter.impl.AttachmentDtoConverter;
 import com.innowise.training.shablinskaya.helpdesk.dto.AttachmentDto;
 import com.innowise.training.shablinskaya.helpdesk.dto.TicketDto;
 import com.innowise.training.shablinskaya.helpdesk.entity.Attachment;

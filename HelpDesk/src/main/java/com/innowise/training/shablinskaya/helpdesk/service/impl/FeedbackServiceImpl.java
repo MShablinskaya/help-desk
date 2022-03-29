@@ -1,6 +1,6 @@
 package com.innowise.training.shablinskaya.helpdesk.service.impl;
 
-import com.innowise.training.shablinskaya.helpdesk.converter.FeedBackDtoConverter;
+import com.innowise.training.shablinskaya.helpdesk.converter.impl.FeedBackConverterImpl;
 import com.innowise.training.shablinskaya.helpdesk.dto.FeedbackDto;
 import com.innowise.training.shablinskaya.helpdesk.entity.Feedback;
 import com.innowise.training.shablinskaya.helpdesk.exception.TicketStateException;
@@ -15,12 +15,12 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 public class FeedbackServiceImpl implements FeedbackService {
     private final FeedbackRepository feedbackRepository;
-    private final FeedBackDtoConverter converter;
+    private final FeedBackConverterImpl converter;
     private final EmailService emailService;
     private final TicketService ticketService;
 
     @Autowired
-    public FeedbackServiceImpl(FeedbackRepository feedbackRepository, FeedBackDtoConverter converter, EmailService emailService, TicketService ticketService) {
+    public FeedbackServiceImpl(FeedbackRepository feedbackRepository, FeedBackConverterImpl converter, EmailService emailService, TicketService ticketService) {
         this.feedbackRepository = feedbackRepository;
         this.converter = converter;
         this.emailService = emailService;

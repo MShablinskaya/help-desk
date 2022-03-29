@@ -1,6 +1,6 @@
 package com.innowise.training.shablinskaya.helpdesk.controller;
 
-import com.innowise.training.shablinskaya.helpdesk.converter.FeedBackDtoConverter;
+import com.innowise.training.shablinskaya.helpdesk.converter.impl.FeedBackConverterImpl;
 import com.innowise.training.shablinskaya.helpdesk.dto.FeedbackDto;
 import com.innowise.training.shablinskaya.helpdesk.dto.TicketDto;
 import com.innowise.training.shablinskaya.helpdesk.entity.Feedback;
@@ -22,11 +22,11 @@ public class FeedbackController {
     private final static String DONE = "DONE";
     private final FeedbackService feedbackService;
     private final TicketService ticketService;
-    private final FeedBackDtoConverter converter;
+    private final FeedBackConverterImpl converter;
     private final UserService userService;
 
     @Autowired
-    public FeedbackController(FeedbackService feedbackService, TicketService ticketService, FeedBackDtoConverter converter, UserService userService) {
+    public FeedbackController(FeedbackService feedbackService, TicketService ticketService, FeedBackConverterImpl converter, UserService userService) {
         this.feedbackService = feedbackService;
         this.ticketService = ticketService;
         this.converter = converter;

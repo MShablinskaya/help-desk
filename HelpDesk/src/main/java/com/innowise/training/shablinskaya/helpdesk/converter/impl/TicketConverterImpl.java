@@ -1,5 +1,6 @@
-package com.innowise.training.shablinskaya.helpdesk.converter;
+package com.innowise.training.shablinskaya.helpdesk.converter.impl;
 
+import com.innowise.training.shablinskaya.helpdesk.converter.TicketConverter;
 import com.innowise.training.shablinskaya.helpdesk.dto.TicketDto;
 import com.innowise.training.shablinskaya.helpdesk.entity.Ticket;
 import com.innowise.training.shablinskaya.helpdesk.enums.State;
@@ -13,16 +14,19 @@ import java.sql.Timestamp;
 import java.time.Instant;
 
 @Component
-public class TicketDtoConverter {
+public class TicketConverterImpl implements TicketConverter {
+
+
     private final UserService userService;
     private final CategoryService categoryService;
 
     @Autowired
-    public TicketDtoConverter(UserService userService, CategoryService categoryService) {
+    public TicketConverterImpl(UserService userService, CategoryService categoryService) {
         this.userService = userService;
         this.categoryService = categoryService;
     }
 
+    @Override
     public TicketDto toDto(Ticket ticket) {
         TicketDto dto = new TicketDto();
 
@@ -41,6 +45,7 @@ public class TicketDtoConverter {
         return dto;
     }
 
+    @Override
     public Ticket toEntity(TicketDto dto) {
         Ticket ticket = new Ticket();
 
@@ -59,6 +64,7 @@ public class TicketDtoConverter {
 
     }
 
+    @Override
     public Ticket toUpdEntity(TicketDto dto) {
         Ticket ticket = new Ticket();
 

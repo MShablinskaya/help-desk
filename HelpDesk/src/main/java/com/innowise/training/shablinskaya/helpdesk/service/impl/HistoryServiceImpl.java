@@ -1,6 +1,6 @@
 package com.innowise.training.shablinskaya.helpdesk.service.impl;
 
-import com.innowise.training.shablinskaya.helpdesk.converter.TicketDtoConverter;
+import com.innowise.training.shablinskaya.helpdesk.converter.impl.TicketConverterImpl;
 import com.innowise.training.shablinskaya.helpdesk.dto.AttachmentDto;
 import com.innowise.training.shablinskaya.helpdesk.dto.TicketDto;
 import com.innowise.training.shablinskaya.helpdesk.entity.History;
@@ -43,11 +43,11 @@ public class HistoryServiceImpl implements HistoryService {
     private final HistoryRepository historyRepository;
     private final UserService userService;
     private final TicketService ticketService;
-    private final TicketDtoConverter converter;
+    private final TicketConverterImpl converter;
 
 
     @Autowired
-    public HistoryServiceImpl(HistoryRepository historyRepository, UserService userService, TicketService ticketService, TicketDtoConverter converter) {
+    public HistoryServiceImpl(HistoryRepository historyRepository, UserService userService, TicketService ticketService, TicketConverterImpl converter) {
         this.historyRepository = historyRepository;
         this.userService = userService;
         this.ticketService = ticketService;

@@ -1,7 +1,7 @@
 package com.innowise.training.shablinskaya.helpdesk.service.impl;
 
-import com.innowise.training.shablinskaya.helpdesk.converter.AttachmentDtoConverter;
-import com.innowise.training.shablinskaya.helpdesk.converter.TicketDtoConverter;
+import com.innowise.training.shablinskaya.helpdesk.converter.impl.AttachmentDtoConverter;
+import com.innowise.training.shablinskaya.helpdesk.converter.impl.TicketConverterImpl;
 import com.innowise.training.shablinskaya.helpdesk.dto.AttachmentDto;
 import com.innowise.training.shablinskaya.helpdesk.dto.TicketDto;
 import com.innowise.training.shablinskaya.helpdesk.entity.Attachment;
@@ -26,11 +26,11 @@ public class AttachmentServiceImpl implements AttachmentService {
     private final static String WRONG_SIZE = "The size of attached file should not be greater than 5 Mb. Please select another file.";
 
     private final AttachmentRepository attachmentRepository;
-    private final TicketDtoConverter converter;
+    private final TicketConverterImpl converter;
     private final AttachmentDtoConverter attachmentDtoConverter;
 
     @Autowired
-    public AttachmentServiceImpl(AttachmentRepository attachmentRepository, TicketDtoConverter converter, AttachmentDtoConverter attachmentDtoConverter) {
+    public AttachmentServiceImpl(AttachmentRepository attachmentRepository, TicketConverterImpl converter, AttachmentDtoConverter attachmentDtoConverter) {
         this.attachmentRepository = attachmentRepository;
         this.converter = converter;
         this.attachmentDtoConverter = attachmentDtoConverter;

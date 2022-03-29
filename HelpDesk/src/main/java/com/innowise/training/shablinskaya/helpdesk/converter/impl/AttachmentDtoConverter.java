@@ -1,5 +1,6 @@
-package com.innowise.training.shablinskaya.helpdesk.converter;
+package com.innowise.training.shablinskaya.helpdesk.converter.impl;
 
+import com.innowise.training.shablinskaya.helpdesk.converter.AttachmentConverter;
 import com.innowise.training.shablinskaya.helpdesk.dto.AttachmentDto;
 import com.innowise.training.shablinskaya.helpdesk.entity.Attachment;
 import com.innowise.training.shablinskaya.helpdesk.service.UserService;
@@ -9,7 +10,7 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.commons.CommonsMultipartResolver;
 
 @Component
-public class AttachmentDtoConverter {
+public class AttachmentDtoConverter implements AttachmentConverter {
     private final UserService userService;
 
     @Autowired
@@ -17,6 +18,7 @@ public class AttachmentDtoConverter {
         this.userService = userService;
     }
 
+    @Override
     public AttachmentDto toDto(Attachment attachment){
         AttachmentDto dto = new AttachmentDto();
 

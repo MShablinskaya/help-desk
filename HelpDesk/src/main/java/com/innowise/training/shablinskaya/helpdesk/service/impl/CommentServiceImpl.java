@@ -1,6 +1,6 @@
 package com.innowise.training.shablinskaya.helpdesk.service.impl;
 
-import com.innowise.training.shablinskaya.helpdesk.converter.CommentDtoConverter;
+import com.innowise.training.shablinskaya.helpdesk.converter.impl.CommentConverterImpl;
 import com.innowise.training.shablinskaya.helpdesk.dto.CommentDto;
 import com.innowise.training.shablinskaya.helpdesk.entity.Comment;
 import com.innowise.training.shablinskaya.helpdesk.exception.TicketStateException;
@@ -13,10 +13,10 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 public class CommentServiceImpl implements CommentService {
     private final CommentRepository commentRepository;
-    private final CommentDtoConverter converter;
+    private final CommentConverterImpl converter;
 
     @Autowired
-    public CommentServiceImpl(CommentRepository commentRepository, CommentDtoConverter converter) {
+    public CommentServiceImpl(CommentRepository commentRepository, CommentConverterImpl converter) {
         this.commentRepository = commentRepository;
         this.converter = converter;
     }

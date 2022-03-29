@@ -1,6 +1,6 @@
 package com.innowise.training.shablinskaya.helpdesk.controller;
 
-import com.innowise.training.shablinskaya.helpdesk.converter.TicketDtoConverter;
+import com.innowise.training.shablinskaya.helpdesk.converter.impl.TicketConverterImpl;
 import com.innowise.training.shablinskaya.helpdesk.dto.TicketDto;
 import com.innowise.training.shablinskaya.helpdesk.entity.Ticket;
 import com.innowise.training.shablinskaya.helpdesk.enums.State;
@@ -34,15 +34,17 @@ public class TicketController {
 
     private final TicketService ticketService;
     private final UserService userService;
-    private final TicketDtoConverter converter;
+    private final TicketConverterImpl converter;
     private final HistoryService historyService;
+    private final EmailService emailService;
 
     @Autowired
-    public TicketController(TicketService ticketService, UserService userService, TicketDtoConverter converter, HistoryService historyService) {
+    public TicketController(TicketService ticketService, UserService userService, TicketConverterImpl converter, HistoryService historyService, EmailService emailService) {
         this.ticketService = ticketService;
         this.userService = userService;
         this.converter = converter;
         this.historyService = historyService;
+        this.emailService = emailService;
     }
 
     @GetMapping("/{id}")
@@ -111,6 +113,7 @@ public class TicketController {
             ticketDto.setState(NEW);
             Ticket ticket = ticketService.save(ticketDto);
 
+            emailService.sendAllManagerMessage(ticketDto);
             historyService.createTicketHistory(ticket);
             String savedTicketLocation = "tickets/" + ticket.getId();
 

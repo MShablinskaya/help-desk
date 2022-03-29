@@ -1,5 +1,6 @@
-package com.innowise.training.shablinskaya.helpdesk.converter;
+package com.innowise.training.shablinskaya.helpdesk.converter.impl;
 
+import com.innowise.training.shablinskaya.helpdesk.converter.CommentConverter;
 import com.innowise.training.shablinskaya.helpdesk.dto.CommentDto;
 import com.innowise.training.shablinskaya.helpdesk.entity.Comment;
 import com.innowise.training.shablinskaya.helpdesk.service.TicketService;
@@ -8,18 +9,19 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component
-public class CommentDtoConverter {
+public class CommentConverterImpl implements CommentConverter {
     private final UserService userService;
     private final TicketService ticketService;
-    private final TicketDtoConverter converter;
+    private final TicketConverterImpl converter;
 
     @Autowired
-    public CommentDtoConverter(UserService userService, TicketService ticketService, TicketDtoConverter converter) {
+    public CommentConverterImpl(UserService userService, TicketService ticketService, TicketConverterImpl converter) {
         this.userService = userService;
         this.ticketService = ticketService;
         this.converter = converter;
     }
 
+    @Override
     public CommentDto toDto(Comment comment){
         CommentDto dto = new CommentDto();
 
@@ -31,6 +33,7 @@ public class CommentDtoConverter {
         return dto;
     }
 
+    @Override
     public Comment toEntity(CommentDto commentDto){
         Comment comment = new Comment();
 

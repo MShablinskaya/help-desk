@@ -8,10 +8,6 @@ import java.util.List;
 
 public interface UserService {
 
-    List<User> getAll();
-
-    List<User> findByName(String name);
-
     List<User> getAllByRole(Role role) throws TicketStateException;
 
     User findByEmail(String email);
@@ -21,6 +17,4 @@ public interface UserService {
     User getCurrentUser();
 
     boolean hasRole(String... roles);
-
-    User refresh(User user);
 }

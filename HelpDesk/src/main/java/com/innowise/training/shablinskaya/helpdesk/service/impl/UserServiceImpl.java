@@ -26,16 +26,6 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public List<User> getAll() {
-        return userRepository.getAll();
-    }
-
-    @Override
-    public List<User> findByName(String name) {
-        return userRepository.findByName(name);
-    }
-
-    @Override
     public List<User> getAllByRole(Role role) throws TicketStateException {
         if (role != null){
             return userRepository.findByRole(role);
@@ -70,11 +60,6 @@ public class UserServiceImpl implements UserService {
             }
         }
         return false;
-    }
-
-    @Override
-    public User refresh(User user) {
-        return userRepository.update(user);
     }
 
 }

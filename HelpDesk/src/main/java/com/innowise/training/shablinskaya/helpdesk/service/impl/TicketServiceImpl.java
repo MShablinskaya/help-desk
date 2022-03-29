@@ -1,6 +1,6 @@
 package com.innowise.training.shablinskaya.helpdesk.service.impl;
 
-import com.innowise.training.shablinskaya.helpdesk.converter.TicketDtoConverter;
+import com.innowise.training.shablinskaya.helpdesk.converter.impl.TicketConverterImpl;
 import com.innowise.training.shablinskaya.helpdesk.dto.TicketDto;
 import com.innowise.training.shablinskaya.helpdesk.entity.Ticket;
 import com.innowise.training.shablinskaya.helpdesk.enums.State;
@@ -26,7 +26,7 @@ import java.util.List;
 public class TicketServiceImpl implements TicketService {
 
     private final TicketRepository ticketRepository;
-    private final TicketDtoConverter ticketDtoConverter;
+    private final TicketConverterImpl ticketConverterImpl;
     private final UserService userService;
     private final EmailService emailService;
     private static final String DRAFT = "DRAFT";
@@ -38,9 +38,9 @@ public class TicketServiceImpl implements TicketService {
     private static final String DONE = "DONE";
 
     @Autowired
-    public TicketServiceImpl(TicketRepository ticketRepository, TicketDtoConverter ticketDtoConverter, UserService userService, EmailService emailService) {
+    public TicketServiceImpl(TicketRepository ticketRepository, TicketConverterImpl ticketConverterImpl, UserService userService, EmailService emailService) {
         this.ticketRepository = ticketRepository;
-        this.ticketDtoConverter = ticketDtoConverter;
+        this.ticketConverterImpl = ticketConverterImpl;
         this.userService = userService;
         this.emailService = emailService;
     }
@@ -62,7 +62,7 @@ public class TicketServiceImpl implements TicketService {
 
     @Override
     public TicketDto findById(Long id) {
-        return ticketDtoConverter.toDto(ticketRepository.getById(id).orElseThrow(EntityNotFoundException::new));
+        return ticketConverterImpl.toDto(ticketRepository.getById(id).orElseThrow(EntityNotFoundException::new));
     }
 
     @Override
@@ -73,7 +73,7 @@ public class TicketServiceImpl implements TicketService {
 
         if (tickets != null) {
             tickets.forEach(ticket -> {
-                ticketDtos.add(ticketDtoConverter.toDto(ticket));
+                ticketDtos.add(ticketConverterImpl.toDto(ticket));
             });
         }
 
@@ -88,7 +88,7 @@ public class TicketServiceImpl implements TicketService {
 
         if (tickets != null) {
             tickets.forEach(ticket -> {
-                ticketDtos.add(ticketDtoConverter.toDto(ticket));
+                ticketDtos.add(ticketConverterImpl.toDto(ticket));
             });
         }
         return ticketDtos;
@@ -102,7 +102,7 @@ public class TicketServiceImpl implements TicketService {
 
         if (tickets != null) {
             tickets.forEach(ticket -> {
-                ticketDtos.add(ticketDtoConverter.toDto(ticket));
+                ticketDtos.add(ticketConverterImpl.toDto(ticket));
             });
         }
         return ticketDtos;
@@ -117,7 +117,7 @@ public class TicketServiceImpl implements TicketService {
 
         if (tickets != null) {
             tickets.forEach(ticket -> {
-                ticketDtos.add(ticketDtoConverter.toDto(ticket));
+                ticketDtos.add(ticketConverterImpl.toDto(ticket));
             });
         }
         return ticketDtos;
@@ -131,7 +131,7 @@ public class TicketServiceImpl implements TicketService {
 
         if (tickets != null) {
             tickets.forEach(ticket -> {
-                ticketDtos.add(ticketDtoConverter.toDto(ticket));
+                ticketDtos.add(ticketConverterImpl.toDto(ticket));
             });
         }
         return ticketDtos;
@@ -147,7 +147,7 @@ public class TicketServiceImpl implements TicketService {
         LocalDate resolutionDate = setTime.toLocalDateTime().toLocalDate();
         Ticket ticket = null;
         if (currentDate.compareTo(resolutionDate) <= 0) {
-            ticket = ticketRepository.create(ticketDtoConverter.toEntity(dto));
+            ticket = ticketRepository.create(ticketConverterImpl.toEntity(dto));
         }
         if (ticket == null) {
             throw new EntityNotFoundException("Ticket does not create!");
@@ -167,23 +167,23 @@ public class TicketServiceImpl implements TicketService {
                 case DRAFT:
                     changeStateFromDraft(dto, state);
                     emailService.sendAllManagerMessage(dto);
-                    return ticketRepository.update(ticketDtoConverter.toUpdEntity(dto));
+                    return ticketRepository.update(ticketConverterImpl.toUpdEntity(dto));
                 case NEW:
                     changeStateFromNew(dto, state);
                     emailService.sendEmailsForNewTickets(dto);
-                    return ticketRepository.update(ticketDtoConverter.toUpdEntity(dto));
+                    return ticketRepository.update(ticketConverterImpl.toUpdEntity(dto));
                 case APPROVE:
                     changeStateFromApprove(dto, state);
                     emailService.sendApproveMessage(dto);
-                    return ticketRepository.update(ticketDtoConverter.toUpdEntity(dto));
+                    return ticketRepository.update(ticketConverterImpl.toUpdEntity(dto));
                 case IN_PROGRESS:
                     changeStateFromInProgress(dto, state);
                     emailService.sendCreatorMessage(dto);
-                    return ticketRepository.update(ticketDtoConverter.toUpdEntity(dto));
+                    return ticketRepository.update(ticketConverterImpl.toUpdEntity(dto));
                 case DECLINE:
                     changeStateFromeDecline(dto, state);
                     emailService.sendAllManagerMessage(dto);
-                    return ticketRepository.update(ticketDtoConverter.toUpdEntity(dto));
+                    return ticketRepository.update(ticketConverterImpl.toUpdEntity(dto));
                 default:
                     throw new TicketStateException("There is no transition status");
             }
