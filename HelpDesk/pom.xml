@@ -39,6 +39,10 @@
         <javax.mail.version>1.6.2</javax.mail.version>
         <junit.version>4.13.1</junit.version>
         <jwebunit.version>3.3</jwebunit.version>
+        <mockito.core.version>4.4.0</mockito.core.version>
+        <mockMvc.version>2.0.5.RELEASE</mockMvc.version>
+        <jquery.version>3.6.0</jquery.version>
+        <bootstrap.version>4.5.3</bootstrap.version>
     </properties>
 
 
@@ -306,37 +310,45 @@
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
-            <version>4.13.1</version>
+            <version>${junit.version}</version>
             <scope>compile</scope>
         </dependency>
 
-        <!-- https://mvnrepository.com/artifact/org.mockito/mockito-all -->
-        <dependency>
-            <groupId>org.mockito</groupId>
-            <artifactId>mockito-all</artifactId>
-            <version>1.10.19</version>
-            <scope>test</scope>
-        </dependency>
-
-        <!-- https://mvnrepository.com/artifact/org.mockito/mockito-core -->
+        <!-- mockito-core -->
         <dependency>
             <groupId>org.mockito</groupId>
             <artifactId>mockito-core</artifactId>
-            <version>4.4.0</version>
+            <version>${mockito.core.version}</version>
             <scope>test</scope>
         </dependency>
 
-        <!-- https://mvnrepository.com/artifact/org.springframework.restdocs/spring-restdocs-mockmvc -->
+        <!-- spring-restdocs-mockmvc -->
         <dependency>
             <groupId>org.springframework.restdocs</groupId>
             <artifactId>spring-restdocs-mockmvc</artifactId>
-            <version>2.0.5.RELEASE</version>
+            <version>${mockMvc.version}</version>
             <scope>test</scope>
         </dependency>
 
+        <!-- jquery -->
+        <dependency>
+            <groupId>org.webjars</groupId>
+            <artifactId>jquery</artifactId>
+            <version>${jquery.version}</version>
+        </dependency>
 
-
-
+        <!-- bootstrap -->
+        <dependency>
+            <groupId>org.webjars</groupId>
+            <artifactId>bootstrap</artifactId>
+            <version>${bootstrap.version}</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.webjars</groupId>
+                    <artifactId>jquery</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
 
     </dependencies>
 
