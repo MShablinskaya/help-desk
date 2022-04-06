@@ -133,11 +133,9 @@ public class EmailServiceImpl implements EmailService {
         List<String> emails = new ArrayList<>();
 
         if (users != null) {
-            users.forEach(user -> {
-                emails.add(user.getEmail());
-            });
+            users.forEach(user -> emails.add(user.getEmail()));
         }
-        String email = dto.getOwner();
+        String email = dto.getOwner().getEmail();
 
         emails.add(email);
 
@@ -150,9 +148,7 @@ public class EmailServiceImpl implements EmailService {
         List<String> emails = new ArrayList<>();
 
         if (users != null) {
-            users.forEach(user -> {
-                emails.add(user.getEmail());
-            });
+            users.forEach(user -> emails.add(user.getEmail()));
         }
 
         return emails.toArray(new String[0]);
@@ -200,8 +196,8 @@ public class EmailServiceImpl implements EmailService {
     }
 
     private void templateForCreatorMails(TicketDto dto) {
-        User user = userService.findByEmail(dto.getOwner());
-        String creator = dto.getOwner();
+        User user = userService.findByEmail(dto.getOwner().getEmail());
+        String creator = dto.getOwner().getEmail();
         String firstName = user.getFirstName();
         String lastName = user.getLastName();
         Long ticketName = dto.getId();
@@ -221,8 +217,8 @@ public class EmailServiceImpl implements EmailService {
     }
 
     private void templateForApproveMails(TicketDto dto) {
-        String approveEmail = dto.getApprove();
-        String ownerEmail = dto.getOwner();
+        String approveEmail = dto.getApprove().getEmail();
+        String ownerEmail = dto.getOwner().getEmail();
         Long ticketName = dto.getId();
         Context context = new Context();
         context.setVariable("ticketName", ticketName);
@@ -233,10 +229,9 @@ public class EmailServiceImpl implements EmailService {
     }
 
     private void templateForAssignee(TicketDto dto) {
-        User user = userService.findByEmail(dto.getAssignee());
-        String assignee = dto.getAssignee();
-        String firstName = user.getFirstName();
-        String lastName = user.getLastName();
+        String assignee = dto.getAssignee().getEmail();
+        String firstName = dto.getAssignee().getFirstName();
+        String lastName = dto.getAssignee().getLastName();
         Long ticketName = dto.getId();
         Context context = new Context();
         context.setVariable("firstName", firstName);

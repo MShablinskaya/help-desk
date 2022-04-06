@@ -1,36 +1,30 @@
 package com.innowise.training.shablinskaya.helpdesk.dto;
 
+import java.sql.Timestamp;
 import java.util.Objects;
 
 public class CommentDto {
-    private Long id;
-    private Long userId;
+
+    private Timestamp creationDate;
+    private UserDto userId;
     private String text;
     private Long ticketId;
 
     public CommentDto() {
     }
 
-    public CommentDto(Long id, Long userId, String text, Long ticketId) {
-        this.id = id;
+    public CommentDto(UserDto userId, String text, Long ticketId) {
         this.userId = userId;
         this.text = text;
         this.ticketId = ticketId;
     }
 
-    public Long getId() {
-        return id;
-    }
 
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public Long getUserId() {
+    public UserDto getUserId() {
         return userId;
     }
 
-    public void setUserId(Long userId) {
+    public void setUserId(UserDto userId) {
         this.userId = userId;
     }
 
@@ -50,26 +44,34 @@ public class CommentDto {
         this.ticketId = ticketId;
     }
 
+    public Timestamp getCreationDate() {
+        return creationDate;
+    }
+
+    public void setCreationDate(Timestamp creationDate) {
+        this.creationDate = creationDate;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        CommentDto that = (CommentDto) o;
-        return Objects.equals(id, that.id)
-                && Objects.equals(userId, that.userId)
-                && Objects.equals(text, that.text)
-                && Objects.equals(ticketId, that.ticketId);
+        CommentDto dto = (CommentDto) o;
+        return Objects.equals(creationDate, dto.creationDate)
+                && Objects.equals(userId, dto.userId)
+                && Objects.equals(text, dto.text)
+                && Objects.equals(ticketId, dto.ticketId);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, userId, text, ticketId);
+        return Objects.hash(creationDate, userId, text, ticketId);
     }
 
     @Override
     public String toString() {
         return "CommentDto{" +
-                "id=" + id +
+                "creationDate=" + creationDate +
                 ", userId=" + userId +
                 ", text='" + text + '\'' +
                 ", ticketId=" + ticketId +

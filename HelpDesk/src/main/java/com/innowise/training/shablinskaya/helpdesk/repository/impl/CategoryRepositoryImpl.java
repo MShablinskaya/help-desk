@@ -6,7 +6,6 @@ import org.springframework.stereotype.Repository;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
-import java.util.List;
 import java.util.Optional;
 
 @Repository
@@ -25,12 +24,6 @@ public class CategoryRepositoryImpl implements CategoryRepository {
         return (Category) entityManager.createQuery("SELECT c FROM Category c WHERE c.categoryName = :name")
                 .setParameter("name", name)
                 .getSingleResult();
-    }
-
-    @Override
-    public List<Category> getAllFromTable() {
-        return entityManager.createQuery("SELECT c FROM Category c", Category.class)
-                .getResultList();
     }
 
 }

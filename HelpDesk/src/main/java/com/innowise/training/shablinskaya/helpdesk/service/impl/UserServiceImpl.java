@@ -27,9 +27,9 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public List<User> getAllByRole(Role role) throws TicketStateException {
-        if (role != null){
+        if (role != null) {
             return userRepository.findByRole(role);
-        }else {
+        } else {
             throw new TicketStateException("Role is unacceptable!");
         }
     }

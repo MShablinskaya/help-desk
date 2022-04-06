@@ -2,7 +2,6 @@ package com.innowise.training.shablinskaya.helpdesk.service.impl;
 
 import com.innowise.training.shablinskaya.helpdesk.converter.impl.TicketConverterImpl;
 import com.innowise.training.shablinskaya.helpdesk.dto.AttachmentDto;
-import com.innowise.training.shablinskaya.helpdesk.dto.TicketDto;
 import com.innowise.training.shablinskaya.helpdesk.entity.History;
 import com.innowise.training.shablinskaya.helpdesk.entity.Ticket;
 import com.innowise.training.shablinskaya.helpdesk.exception.TicketStateException;
@@ -17,13 +16,12 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.persistence.EntityNotFoundException;
 import java.sql.Timestamp;
 import java.time.Instant;
-import java.util.List;
 
 @Service
 public class HistoryServiceImpl implements HistoryService {
     private static final String TICKET_CREATED = "Ticket is created";
     private static final String TICKET_CHANGED = "Ticket Status is changed";
-    private static final String DRAFT_TO_NEW = "Ticket Status is changed from Draft to New";
+    private static final String DRAFT_TO_NEW = "Ticket Status is changed from Draft to Submitted";
     private static final String DRAFT_TO_CANCELLED = "Ticket was Cancelled";
     private static final String NEW_TO_APPROVE = "Ticket Status is changed from New to Approve";
     private static final String NEW_TO_DECLINED = "Ticket Status is changed from New to Declined";
@@ -57,7 +55,7 @@ public class HistoryServiceImpl implements HistoryService {
 
     @Override
     @Transactional
-    public History createTicketHistory(Ticket ticket) throws TicketStateException {
+    public void createTicketHistory(Ticket ticket) throws TicketStateException {
         if (ticket != null) {
             History history = new History();
             history.setTicket(ticket);
@@ -66,29 +64,32 @@ public class HistoryServiceImpl implements HistoryService {
             switch (ticket.getState().name()) {
                 case DRAFT:
                     creation(history);
-                    return historyRepository.save(history);
+                    historyRepository.save(history);
+
                 case NEW:
                     historyForNew(history);
-                    return historyRepository.save(history);
+                    historyRepository.save(history);
+
                 case CANCEL:
                     historyForCancelled(history);
-                    return historyRepository.save(history);
+                    historyRepository.save(history);
 
                 case APPROVE:
                     historyForApprove(history);
-                    return historyRepository.save(history);
+                    historyRepository.save(history);
 
                 case DECLINE:
                     historyForDecline(history);
-                    return historyRepository.save(history);
+                    historyRepository.save(history);
 
                 case IN_PROGRESS:
                     historyForInProgress(history);
-                    return historyRepository.save(history);
+                    historyRepository.save(history);
 
                 case DONE:
                     historyForDone(history);
-                    return historyRepository.save(history);
+                    historyRepository.save(history);
+
 
                 default:
                     throw new TicketStateException("Incorrect transition!");
@@ -100,7 +101,7 @@ public class HistoryServiceImpl implements HistoryService {
 
     @Override
     @Transactional
-    public History ticketHistoryForEdit(Ticket ticket) throws TicketStateException {
+    public void ticketHistoryForEdit(Ticket ticket) throws TicketStateException {
         if (ticket != null) {
             History history = new History();
             history.setTicket(ticket);
@@ -108,7 +109,7 @@ public class HistoryServiceImpl implements HistoryService {
             history.setUserId(userService.getCurrentUser());
             if (ticket.getState().name().equals(NEW)) {
                 edit(history);
-                return historyRepository.save(history);
+                historyRepository.save(history);
             } else {
                 throw new TicketStateException("Incorrect transition!");
             }
@@ -117,36 +118,19 @@ public class HistoryServiceImpl implements HistoryService {
         }
     }
 
-
     @Override
-    public History getById(Long id) {
-        return historyRepository.getById(id).orElseThrow(EntityNotFoundException::new);
-    }
-
-    @Override
-    public List<History> getByTicketId(Long id) {
-        TicketDto ticket = ticketService.findById(id);
-
-        if (ticket != null) {
-            return historyRepository.findByTicketId(id);
-        }
-
-        return null;
+    @Transactional
+    public void historyForAddAttachment(AttachmentDto dto) throws TicketStateException {
+        createHistory(dto, ADD);
     }
 
     @Override
     @Transactional
-    public History historyForAddAttachment(AttachmentDto dto) throws TicketStateException {
-        return getHistory(dto, ADD);
+    public void historyForDeletedAttachment(AttachmentDto dto) throws TicketStateException {
+        createHistory(dto, DELETE);
     }
 
-    @Override
-    @Transactional
-    public History historyForDeletingAttachment(AttachmentDto dto) throws TicketStateException {
-        return getHistory(dto, DELETE);
-    }
-
-    private History getHistory(AttachmentDto dto, String action) throws TicketStateException {
+    private void createHistory(AttachmentDto dto, String action) throws TicketStateException {
         if (dto != null) {
             History history = new History();
             history.setTicket(converter.toUpdEntity(ticketService.findById(dto.getTicketId())));
@@ -154,7 +138,7 @@ public class HistoryServiceImpl implements HistoryService {
             history.setUserId(userService.getCurrentUser());
             history.setAction(action);
             history.setDescription(action + dto.getName());
-            return historyRepository.save(history);
+            historyRepository.save(history);
         } else {
             throw new TicketStateException("File doesn't exist!");
         }

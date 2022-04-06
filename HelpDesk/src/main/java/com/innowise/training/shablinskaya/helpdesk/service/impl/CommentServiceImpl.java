@@ -24,9 +24,9 @@ public class CommentServiceImpl implements CommentService {
     @Override
     @Transactional
     public Comment createComment(CommentDto dto) throws TicketStateException {
-        if (dto.getText() != null){
+        if (dto.getText() != null) {
             return commentRepository.save(converter.toEntity(dto));
-        }else{
+        } else {
             throw new TicketStateException("You can't leave empty comment!");
         }
     }

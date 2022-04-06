@@ -66,7 +66,7 @@ public class AttachmentController {
             TicketDto ticketDto = ticketService.findById(dto.getTicketId());
             User user = userService.getCurrentUser();
             if (ticketDto.getOwner().equals(user.getEmail())) {
-                historyService.historyForDeletingAttachment(dto);
+                historyService.historyForDeletedAttachment(dto);
                 attachmentService.deleteFile(dto);
 
                 return new ResponseEntity(HttpStatus.OK);

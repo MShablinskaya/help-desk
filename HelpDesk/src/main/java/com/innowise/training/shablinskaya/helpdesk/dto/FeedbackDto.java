@@ -92,7 +92,6 @@ public class FeedbackDto {
     @Override
     public String toString() {
         return "FeedbackDto{" +
-                "id=" + id +
                 ", userId='" + userId + '\'' +
                 ", rate=" + rate +
                 ", date=" + date +

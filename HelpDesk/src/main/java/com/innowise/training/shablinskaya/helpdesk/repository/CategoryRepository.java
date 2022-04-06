@@ -11,5 +11,4 @@ public interface CategoryRepository {
 
     Category getByName(String name);
 
-    List<Category> getAllFromTable();
 }
