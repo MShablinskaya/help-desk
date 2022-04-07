@@ -1,8 +1,7 @@
 package com.innowise.training.shablinskaya.helpdesk.service.impl;
 
-import com.innowise.training.shablinskaya.helpdesk.converter.TicketDtoConverter;
+import com.innowise.training.shablinskaya.helpdesk.converter.impl.TicketConverterImpl;
 import com.innowise.training.shablinskaya.helpdesk.dto.AttachmentDto;
-import com.innowise.training.shablinskaya.helpdesk.dto.TicketDto;
 import com.innowise.training.shablinskaya.helpdesk.entity.History;
 import com.innowise.training.shablinskaya.helpdesk.entity.Ticket;
 import com.innowise.training.shablinskaya.helpdesk.exception.TicketStateException;
@@ -17,37 +16,36 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.persistence.EntityNotFoundException;
 import java.sql.Timestamp;
 import java.time.Instant;
-import java.util.List;
 
 @Service
 public class HistoryServiceImpl implements HistoryService {
-    private final static String TICKET_CREATED = "Ticket is created";
-    private final static String TICKET_CHANGED = "Ticket Status is changed";
-    private final static String DRAFT_TO_NEW = "Ticket Status is changed from Draft to New";
-    private final static String DRAFT_TO_CANCELLED = "Ticket was Cancelled";
-    private final static String NEW_TO_APPROVE = "Ticket Status is changed from New to Approve";
-    private final static String NEW_TO_DECLINED = "Ticket Status is changed from New to Declined";
-    private final static String APPROVE_TO_IN_PROGRESS = "Ticket Status is changed Assignee to In Progress";
-    private final static String I_PROGRESS_TO_DONE = "Ticket Status is changed In Progress to Done";
-    private final static String NEW = "NEW";
-    private final static String DRAFT = "DRAFT";
-    private final static String APPROVE = "APPROVED";
-    private final static String DECLINE = "DECLINED";
-    private final static String CANCEL = "CANCELLED";
-    private final static String IN_PROGRESS = "IN_PROGRESS";
-    private final static String DONE = "DONE";
-    private final static String EDIT = "Ticket is edited";
-    private final static String ADD = "File is attached ";
-    private final static String DELETE = "File is removed ";
+    private static final String TICKET_CREATED = "Ticket is created";
+    private static final String TICKET_CHANGED = "Ticket Status is changed";
+    private static final String DRAFT_TO_NEW = "Ticket Status is changed from Draft to New";
+    private static final String DRAFT_TO_CANCELLED = "Ticket was Cancelled";
+    private static final String NEW_TO_APPROVE = "Ticket Status is changed from New to Approve";
+    private static final String NEW_TO_DECLINED = "Ticket Status is changed from New to Declined";
+    private static final String APPROVE_TO_IN_PROGRESS = "Ticket Status is changed Assignee to In Progress";
+    private static final String I_PROGRESS_TO_DONE = "Ticket Status is changed In Progress to Done";
+    private static final String NEW = "NEW";
+    private static final String DRAFT = "DRAFT";
+    private static final String APPROVE = "APPROVED";
+    private static final String DECLINE = "DECLINED";
+    private static final String CANCEL = "CANCELLED";
+    private static final String IN_PROGRESS = "IN_PROGRESS";
+    private static final String DONE = "DONE";
+    private static final String EDIT = "Ticket is edited";
+    private static final String ADD = "File is attached ";
+    private static final String DELETE = "File is removed ";
 
-    private HistoryRepository historyRepository;
-    private UserService userService;
-    private TicketService ticketService;
-    private TicketDtoConverter converter;
+    private final HistoryRepository historyRepository;
+    private final UserService userService;
+    private final TicketService ticketService;
+    private final TicketConverterImpl converter;
 
 
     @Autowired
-    public HistoryServiceImpl(HistoryRepository historyRepository, UserService userService, TicketService ticketService, TicketDtoConverter converter) {
+    public HistoryServiceImpl(HistoryRepository historyRepository, UserService userService, TicketService ticketService, TicketConverterImpl converter) {
         this.historyRepository = historyRepository;
         this.userService = userService;
         this.ticketService = ticketService;
@@ -57,7 +55,7 @@ public class HistoryServiceImpl implements HistoryService {
 
     @Override
     @Transactional
-    public History createTicketHistory(Ticket ticket) throws TicketStateException {
+    public void createTicketHistory(Ticket ticket) throws TicketStateException {
         if (ticket != null) {
             History history = new History();
             history.setTicket(ticket);
@@ -66,29 +64,38 @@ public class HistoryServiceImpl implements HistoryService {
             switch (ticket.getState().name()) {
                 case DRAFT:
                     creation(history);
-                    return historyRepository.save(history);
+                    historyRepository.save(history);
+                    break;
+
                 case NEW:
                     historyForNew(history);
-                    return historyRepository.save(history);
+                    historyRepository.save(history);
+                    break;
+
                 case CANCEL:
                     historyForCancelled(history);
-                    return historyRepository.save(history);
+                    historyRepository.save(history);
+                    break;
 
                 case APPROVE:
                     historyForApprove(history);
-                    return historyRepository.save(history);
+                    historyRepository.save(history);
+                    break;
 
                 case DECLINE:
                     historyForDecline(history);
-                    return historyRepository.save(history);
+                    historyRepository.save(history);
+                    break;
 
                 case IN_PROGRESS:
                     historyForInProgress(history);
-                    return historyRepository.save(history);
+                    historyRepository.save(history);
+                    break;
 
                 case DONE:
                     historyForDone(history);
-                    return historyRepository.save(history);
+                    historyRepository.save(history);
+                    break;
 
                 default:
                     throw new TicketStateException("Incorrect transition!");
@@ -100,68 +107,45 @@ public class HistoryServiceImpl implements HistoryService {
 
     @Override
     @Transactional
-    public History ticketHistoryForEdit(Ticket ticket) throws TicketStateException {
+    public void ticketHistoryForEdit(Ticket ticket) throws TicketStateException {
         if (ticket != null) {
             History history = new History();
             history.setTicket(ticket);
             history.setDate(Timestamp.from(Instant.now()));
             history.setUserId(userService.getCurrentUser());
-            if (ticket.getState().name().equals(NEW)){
+            if (ticket.getState().name().equals(NEW)) {
                 edit(history);
-                return historyRepository.save(history);
-            }else{
+                historyRepository.save(history);
+            } else {
                 throw new TicketStateException("Incorrect transition!");
             }
-        }else {
+        } else {
             throw new EntityNotFoundException("Ticket not found!");
         }
     }
 
-
     @Override
-    public History getById(Long id) {
-        return historyRepository.getById(id).orElseThrow(EntityNotFoundException::new);
-    }
-
-    @Override
-    public List<History> getByTicketId(Long id) {
-        TicketDto ticket = ticketService.findById(id);
-
-        if (ticket != null) {
-            return historyRepository.findByTicketId(id);
-        }
-
-        return null;
+    @Transactional
+    public void historyForAddAttachment(AttachmentDto dto) throws TicketStateException {
+        createHistory(dto, ADD);
     }
 
     @Override
     @Transactional
-    public History historyForAddAttachment(AttachmentDto dto) throws TicketStateException {
-        if (dto != null){
-            History history = new History();
-            history.setTicket(converter.toUpdEntity(ticketService.findById(dto.getTicketId())));
-            history.setDate(Timestamp.from(Instant.now()));
-            history.setUserId(userService.getCurrentUser());
-            history.setAction(ADD);
-            history.setDescription(ADD + dto.getName());
-            return historyRepository.save(history);
-        }else {
-            throw new TicketStateException("File doesn't exist!");
-        }
+    public void historyForDeletedAttachment(AttachmentDto dto) throws TicketStateException {
+        createHistory(dto, DELETE);
     }
 
-    @Override
-    @Transactional
-    public History historyForDeletingAttachment(AttachmentDto dto) throws TicketStateException {
-        if (dto != null){
+    private void createHistory(AttachmentDto dto, String action) throws TicketStateException {
+        if (dto != null) {
             History history = new History();
             history.setTicket(converter.toUpdEntity(ticketService.findById(dto.getTicketId())));
             history.setDate(Timestamp.from(Instant.now()));
             history.setUserId(userService.getCurrentUser());
-            history.setAction(DELETE);
-            history.setDescription(DELETE + dto.getName());
-            return historyRepository.save(history);
-        }else {
+            history.setAction(action);
+            history.setDescription(action + dto.getName());
+            historyRepository.save(history);
+        } else {
             throw new TicketStateException("File doesn't exist!");
         }
     }
@@ -196,19 +180,19 @@ public class HistoryServiceImpl implements HistoryService {
         historyRepository.save(history);
     }
 
-    private void historyForInProgress(History history){
+    private void historyForInProgress(History history) {
         history.setAction(TICKET_CHANGED);
         history.setDescription(APPROVE_TO_IN_PROGRESS);
         historyRepository.save(history);
     }
 
-    private void historyForDone(History history){
+    private void historyForDone(History history) {
         history.setAction(TICKET_CHANGED);
         history.setDescription(I_PROGRESS_TO_DONE);
         historyRepository.save(history);
     }
 
-    private void edit(History history){
+    private void edit(History history) {
         history.setAction(EDIT);
         history.setDescription(EDIT);
         historyRepository.save(history);

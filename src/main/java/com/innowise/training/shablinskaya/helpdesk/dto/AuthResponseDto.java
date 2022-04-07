@@ -1,22 +1,17 @@
 package com.innowise.training.shablinskaya.helpdesk.dto;
 
+import java.util.List;
 import java.util.Objects;
 
 public class AuthResponseDto {
 
     private String token;
 
-    private String lastName;
+    private String email;
 
-    private String role;
+    private List role;
 
     public AuthResponseDto() {
-    }
-
-    public AuthResponseDto(String token, String lastName, String role) {
-        this.token = token;
-        this.lastName = lastName;
-        this.role = role;
     }
 
     public String getToken() {
@@ -27,19 +22,19 @@ public class AuthResponseDto {
         this.token = token;
     }
 
-    public String getLastName() {
-        return lastName;
+    public String getEmail() {
+        return email;
     }
 
-    public void setLastName(String lastName) {
-        this.lastName = lastName;
+    public void setEmail(String email) {
+        this.email = email;
     }
 
-    public String getRole() {
+    public List getRole() {
         return role;
     }
 
-    public void setRole(String role) {
+    public void setRole(List role) {
         this.role = role;
     }
 
@@ -48,22 +43,22 @@ public class AuthResponseDto {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         AuthResponseDto that = (AuthResponseDto) o;
-        return Objects.equals(token, that.token) &&
-                Objects.equals(lastName, that.lastName) &&
-                Objects.equals(role, that.role);
+        return Objects.equals(token, that.token)
+                && Objects.equals(email, that.email)
+                && Objects.equals(role, that.role);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(token, lastName, role);
+        return Objects.hash(token, email, role);
     }
 
     @Override
     public String toString() {
         return "AuthResponseDto{" +
-                "token='" + token + '\'' +
-                ", email='" + lastName + '\'' +
+                "email='" + email + '\'' +
                 ", role='" + role + '\'' +
+                ", token=" + token +
                 '}';
     }
 }

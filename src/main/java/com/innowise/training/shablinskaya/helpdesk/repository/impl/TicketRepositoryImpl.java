@@ -60,12 +60,6 @@ public class TicketRepositoryImpl implements TicketRepository {
         return Optional.of(entityManager.find(Ticket.class, id));
     }
 
-//    @Override
-//    public List<Ticket> getAll() {
-//        return entityManager.createQuery("SELECT t FROM Ticket t", Ticket.class)
-//                .getResultList();
-//    }
-
     @Override
     public Ticket update(Ticket ticket) {
         entityManager.merge(ticket);
@@ -75,9 +69,9 @@ public class TicketRepositoryImpl implements TicketRepository {
     @Override
     public Ticket create(Ticket ticket) {
 
-        if (ticket.getId() == null){
+        if (ticket.getId() == null) {
             entityManager.persist(ticket);
-        }else{
+        } else {
             entityManager.merge(ticket);
         }
         return ticket;

@@ -9,16 +9,10 @@ import java.util.Optional;
 
 public interface UserRepository {
 
-    List<User> findByName(String name);
-
     List<User> findByRole(Role role);
 
     Optional<User> findByEmail(String email);
 
     Optional<User> getById(Long id);
-
-    List<User> getAll();
-
-    User update(User user);
 
 }

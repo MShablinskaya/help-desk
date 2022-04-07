@@ -45,7 +45,7 @@ public class Ticket {
     private State state;
 
     @JoinColumn(name = "category_id", referencedColumnName = "id")
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(cascade = CascadeType.ALL)
     private Category category;
 
     @Column(name = "urgency_id")
@@ -67,7 +67,8 @@ public class Ticket {
     public Ticket() {
     }
 
-    public Ticket(String name, String description, Timestamp createDate, Timestamp resolutionDate, User owner, User assignee, User approve, State state, Urgency urgency, Category category) {
+    public Ticket(Long id, String name, String description, Timestamp createDate, Timestamp resolutionDate, User owner, User assignee, User approve, State state, Urgency urgency, Category category) {
+        this.id = id;
         this.name = name;
         this.description = description;
         this.createDate = createDate;
@@ -240,4 +241,5 @@ public class Ticket {
                 ", attachments=" + attachments +
                 '}';
     }
+
 }

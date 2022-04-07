@@ -1,10 +1,8 @@
 package com.innowise.training.shablinskaya.helpdesk.dto;
 
-import com.innowise.training.shablinskaya.helpdesk.entity.Category;
-import com.innowise.training.shablinskaya.helpdesk.entity.User;
-
 import java.sql.Timestamp;
 import java.util.Objects;
+
 public class TicketDto {
 
     private Long id;
@@ -12,29 +10,14 @@ public class TicketDto {
     private String description;
     private Timestamp creationDate;
     private Timestamp resolutionDate;
-    private Long owner;
-    private Long assignee;
-    private Long approve;
+    private UserDto owner;
+    private UserDto assignee;
+    private UserDto approve;
     private String state;
-    private Long category;
+    private String category;
     private String urgency;
 
     public TicketDto() {
-    }
-
-
-    public TicketDto(Long id, String name, String description, Timestamp creationDate, Timestamp resolutionDate, Long owner, Long assignee, Long approve, String state, Long category, String urgency) {
-        this.id = id;
-        this.name = name;
-        this.description = description;
-        this.creationDate = creationDate;
-        this.resolutionDate = resolutionDate;
-        this.owner = owner;
-        this.assignee = assignee;
-        this.approve = approve;
-        this.state = state;
-        this.category = category;
-        this.urgency = urgency;
     }
 
     public Long getId() {
@@ -77,27 +60,27 @@ public class TicketDto {
         this.resolutionDate = resolutionDate;
     }
 
-    public Long getOwner() {
+    public UserDto getOwner() {
         return owner;
     }
 
-    public void setOwner(Long owner) {
+    public void setOwner(UserDto owner) {
         this.owner = owner;
     }
 
-    public Long getAssignee() {
+    public UserDto getAssignee() {
         return assignee;
     }
 
-    public void setAssignee(Long assignee) {
+    public void setAssignee(UserDto assignee) {
         this.assignee = assignee;
     }
 
-    public Long getApprove() {
+    public UserDto getApprove() {
         return approve;
     }
 
-    public void setApprove(Long approve) {
+    public void setApprove(UserDto approve) {
         this.approve = approve;
     }
 
@@ -109,11 +92,11 @@ public class TicketDto {
         this.state = state;
     }
 
-    public Long getCategory() {
+    public String getCategory() {
         return category;
     }
 
-    public void setCategory(Long category) {
+    public void setCategory(String category) {
         this.category = category;
     }
 
@@ -129,18 +112,18 @@ public class TicketDto {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        TicketDto ticketDto = (TicketDto) o;
-        return Objects.equals(id, ticketDto.id)
-                && Objects.equals(name, ticketDto.name)
-                && Objects.equals(description, ticketDto.description)
-                && Objects.equals(creationDate, ticketDto.creationDate)
-                && Objects.equals(resolutionDate, ticketDto.resolutionDate)
-                && Objects.equals(owner, ticketDto.owner)
-                && Objects.equals(assignee, ticketDto.assignee)
-                && Objects.equals(approve, ticketDto.approve)
-                && Objects.equals(state, ticketDto.state)
-                && Objects.equals(category, ticketDto.category)
-                && Objects.equals(urgency, ticketDto.urgency);
+        TicketDto dto = (TicketDto) o;
+        return Objects.equals(id, dto.id)
+                && Objects.equals(name, dto.name)
+                && Objects.equals(description, dto.description)
+                && Objects.equals(creationDate, dto.creationDate)
+                && Objects.equals(resolutionDate, dto.resolutionDate)
+                && Objects.equals(owner, dto.owner)
+                && Objects.equals(assignee, dto.assignee)
+                && Objects.equals(approve, dto.approve)
+                && Objects.equals(state, dto.state)
+                && Objects.equals(category, dto.category)
+                && Objects.equals(urgency, dto.urgency);
     }
 
     @Override
@@ -151,8 +134,7 @@ public class TicketDto {
     @Override
     public String toString() {
         return "TicketDto{" +
-                "id=" + id +
-                ", name='" + name + '\'' +
+                "name='" + name + '\'' +
                 ", description='" + description + '\'' +
                 ", creationDate=" + creationDate +
                 ", resolutionDate=" + resolutionDate +
@@ -160,7 +142,7 @@ public class TicketDto {
                 ", assignee=" + assignee +
                 ", approve=" + approve +
                 ", state='" + state + '\'' +
-                ", category=" + category +
+                ", category='" + category + '\'' +
                 ", urgency='" + urgency + '\'' +
                 '}';
     }

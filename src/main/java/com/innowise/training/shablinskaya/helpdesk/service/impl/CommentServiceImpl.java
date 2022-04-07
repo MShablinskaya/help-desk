@@ -1,33 +1,48 @@
 package com.innowise.training.shablinskaya.helpdesk.service.impl;
 
-import com.innowise.training.shablinskaya.helpdesk.converter.CommentDtoConverter;
+import com.innowise.training.shablinskaya.helpdesk.converter.impl.CommentConverterImpl;
 import com.innowise.training.shablinskaya.helpdesk.dto.CommentDto;
+import com.innowise.training.shablinskaya.helpdesk.dto.TicketDto;
 import com.innowise.training.shablinskaya.helpdesk.entity.Comment;
 import com.innowise.training.shablinskaya.helpdesk.exception.TicketStateException;
 import com.innowise.training.shablinskaya.helpdesk.repository.CommentRepository;
 import com.innowise.training.shablinskaya.helpdesk.service.CommentService;
+import com.innowise.training.shablinskaya.helpdesk.service.TicketService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class CommentServiceImpl implements CommentService {
-    private CommentRepository commentRepository;
-    private CommentDtoConverter converter;
+    private final CommentRepository commentRepository;
+    private final CommentConverterImpl converter;
+    private final TicketService ticketService;
 
     @Autowired
-    public CommentServiceImpl(CommentRepository commentRepository, CommentDtoConverter converter) {
+    public CommentServiceImpl(CommentRepository commentRepository,
+                              CommentConverterImpl converter,
+                              TicketService ticketService) {
         this.commentRepository = commentRepository;
         this.converter = converter;
+        this.ticketService = ticketService;
     }
 
     @Override
     @Transactional
-    public Comment createComment(CommentDto dto) throws TicketStateException {
-        if (dto.getText() != null){
+    public CommentDto postComment(Long id, CommentDto commentDto) throws TicketStateException {
+        TicketDto ticketDto = ticketService.findById(id);
+        return converter.toDto(saveComment(commentDto, ticketDto));
+    }
+
+    @Override
+    @Transactional
+    public Comment saveComment(CommentDto dto, TicketDto ticketDto) throws TicketStateException {
+        if (ticketDto != null && dto.getText() != null) {
+            dto.setTicketId(ticketDto.getId());
             return commentRepository.save(converter.toEntity(dto));
-        }else{
+        } else {
             throw new TicketStateException("You can't leave empty comment!");
         }
     }
+
 }

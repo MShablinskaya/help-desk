@@ -2,6 +2,8 @@ package com.innowise.training.shablinskaya.helpdesk.service.impl;
 
 
 import com.innowise.training.shablinskaya.helpdesk.entity.User;
+import com.innowise.training.shablinskaya.helpdesk.enums.Role;
+import com.innowise.training.shablinskaya.helpdesk.exception.TicketStateException;
 import com.innowise.training.shablinskaya.helpdesk.repository.UserRepository;
 import com.innowise.training.shablinskaya.helpdesk.service.UserService;
 import org.apache.log4j.Logger;
@@ -24,13 +26,12 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public List<User> getAll() {
-        return userRepository.getAll();
-    }
-
-    @Override
-    public List<User> findByName(String name) {
-        return userRepository.findByName(name);
+    public List<User> getAllByRole(Role role) throws TicketStateException {
+        if (role != null) {
+            return userRepository.findByRole(role);
+        } else {
+            throw new TicketStateException("Role is unacceptable!");
+        }
     }
 
     @Override
@@ -59,11 +60,6 @@ public class UserServiceImpl implements UserService {
             }
         }
         return false;
-    }
-
-    @Override
-    public User refresh(User user) {
-        return userRepository.update(user);
     }
 
 }

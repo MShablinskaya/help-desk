@@ -10,8 +10,6 @@ import java.util.Optional;
 public interface TicketRepository {
     Optional<Ticket> getById(Long id);
 
-//    List<Ticket> getAll();
-
     Ticket update(Ticket ticket);
 
     Ticket create(Ticket ticket);

@@ -1,11 +1,11 @@
 package com.innowise.training.shablinskaya.helpdesk.controller;
 
-import com.innowise.training.shablinskaya.helpdesk.converter.TicketDtoConverter;
+import com.innowise.training.shablinskaya.helpdesk.converter.impl.TicketConverterImpl;
 import com.innowise.training.shablinskaya.helpdesk.dto.TicketDto;
 import com.innowise.training.shablinskaya.helpdesk.entity.Ticket;
 import com.innowise.training.shablinskaya.helpdesk.enums.State;
-import com.innowise.training.shablinskaya.helpdesk.enums.Urgency;
 import com.innowise.training.shablinskaya.helpdesk.exception.TicketStateException;
+import com.innowise.training.shablinskaya.helpdesk.service.EmailService;
 import com.innowise.training.shablinskaya.helpdesk.service.HistoryService;
 import com.innowise.training.shablinskaya.helpdesk.service.TicketService;
 import com.innowise.training.shablinskaya.helpdesk.service.UserService;
@@ -28,62 +28,29 @@ public class TicketController {
     private static final Logger log = org.apache.log4j.Logger.getLogger(TicketController.class);
     private final static String DRAFT = "DRAFT";
     private final static String NEW = "NEW";
+    private final static String SUBMIT = "SUBMIT";
 
 
     private final TicketService ticketService;
     private final UserService userService;
-    private final TicketDtoConverter converter;
-    private HistoryService historyService;
+    private final TicketConverterImpl converter;
+    private final HistoryService historyService;
+    private final EmailService emailService;
 
     @Autowired
-    public TicketController(TicketService ticketService, UserService userService, TicketDtoConverter converter, HistoryService historyService) {
+    public TicketController(TicketService ticketService, UserService userService, TicketConverterImpl converter, HistoryService historyService, EmailService emailService) {
         this.ticketService = ticketService;
         this.userService = userService;
         this.converter = converter;
         this.historyService = historyService;
+        this.emailService = emailService;
     }
 
-    @GetMapping("/{id}")
-    public ResponseEntity<TicketDto> getById(@PathVariable(name = "id") Long id) {
+    @GetMapping("/{ticketId}")
+    public ResponseEntity<TicketDto> getById(@PathVariable(name = "ticketId") Long id) {
         TicketDto ticketDto = ticketService.findById(id);
 
         return new ResponseEntity<>(ticketDto, HttpStatus.OK);
-    }
-
-    @GetMapping("/by-owner/{id}")
-    public ResponseEntity<List<TicketDto>> getByOwnerId(@PathVariable(name = "id") Long id) {
-        List<TicketDto> ticketDtos = ticketService.findByOwner(id);
-
-        return ResponseEntity.ok(ticketDtos);
-    }
-
-    @GetMapping("/by-approve/{id}")
-    public ResponseEntity<List<TicketDto>> getByApproveId(@PathVariable(name = "id") Long id) {
-        List<TicketDto> ticketDtos = ticketService.findByApprove(id);
-
-        return new ResponseEntity<>(ticketDtos, HttpStatus.OK);
-    }
-
-    @GetMapping("/by-assignee/{id}")
-    public ResponseEntity<List<TicketDto>> getByAssigneeId(@PathVariable(name = "id") Long id) {
-        List<TicketDto> ticketDtos = ticketService.findByAssignee(id);
-
-        return ResponseEntity.ok(ticketDtos);
-    }
-
-    @GetMapping("/by-state/{state}")
-    public ResponseEntity<List<TicketDto>> getByState(@PathVariable(value = "state") String state) {
-
-        List<TicketDto> ticketDtos = ticketService.findByState(State.valueOf(state.toUpperCase()));
-
-        return ResponseEntity.ok(ticketDtos);
-    }
-
-    @GetMapping("/by-urgency/{urgency}")
-    public ResponseEntity<List<TicketDto>> getByUrgency(@PathVariable(value = "urgency") String urgency) {
-        List<TicketDto> ticketDtos = ticketService.findByUrgency(Urgency.valueOf(urgency.toUpperCase()));
-
-        return ResponseEntity.ok(ticketDtos);
     }
 
     @GetMapping("/my-tickets")
@@ -94,55 +61,62 @@ public class TicketController {
     }
 
 
+//    @GetMapping("/{id}")
+//    public ResponseEntity<List<TicketDto>> getByApproveId(@PathVariable(name = "id") Long id) {
+//        List<TicketDto> ticketDtos = ticketService.findByApprove(id);
+//
+//        return new ResponseEntity<>(ticketDtos, HttpStatus.OK);
+//    }
+
+//    @GetMapping("/{state}")
+//    public ResponseEntity<List<TicketDto>> getByState(@PathVariable(value = "state") String state) {
+//        List<TicketDto> ticketDtos = ticketService.findByState(State.valueOf(state.toUpperCase()));
+//
+//        return ResponseEntity.ok(ticketDtos);
+//    }
+
     @PreAuthorize("@userServiceImpl.hasRole('EMPLOYEE', 'MANAGER')")
-    @PostMapping("/ticket-create/{action}")
-    public ResponseEntity<TicketDto> createTicket(@PathVariable(name = "action") String action, @RequestBody TicketDto ticketDto) throws TicketStateException {
-        if (action.equalsIgnoreCase("draft")) {
+    @PostMapping("/new-ticket/{action}")
+    public ResponseEntity<TicketDto> postNewTicket(@PathVariable(name = "action") String action, @RequestBody TicketDto ticketDto) throws TicketStateException {
+        if (action.equalsIgnoreCase(DRAFT)) {
             ticketDto.setState(DRAFT);
             Ticket ticket = ticketService.save(ticketDto);
+
             historyService.createTicketHistory(ticket);
             String savedTicketLocation = "tickets/" + ticket.getId();
+
             return ResponseEntity.created(URI.create(savedTicketLocation)).build();
-        } else if (action.equalsIgnoreCase("submit")) {
+        } else if (action.equalsIgnoreCase(SUBMIT)) {
             ticketDto.setState(NEW);
             Ticket ticket = ticketService.save(ticketDto);
+
+            emailService.sendAllManagerMessage(ticketDto);
             historyService.createTicketHistory(ticket);
             String savedTicketLocation = "tickets/" + ticket.getId();
+
             return ResponseEntity.created(URI.create(savedTicketLocation)).build();
-        }else{
+        } else {
             throw new TicketStateException("Unacceptable action!");
         }
     }
 
+    @PutMapping("/{action}")
+    public ResponseEntity<TicketDto> changeTicketState(@PathVariable(name = "action") State state, @RequestBody TicketDto dto) throws TicketStateException {
 
-    @PutMapping("/change-status/{id}")
-    public ResponseEntity<TicketDto> changeTicketState(@PathVariable(name = "id") Long id, @RequestBody State state) throws TicketStateException {
-        TicketDto ticketDto = ticketService.findById(id);
+            ticketService.changeState(dto, state);
+            historyService.createTicketHistory(converter.toUpdEntity(dto));
 
-        if (ticketDto.getId() != null && state != null) {
-            ticketService.changeState(ticketDto, state);
-            historyService.createTicketHistory(converter.toUpdEntity(ticketDto));
-
-            return new ResponseEntity<>(ticketDto, HttpStatus.OK);
-        } else {
-            throw new EntityNotFoundException("Ticket is not exist");
-        }
-
+            return new ResponseEntity<>(dto, HttpStatus.OK);
     }
 
 
     @PutMapping("/edit-ticket/{action}")
     public ResponseEntity<TicketDto> editTicket(@PathVariable(name = "action") String action, @RequestBody TicketDto ticketDto)
             throws TicketStateException {
-        if (ticketDto.getId() != null && ticketDto.getState().equals("DRAFT")) {
-            if (action.equalsIgnoreCase("submit")) {
-                ticketService.changeState(ticketDto, State.valueOf("NEW"));
+        if (ticketDto.getId() != null && ticketDto.getState().equals(DRAFT)) {
+            if (action.equalsIgnoreCase(SUBMIT)) {
+                ticketService.changeState(ticketDto, State.valueOf(NEW));
                 historyService.ticketHistoryForEdit(converter.toUpdEntity(ticketDto));
-
-                return new ResponseEntity<>(ticketDto, HttpStatus.OK);
-            } else if (action.equalsIgnoreCase("cancel")) {
-                ticketService.changeState(ticketDto, State.valueOf("CANCELLED"));
-                historyService.createTicketHistory(converter.toUpdEntity(ticketDto));
 
                 return new ResponseEntity<>(ticketDto, HttpStatus.OK);
             } else {
