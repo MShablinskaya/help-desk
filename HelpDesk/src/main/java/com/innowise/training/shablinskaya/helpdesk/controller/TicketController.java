@@ -4,7 +4,6 @@ import com.innowise.training.shablinskaya.helpdesk.converter.impl.TicketConverte
 import com.innowise.training.shablinskaya.helpdesk.dto.TicketDto;
 import com.innowise.training.shablinskaya.helpdesk.entity.Ticket;
 import com.innowise.training.shablinskaya.helpdesk.enums.State;
-import com.innowise.training.shablinskaya.helpdesk.enums.Urgency;
 import com.innowise.training.shablinskaya.helpdesk.exception.TicketStateException;
 import com.innowise.training.shablinskaya.helpdesk.service.EmailService;
 import com.innowise.training.shablinskaya.helpdesk.service.HistoryService;
@@ -47,47 +46,11 @@ public class TicketController {
         this.emailService = emailService;
     }
 
-    @GetMapping("/{id}")
-    public ResponseEntity<TicketDto> getById(@PathVariable(name = "id") Long id) {
+    @GetMapping("/{ticketId}")
+    public ResponseEntity<TicketDto> getById(@PathVariable(name = "ticketId") Long id) {
         TicketDto ticketDto = ticketService.findById(id);
 
         return new ResponseEntity<>(ticketDto, HttpStatus.OK);
-    }
-
-    @GetMapping("/by-owner/{id}")
-    public ResponseEntity<List<TicketDto>> getByOwnerId(@PathVariable(name = "id") Long id) {
-        List<TicketDto> ticketDtos = ticketService.findByOwner(id);
-
-        return ResponseEntity.ok(ticketDtos);
-    }
-
-    @GetMapping("/by-approve/{id}")
-    public ResponseEntity<List<TicketDto>> getByApproveId(@PathVariable(name = "id") Long id) {
-        List<TicketDto> ticketDtos = ticketService.findByApprove(id);
-
-        return new ResponseEntity<>(ticketDtos, HttpStatus.OK);
-    }
-
-    @GetMapping("/by-assignee/{id}")
-    public ResponseEntity<List<TicketDto>> getByAssigneeId(@PathVariable(name = "id") Long id) {
-        List<TicketDto> ticketDtos = ticketService.findByAssignee(id);
-
-        return ResponseEntity.ok(ticketDtos);
-    }
-
-    @GetMapping("/by-state/{state}")
-    public ResponseEntity<List<TicketDto>> getByState(@PathVariable(value = "state") String state) {
-
-        List<TicketDto> ticketDtos = ticketService.findByState(State.valueOf(state.toUpperCase()));
-
-        return ResponseEntity.ok(ticketDtos);
-    }
-
-    @GetMapping("/by-urgency/{urgency}")
-    public ResponseEntity<List<TicketDto>> getByUrgency(@PathVariable(value = "urgency") String urgency) {
-        List<TicketDto> ticketDtos = ticketService.findByUrgency(Urgency.valueOf(urgency.toUpperCase()));
-
-        return ResponseEntity.ok(ticketDtos);
     }
 
     @GetMapping("/my-tickets")
@@ -98,9 +61,23 @@ public class TicketController {
     }
 
 
+//    @GetMapping("/{id}")
+//    public ResponseEntity<List<TicketDto>> getByApproveId(@PathVariable(name = "id") Long id) {
+//        List<TicketDto> ticketDtos = ticketService.findByApprove(id);
+//
+//        return new ResponseEntity<>(ticketDtos, HttpStatus.OK);
+//    }
+
+//    @GetMapping("/{state}")
+//    public ResponseEntity<List<TicketDto>> getByState(@PathVariable(value = "state") String state) {
+//        List<TicketDto> ticketDtos = ticketService.findByState(State.valueOf(state.toUpperCase()));
+//
+//        return ResponseEntity.ok(ticketDtos);
+//    }
+
     @PreAuthorize("@userServiceImpl.hasRole('EMPLOYEE', 'MANAGER')")
-    @PostMapping("/ticket-create/{action}")
-    public ResponseEntity<TicketDto> createTicket(@PathVariable(name = "action") String action, @RequestBody TicketDto ticketDto) throws TicketStateException {
+    @PostMapping("/new-ticket/{action}")
+    public ResponseEntity<TicketDto> postNewTicket(@PathVariable(name = "action") String action, @RequestBody TicketDto ticketDto) throws TicketStateException {
         if (action.equalsIgnoreCase(DRAFT)) {
             ticketDto.setState(DRAFT);
             Ticket ticket = ticketService.save(ticketDto);
@@ -123,20 +100,13 @@ public class TicketController {
         }
     }
 
+    @PutMapping("/{action}")
+    public ResponseEntity<TicketDto> changeTicketState(@PathVariable(name = "action") State state, @RequestBody TicketDto dto) throws TicketStateException {
 
-    @PutMapping("/change-status/{id}")
-    public ResponseEntity<TicketDto> changeTicketState(@PathVariable(name = "id") Long id, @RequestBody State state) throws TicketStateException {
-        TicketDto ticketDto = ticketService.findById(id);
+            ticketService.changeState(dto, state);
+            historyService.createTicketHistory(converter.toUpdEntity(dto));
 
-        if (ticketDto.getId() != null && state != null) {
-            ticketService.changeState(ticketDto, state);
-            historyService.createTicketHistory(converter.toUpdEntity(ticketDto));
-
-            return new ResponseEntity<>(ticketDto, HttpStatus.OK);
-        } else {
-            throw new EntityNotFoundException("Ticket is not exist");
-        }
-
+            return new ResponseEntity<>(dto, HttpStatus.OK);
     }
 
 

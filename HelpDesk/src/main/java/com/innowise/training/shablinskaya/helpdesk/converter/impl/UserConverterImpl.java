@@ -13,6 +13,7 @@ public class UserConverterImpl implements UserConverter {
 
         dto.setFirstName(user.getFirstName());
         dto.setLastName(user.getLastName());
+        dto.setEmail(user.getEmail());
 
         return dto;
     }

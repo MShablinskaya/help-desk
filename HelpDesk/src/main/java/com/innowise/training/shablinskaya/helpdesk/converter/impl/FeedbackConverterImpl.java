@@ -12,14 +12,14 @@ import java.sql.Timestamp;
 import java.time.Instant;
 
 @Component
-public class FeedBackConverterImpl implements FeedbackConverter {
+public class FeedbackConverterImpl implements FeedbackConverter {
 
     private final UserService userService;
     private final TicketService ticketService;
     private final TicketConverterImpl converter;
 
     @Autowired
-    public FeedBackConverterImpl(UserService userService, TicketService ticketService, TicketConverterImpl converter) {
+    public FeedbackConverterImpl(UserService userService, TicketService ticketService, TicketConverterImpl converter) {
         this.userService = userService;
         this.ticketService = ticketService;
         this.converter = converter;

@@ -1,20 +1,17 @@
 package com.innowise.training.shablinskaya.helpdesk.dto;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import java.util.Objects;
 
 public class UserDto {
 
     private String firstName;
     private String lastName;
+    @JsonIgnore
     private String email;
 
     public UserDto() {
-    }
-
-    public UserDto(String firstName, String lastName, String email) {
-        this.firstName = firstName;
-        this.lastName = lastName;
-        this.email = email;
     }
 
     public String getFirstName() {

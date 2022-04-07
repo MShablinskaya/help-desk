@@ -1,5 +1,7 @@
 package com.innowise.training.shablinskaya.helpdesk.dto;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import java.sql.Timestamp;
 import java.util.Objects;
 
@@ -8,17 +10,11 @@ public class CommentDto {
     private Timestamp creationDate;
     private UserDto userId;
     private String text;
+    @JsonIgnore
     private Long ticketId;
 
     public CommentDto() {
     }
-
-    public CommentDto(UserDto userId, String text, Long ticketId) {
-        this.userId = userId;
-        this.text = text;
-        this.ticketId = ticketId;
-    }
-
 
     public UserDto getUserId() {
         return userId;

@@ -4,6 +4,8 @@ import com.innowise.training.shablinskaya.helpdesk.converter.TicketConverter;
 import com.innowise.training.shablinskaya.helpdesk.converter.UserConverter;
 import com.innowise.training.shablinskaya.helpdesk.dto.TicketDto;
 import com.innowise.training.shablinskaya.helpdesk.entity.Ticket;
+import com.innowise.training.shablinskaya.helpdesk.entity.User;
+import com.innowise.training.shablinskaya.helpdesk.enums.Role;
 import com.innowise.training.shablinskaya.helpdesk.enums.State;
 import com.innowise.training.shablinskaya.helpdesk.enums.Urgency;
 import com.innowise.training.shablinskaya.helpdesk.exception.TicketStateException;
@@ -12,7 +14,6 @@ import com.innowise.training.shablinskaya.helpdesk.service.EmailService;
 import com.innowise.training.shablinskaya.helpdesk.service.TicketService;
 import com.innowise.training.shablinskaya.helpdesk.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -25,12 +26,6 @@ import java.util.List;
 
 @Service
 public class TicketServiceImpl implements TicketService {
-
-    private final TicketRepository ticketRepository;
-    private final TicketConverter ticketConverter;
-    private final UserService userService;
-    private final UserConverter userConverter;
-    private final EmailService emailService;
     private static final String DRAFT = "DRAFT";
     private static final String NEW = "NEW";
     private static final String APPROVE = "APPROVED";
@@ -38,6 +33,13 @@ public class TicketServiceImpl implements TicketService {
     private static final String CANCEL = "CANCELLED";
     private static final String IN_PROGRESS = "IN_PROGRESS";
     private static final String DONE = "DONE";
+
+    private final TicketRepository ticketRepository;
+    private final TicketConverter ticketConverter;
+    private final UserService userService;
+    private final UserConverter userConverter;
+    private final EmailService emailService;
+
 
     @Autowired
     public TicketServiceImpl(TicketRepository ticketRepository, TicketConverter ticketConverter, UserService userService, UserConverter userConverter, EmailService emailService) {
@@ -147,44 +149,25 @@ public class TicketServiceImpl implements TicketService {
     @Transactional
     @Override
     public Ticket changeState(TicketDto dto, State state) throws TicketStateException {
-        Long ticketId = dto.getId();
+        User user = userService.getCurrentUser();
 
-        if (ticketId != null && state != null) {
-            dto.setId(ticketId);
-            switch (dto.getState()) {
-                case DRAFT:
+        if (dto != null && state != null) {
+            if (user.getRoleId().equals(Role.EMPLOYEE) || user.getRoleId().equals(Role.MANAGER)) {
+                if (dto.getState().equals(DRAFT) || dto.getState().equals(DECLINE)) {
+
                     changeStateFromDraft(dto, state);
                     emailService.sendAllManagerMessage(dto);
-                    return ticketRepository.update(ticketConverter.toUpdEntity(dto));
-                case NEW:
-                    changeStateFromNew(dto, state);
-                    emailService.sendEmailsForNewTickets(dto);
-                    return ticketRepository.update(ticketConverter.toUpdEntity(dto));
-                case APPROVE:
-                    changeStateFromApprove(dto, state);
-                    emailService.sendApproveMessage(dto);
-                    return ticketRepository.update(ticketConverter.toUpdEntity(dto));
-                case IN_PROGRESS:
-                    changeStateFromInProgress(dto, state);
-                    emailService.sendCreatorMessage(dto);
-                    return ticketRepository.update(ticketConverter.toUpdEntity(dto));
-                case DECLINE:
-                    changeStateFromDecline(dto, state);
-                    emailService.sendAllManagerMessage(dto);
-                    return ticketRepository.update(ticketConverter.toUpdEntity(dto));
-                default:
-                    throw new TicketStateException("There is no transition status");
-            }
-        } else {
-            throw new EntityNotFoundException("Ticket is not exist!");
-        }
 
+                    return ticketRepository.update(ticketConverter.toUpdEntity(dto));
+                }
+            }
+        }
+        throw new TicketStateException("You don't own this ticket!");
     }
 
 
-    @PreAuthorize("@userServiceImpl.hasRole('EMPLOYEE', 'MANAGER')")
     private void changeStateFromDraft(TicketDto dto, State state) throws TicketStateException {
-        if (dto.getOwner().equals(userService.getCurrentUser().getEmail())) {
+        if (dto.getOwner().getEmail().equals(userService.getCurrentUser().getEmail())) {
             if (!state.name().equals(dto.getState())) {
                 if (state.name().equals(NEW) || state.name().equals(CANCEL)) {
                     dto.setState(state.name());
@@ -199,9 +182,9 @@ public class TicketServiceImpl implements TicketService {
         }
     }
 
-    @PreAuthorize("@userServiceImpl.hasRole('MANAGER')")
+
     private void changeStateFromNew(TicketDto dto, State state) throws TicketStateException {
-        if (!dto.getOwner().equals(userService.getCurrentUser().getEmail())) {
+        if (!dto.getOwner().getEmail().equals(userService.getCurrentUser().getEmail())) {
             if (!state.name().equals(dto.getState())) {
                 if (state.name().equals(APPROVE) || state.name().equals(DECLINE) || state.name().equals(CANCEL)) {
                     dto.setState(state.name());
@@ -217,7 +200,7 @@ public class TicketServiceImpl implements TicketService {
         }
     }
 
-    @PreAuthorize("@userServiceImpl.hasRole('ENGENEER')")
+
     private void changeStateFromApprove(TicketDto dto, State state) throws TicketStateException {
         if (!state.name().equals(dto.getState())) {
             if (state.name().equals(IN_PROGRESS) || state.name().equals(CANCEL)) {
@@ -231,7 +214,7 @@ public class TicketServiceImpl implements TicketService {
         }
     }
 
-    @PreAuthorize("@userServiceImpl.hasRole('ENGENEER')")
+
     private void changeStateFromInProgress(TicketDto dto, State state) throws TicketStateException {
         if (!state.name().equals(dto.getState())) {
             if (state.name().equals(DONE) || state.name().equals(CANCEL)) {
@@ -246,25 +229,7 @@ public class TicketServiceImpl implements TicketService {
 
     }
 
-    @PreAuthorize("@userServiceImpl.hasRole('EMPLOYEE', 'MANAGER')")
-    private void changeStateFromDecline(TicketDto dto, State state) throws TicketStateException {
-        if (dto.getOwner().equals(userService.getCurrentUser().getEmail())) {
-            if (!state.name().equals(dto.getState())) {
-                if (state.name().equals(CANCEL) || state.name().equals(NEW)) {
-                    dto.setState(state.name());
-                } else {
-                    throw new TicketStateException("You can't use it For Done Ticket!");
-                }
-
-            } else {
-                throw new TicketStateException("It's nothing to change!");
-            }
-        } else {
-            throw new TicketStateException("You don't own this ticket!");
-        }
-    }
 }
-
 
 
 

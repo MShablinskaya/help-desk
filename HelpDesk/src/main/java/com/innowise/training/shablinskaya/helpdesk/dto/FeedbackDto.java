@@ -14,15 +14,6 @@ public class FeedbackDto {
     public FeedbackDto() {
     }
 
-    public FeedbackDto(Long id, String userId, Long rate, Timestamp date, String text, Long ticketId) {
-        this.id = id;
-        this.userId = userId;
-        this.rate = rate;
-        this.date = date;
-        this.text = text;
-        this.ticketId = ticketId;
-    }
-
     public Long getId() {
         return id;
     }

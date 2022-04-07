@@ -21,7 +21,7 @@ import java.time.Instant;
 public class HistoryServiceImpl implements HistoryService {
     private static final String TICKET_CREATED = "Ticket is created";
     private static final String TICKET_CHANGED = "Ticket Status is changed";
-    private static final String DRAFT_TO_NEW = "Ticket Status is changed from Draft to Submitted";
+    private static final String DRAFT_TO_NEW = "Ticket Status is changed from Draft to New";
     private static final String DRAFT_TO_CANCELLED = "Ticket was Cancelled";
     private static final String NEW_TO_APPROVE = "Ticket Status is changed from New to Approve";
     private static final String NEW_TO_DECLINED = "Ticket Status is changed from New to Declined";
@@ -65,31 +65,37 @@ public class HistoryServiceImpl implements HistoryService {
                 case DRAFT:
                     creation(history);
                     historyRepository.save(history);
+                    break;
 
                 case NEW:
                     historyForNew(history);
                     historyRepository.save(history);
+                    break;
 
                 case CANCEL:
                     historyForCancelled(history);
                     historyRepository.save(history);
+                    break;
 
                 case APPROVE:
                     historyForApprove(history);
                     historyRepository.save(history);
+                    break;
 
                 case DECLINE:
                     historyForDecline(history);
                     historyRepository.save(history);
+                    break;
 
                 case IN_PROGRESS:
                     historyForInProgress(history);
                     historyRepository.save(history);
+                    break;
 
                 case DONE:
                     historyForDone(history);
                     historyRepository.save(history);
-
+                    break;
 
                 default:
                     throw new TicketStateException("Incorrect transition!");

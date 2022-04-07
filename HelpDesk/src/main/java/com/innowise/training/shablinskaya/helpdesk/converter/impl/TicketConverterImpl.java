@@ -71,6 +71,7 @@ public class TicketConverterImpl implements TicketConverter {
     public Ticket toUpdEntity(TicketDto dto) {
         Ticket ticket = new Ticket();
 
+        ticket.setId(dto.getId());
         ticket.setName(dto.getName());
         ticket.setDescription(dto.getDescription());
         ticket.setCreateDate(dto.getCreationDate());

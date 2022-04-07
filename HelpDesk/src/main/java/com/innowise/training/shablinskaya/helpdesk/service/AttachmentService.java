@@ -13,7 +13,9 @@ import java.io.IOException;
 public interface AttachmentService {
     Attachment downloadFile(TicketDto ticket, MultipartFile file) throws IOException, TicketStateException;
 
-    void deleteFile(AttachmentDto dto) throws TicketStateException;
+    void removeFile(AttachmentDto dto) throws TicketStateException;
 
-    AttachmentDto findById(Long id);
+    void deleteFile(Long id) throws TicketStateException;
+
+    AttachmentDto postFile(Long id, MultipartFile file) throws TicketStateException, IOException;
 }

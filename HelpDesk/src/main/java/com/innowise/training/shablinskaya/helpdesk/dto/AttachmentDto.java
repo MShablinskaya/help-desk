@@ -11,16 +11,9 @@ public class AttachmentDto {
     private Long id;
     private String Name;
     private Long ticketId;
-    private Long userId;
+
 
     public AttachmentDto() {
-    }
-
-    public AttachmentDto(Long id, String name, Long ticketId, Long userId) {
-        this.id = id;
-        Name = name;
-        this.ticketId = ticketId;
-        this.userId = userId;
     }
 
     public Long getId() {
@@ -47,25 +40,24 @@ public class AttachmentDto {
         this.ticketId = ticketId;
     }
 
-    public Long getUserId() {
-        return userId;
-    }
 
-    public void setUserId(Long userId) {
-        this.userId = userId;
-    }
+
+
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         AttachmentDto dto = (AttachmentDto) o;
-        return Objects.equals(id, dto.id) && Objects.equals(Name, dto.Name) && Objects.equals(ticketId, dto.ticketId) && Objects.equals(userId, dto.userId);
+        return Objects.equals(id, dto.id)
+                && Objects.equals(Name, dto.Name)
+                && Objects.equals(ticketId, dto.ticketId);
+
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, Name, ticketId, userId);
+        return Objects.hash(id, Name, ticketId);
     }
 
     @Override
@@ -74,7 +66,6 @@ public class AttachmentDto {
                 "id=" + id +
                 ", Name='" + Name + '\'' +
                 ", ticketId=" + ticketId +
-                ", userId=" + userId +
                 '}';
     }
 }

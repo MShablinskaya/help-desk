@@ -1,10 +1,8 @@
 package com.innowise.training.shablinskaya.helpdesk.dto;
 
-import com.innowise.training.shablinskaya.helpdesk.entity.Category;
-import com.innowise.training.shablinskaya.helpdesk.entity.User;
-
 import java.sql.Timestamp;
 import java.util.Objects;
+
 public class TicketDto {
 
     private Long id;
