@@ -51,7 +51,7 @@ public class EmailServiceImpl implements EmailService {
     private final ThreadPoolExecutor emailExecutor = new ThreadPoolExecutor(10, 10, 1, TimeUnit.SECONDS, new LinkedBlockingDeque<Runnable>());
 
     @Autowired
-    public EmailServiceImpl(JavaMailSender javaMailSender, TemplateEngine templateEngine, UserService userService) {
+    public EmailServiceImpl(JavaMailSender javaMailSender,TemplateEngine templateEngine, UserService userService) {
         this.javaMailSender = javaMailSender;
         this.templateEngine = templateEngine;
         this.userService = userService;
@@ -94,19 +94,24 @@ public class EmailServiceImpl implements EmailService {
 
     @Override
     public void sendEmailsForNewTickets(TicketDto dto) {
-        if (dto.getState().equals(APPROVED)) {
-            sendAllEngineerMessage(dto);
-        } else {
-            sendCreatorMessage(dto);
-        }
-
+        emailExecutor.execute(() -> {
+            try {
+                if (dto.getState().equals(APPROVED)) {
+                    sendAllEngineerMessage(dto);
+                } else {
+                    sendCreatorMessage(dto);
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        });
     }
 
     @Override
     public void sendApproveMessage(TicketDto dto) {
         emailExecutor.execute(() -> {
             try {
-                templateForApproveMails(dto);
+                templateForCancelledTickets(dto);
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -136,7 +141,6 @@ public class EmailServiceImpl implements EmailService {
             users.forEach(user -> emails.add(user.getEmail()));
         }
         String email = dto.getOwner().getEmail();
-
         emails.add(email);
 
         return emails.toArray(new String[0]);
@@ -216,7 +220,7 @@ public class EmailServiceImpl implements EmailService {
         }
     }
 
-    private void templateForApproveMails(TicketDto dto) {
+    private void templateForCancelledTickets(TicketDto dto) {
         String approveEmail = dto.getApprove().getEmail();
         String ownerEmail = dto.getOwner().getEmail();
         Long ticketName = dto.getId();

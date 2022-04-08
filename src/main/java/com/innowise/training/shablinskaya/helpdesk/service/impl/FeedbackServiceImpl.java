@@ -26,12 +26,7 @@ public class FeedbackServiceImpl implements FeedbackService {
     private final UserConverter userConverter;
 
     @Autowired
-    public FeedbackServiceImpl(FeedbackRepository feedbackRepository,
-                               FeedbackConverterImpl converter,
-                               EmailService emailService,
-                               TicketService ticketService,
-                               UserService userService,
-                               UserConverter userConverter) {
+    public FeedbackServiceImpl(FeedbackRepository feedbackRepository, FeedbackConverterImpl converter, EmailService emailService, TicketService ticketService, UserService userService, UserConverter userConverter) {
         this.feedbackRepository = feedbackRepository;
         this.converter = converter;
         this.emailService = emailService;

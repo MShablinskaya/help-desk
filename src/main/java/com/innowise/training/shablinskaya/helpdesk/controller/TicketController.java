@@ -1,24 +1,16 @@
 package com.innowise.training.shablinskaya.helpdesk.controller;
 
-import com.innowise.training.shablinskaya.helpdesk.converter.impl.TicketConverterImpl;
 import com.innowise.training.shablinskaya.helpdesk.dto.TicketDto;
-import com.innowise.training.shablinskaya.helpdesk.entity.Ticket;
 import com.innowise.training.shablinskaya.helpdesk.enums.State;
 import com.innowise.training.shablinskaya.helpdesk.exception.TicketStateException;
-import com.innowise.training.shablinskaya.helpdesk.service.EmailService;
-import com.innowise.training.shablinskaya.helpdesk.service.HistoryService;
 import com.innowise.training.shablinskaya.helpdesk.service.TicketService;
-import com.innowise.training.shablinskaya.helpdesk.service.UserService;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
-import javax.persistence.EntityNotFoundException;
-import java.net.URI;
 import java.util.List;
 
 
@@ -26,106 +18,47 @@ import java.util.List;
 @RequestMapping(value = "/tickets", produces = MediaType.APPLICATION_JSON_VALUE)
 public class TicketController {
     private static final Logger log = org.apache.log4j.Logger.getLogger(TicketController.class);
-    private final static String DRAFT = "DRAFT";
-    private final static String NEW = "NEW";
-    private final static String SUBMIT = "SUBMIT";
-
 
     private final TicketService ticketService;
-    private final UserService userService;
-    private final TicketConverterImpl converter;
-    private final HistoryService historyService;
-    private final EmailService emailService;
 
     @Autowired
-    public TicketController(TicketService ticketService, UserService userService, TicketConverterImpl converter, HistoryService historyService, EmailService emailService) {
+    public TicketController(TicketService ticketService) {
         this.ticketService = ticketService;
-        this.userService = userService;
-        this.converter = converter;
-        this.historyService = historyService;
-        this.emailService = emailService;
     }
 
     @GetMapping("/{ticketId}")
     public ResponseEntity<TicketDto> getById(@PathVariable(name = "ticketId") Long id) {
-        TicketDto ticketDto = ticketService.findById(id);
-
-        return new ResponseEntity<>(ticketDto, HttpStatus.OK);
+        return ResponseEntity.ok(ticketService.findById(id));
     }
 
     @GetMapping("/my-tickets")
     public ResponseEntity<List<TicketDto>> getByCurrentUser() {
-        List<TicketDto> ticketDtos = ticketService.findByOwner(userService.getCurrentUser().getId());
-
-        return ResponseEntity.ok(ticketDtos);
+        return ResponseEntity.ok(ticketService.findByCurrentUser());
     }
 
-
-//    @GetMapping("/{id}")
-//    public ResponseEntity<List<TicketDto>> getByApproveId(@PathVariable(name = "id") Long id) {
-//        List<TicketDto> ticketDtos = ticketService.findByApprove(id);
-//
-//        return new ResponseEntity<>(ticketDtos, HttpStatus.OK);
-//    }
-
-//    @GetMapping("/{state}")
-//    public ResponseEntity<List<TicketDto>> getByState(@PathVariable(value = "state") String state) {
-//        List<TicketDto> ticketDtos = ticketService.findByState(State.valueOf(state.toUpperCase()));
-//
-//        return ResponseEntity.ok(ticketDtos);
-//    }
+    @GetMapping("")
+    public ResponseEntity<List<TicketDto>> getByRole() throws TicketStateException {
+        return ResponseEntity.ok(ticketService.findByRole());
+    }
 
     @PreAuthorize("@userServiceImpl.hasRole('EMPLOYEE', 'MANAGER')")
-    @PostMapping("/new-ticket/{action}")
-    public ResponseEntity<TicketDto> postNewTicket(@PathVariable(name = "action") String action, @RequestBody TicketDto ticketDto) throws TicketStateException {
-        if (action.equalsIgnoreCase(DRAFT)) {
-            ticketDto.setState(DRAFT);
-            Ticket ticket = ticketService.save(ticketDto);
-
-            historyService.createTicketHistory(ticket);
-            String savedTicketLocation = "tickets/" + ticket.getId();
-
-            return ResponseEntity.created(URI.create(savedTicketLocation)).build();
-        } else if (action.equalsIgnoreCase(SUBMIT)) {
-            ticketDto.setState(NEW);
-            Ticket ticket = ticketService.save(ticketDto);
-
-            emailService.sendAllManagerMessage(ticketDto);
-            historyService.createTicketHistory(ticket);
-            String savedTicketLocation = "tickets/" + ticket.getId();
-
-            return ResponseEntity.created(URI.create(savedTicketLocation)).build();
-        } else {
-            throw new TicketStateException("Unacceptable action!");
-        }
+    @PostMapping("/{action}")
+    public ResponseEntity<TicketDto> postNewTicket(@PathVariable(name = "action") String action,
+                                                   @RequestBody TicketDto ticketDto) throws TicketStateException {
+        return ResponseEntity.ok(ticketService.postNewTicket(action, ticketDto));
     }
 
     @PutMapping("/{action}")
-    public ResponseEntity<TicketDto> changeTicketState(@PathVariable(name = "action") State state, @RequestBody TicketDto dto) throws TicketStateException {
-
-            ticketService.changeState(dto, state);
-            historyService.createTicketHistory(converter.toUpdEntity(dto));
-
-            return new ResponseEntity<>(dto, HttpStatus.OK);
+    public ResponseEntity<TicketDto> changeTicketState(@PathVariable(name = "action") State state,
+                                                       @RequestBody Long id) throws TicketStateException {
+        return ResponseEntity.ok(ticketService.ticketStatusChange(id, state));
     }
 
-
-    @PutMapping("/edit-ticket/{action}")
-    public ResponseEntity<TicketDto> editTicket(@PathVariable(name = "action") String action, @RequestBody TicketDto ticketDto)
-            throws TicketStateException {
-        if (ticketDto.getId() != null && ticketDto.getState().equals(DRAFT)) {
-            if (action.equalsIgnoreCase(SUBMIT)) {
-                ticketService.changeState(ticketDto, State.valueOf(NEW));
-                historyService.ticketHistoryForEdit(converter.toUpdEntity(ticketDto));
-
-                return new ResponseEntity<>(ticketDto, HttpStatus.OK);
-            } else {
-                throw new TicketStateException("Incorrect action!");
-            }
-        } else {
-            throw new TicketStateException("You can't edit this Ticket anymore!");
-        }
-
+    @PreAuthorize("@userServiceImpl.hasRole('EMPLOYEE', 'MANAGER')")
+    @PutMapping("/edit/{action}")
+    public ResponseEntity<TicketDto> editTicket(@PathVariable(name = "action") String action,
+                                                @RequestBody TicketDto ticketDto) throws TicketStateException {
+        return ResponseEntity.ok(ticketService.editTicket(action, ticketDto));
     }
 }
 

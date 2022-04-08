@@ -13,6 +13,7 @@ import com.innowise.training.shablinskaya.helpdesk.service.HistoryService;
 import com.innowise.training.shablinskaya.helpdesk.service.TicketService;
 import com.innowise.training.shablinskaya.helpdesk.service.UserService;
 import org.apache.commons.io.FilenameUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -31,25 +32,16 @@ public class AttachmentServiceImpl implements AttachmentService {
     private final AttachmentRepository attachmentRepository;
     private final AttachmentDtoConverter converter;
     private final TicketConverter ticketConverter;
-    private final AttachmentDtoConverter attachmentDtoConverter;
     private final TicketService ticketService;
     private final UserService userService;
     private final UserConverter userConverter;
     private final HistoryService historyService;
 
 
-    public AttachmentServiceImpl(AttachmentRepository attachmentRepository,
-                                 AttachmentDtoConverter converter,
-                                 TicketConverter ticketConverter,
-                                 AttachmentDtoConverter attachmentDtoConverter,
-                                 TicketService ticketService,
-                                 UserService userService,
-                                 UserConverter userConverter,
-                                 HistoryService historyService) {
+    public AttachmentServiceImpl(AttachmentRepository attachmentRepository,AttachmentDtoConverter converter, TicketConverter ticketConverter, TicketService ticketService, UserService userService, UserConverter userConverter, HistoryService historyService) {
         this.attachmentRepository = attachmentRepository;
         this.converter = converter;
         this.ticketConverter = ticketConverter;
-        this.attachmentDtoConverter = attachmentDtoConverter;
         this.ticketService = ticketService;
         this.userService = userService;
         this.userConverter = userConverter;
@@ -116,7 +108,7 @@ public class AttachmentServiceImpl implements AttachmentService {
     }
 
     private AttachmentDto findById(Long id) {
-        return attachmentDtoConverter.toDto(attachmentRepository.getById(id).orElseThrow(EntityNotFoundException::new));
+        return converter.toDto(attachmentRepository.getById(id).orElseThrow(EntityNotFoundException::new));
     }
 
     private boolean allowedFileTypes(String type) {

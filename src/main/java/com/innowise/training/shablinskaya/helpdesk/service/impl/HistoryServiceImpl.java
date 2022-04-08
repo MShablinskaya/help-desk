@@ -2,8 +2,8 @@ package com.innowise.training.shablinskaya.helpdesk.service.impl;
 
 import com.innowise.training.shablinskaya.helpdesk.converter.impl.TicketConverterImpl;
 import com.innowise.training.shablinskaya.helpdesk.dto.AttachmentDto;
+import com.innowise.training.shablinskaya.helpdesk.dto.TicketDto;
 import com.innowise.training.shablinskaya.helpdesk.entity.History;
-import com.innowise.training.shablinskaya.helpdesk.entity.Ticket;
 import com.innowise.training.shablinskaya.helpdesk.exception.TicketStateException;
 import com.innowise.training.shablinskaya.helpdesk.repository.HistoryRepository;
 import com.innowise.training.shablinskaya.helpdesk.service.HistoryService;
@@ -55,13 +55,13 @@ public class HistoryServiceImpl implements HistoryService {
 
     @Override
     @Transactional
-    public void createTicketHistory(Ticket ticket) throws TicketStateException {
+    public void createTicketHistory(TicketDto ticket) throws TicketStateException {
         if (ticket != null) {
             History history = new History();
-            history.setTicket(ticket);
+            history.setTicket(converter.toEntity(ticket));
             history.setDate(Timestamp.from(Instant.now()));
             history.setUserId(userService.getCurrentUser());
-            switch (ticket.getState().name()) {
+            switch (ticket.getState()) {
                 case DRAFT:
                     creation(history);
                     historyRepository.save(history);
@@ -107,13 +107,13 @@ public class HistoryServiceImpl implements HistoryService {
 
     @Override
     @Transactional
-    public void ticketHistoryForEdit(Ticket ticket) throws TicketStateException {
+    public void ticketHistoryForEdit(TicketDto ticket) throws TicketStateException {
         if (ticket != null) {
             History history = new History();
-            history.setTicket(ticket);
+            history.setTicket(converter.toUpdEntity(ticket));
             history.setDate(Timestamp.from(Instant.now()));
             history.setUserId(userService.getCurrentUser());
-            if (ticket.getState().name().equals(NEW)) {
+            if (ticket.getState().equals(NEW)) {
                 edit(history);
                 historyRepository.save(history);
             } else {

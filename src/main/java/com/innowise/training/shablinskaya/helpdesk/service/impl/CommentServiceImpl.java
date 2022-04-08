@@ -19,9 +19,7 @@ public class CommentServiceImpl implements CommentService {
     private final TicketService ticketService;
 
     @Autowired
-    public CommentServiceImpl(CommentRepository commentRepository,
-                              CommentConverterImpl converter,
-                              TicketService ticketService) {
+    public CommentServiceImpl(CommentRepository commentRepository, CommentConverterImpl converter,TicketService ticketService) {
         this.commentRepository = commentRepository;
         this.converter = converter;
         this.ticketService = ticketService;

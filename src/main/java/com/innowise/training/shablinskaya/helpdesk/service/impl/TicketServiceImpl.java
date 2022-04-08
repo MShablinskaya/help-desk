@@ -7,7 +7,6 @@ import com.innowise.training.shablinskaya.helpdesk.entity.Ticket;
 import com.innowise.training.shablinskaya.helpdesk.entity.User;
 import com.innowise.training.shablinskaya.helpdesk.enums.Role;
 import com.innowise.training.shablinskaya.helpdesk.enums.State;
-import com.innowise.training.shablinskaya.helpdesk.enums.Urgency;
 import com.innowise.training.shablinskaya.helpdesk.exception.TicketStateException;
 import com.innowise.training.shablinskaya.helpdesk.repository.TicketRepository;
 import com.innowise.training.shablinskaya.helpdesk.service.EmailService;
@@ -21,8 +20,9 @@ import javax.persistence.EntityNotFoundException;
 import java.sql.Timestamp;
 import java.time.Instant;
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Service
 public class TicketServiceImpl implements TicketService {
@@ -33,6 +33,10 @@ public class TicketServiceImpl implements TicketService {
     private static final String CANCEL = "CANCELLED";
     private static final String IN_PROGRESS = "IN_PROGRESS";
     private static final String DONE = "DONE";
+    private static final String EMPLOYEE = "EMPLOYEE";
+    private static final String MANAGER = "MANAGER";
+    private static final String ENGINEER = "ENGINEER";
+    private static final String SUBMIT = "Submit";
 
     private final TicketRepository ticketRepository;
     private final TicketConverter ticketConverter;
@@ -56,80 +60,70 @@ public class TicketServiceImpl implements TicketService {
     }
 
     @Override
-    public List<TicketDto> findByOwner(Long id) {
-        List<Ticket> tickets = ticketRepository.getByOwnerId(id);
-
-        List<TicketDto> ticketDtos = new ArrayList<>();
-
-        if (tickets != null) {
-            tickets.forEach(ticket -> {
-                ticketDtos.add(ticketConverter.toDto(ticket));
-            });
+    public List<TicketDto> findByCurrentUser() {
+        User user = userService.getCurrentUser();
+        if (user.getRoleId().name().equals(EMPLOYEE) || user.getRoleId().name().equals(MANAGER)) {
+            return findByOwner();
+        } else {
+            return findByAssignee();
         }
-
-        return ticketDtos;
     }
 
     @Override
-    public List<TicketDto> findByApprove(Long id) {
-        List<Ticket> tickets = ticketRepository.getByApproveId(id);
+    public List<TicketDto> findByRole() throws TicketStateException {
+        User user = userService.getCurrentUser();
+        if (user != null) {
+            if (user.getRoleId().name().equals(EMPLOYEE)) {
 
-        List<TicketDto> ticketDtos = new ArrayList<>();
+                return findByOwner();
+            } else if (user.getRoleId().name().equals(MANAGER)) {
+                Set<TicketDto> managersAllTicketsSet = new LinkedHashSet<>(findByOwner());
+                managersAllTicketsSet.addAll(findByState(State.NEW));
+                List<TicketDto> managersAllTickets = new ArrayList<>(managersAllTicketsSet);
+                managersAllTickets.addAll(findByApprove());
 
-        if (tickets != null) {
-            tickets.forEach(ticket -> {
-                ticketDtos.add(ticketConverter.toDto(ticket));
-            });
+                return managersAllTickets;
+            } else if (user.getRoleId().name().equals(ENGINEER)) {
+
+                return Stream.of(findByState(State.APPROVED), findByAssignee())
+                        .flatMap(Collection::stream)
+                        .collect(Collectors.toList());
+            } else {
+                throw new TicketStateException("Oops, something going wrong!");
+            }
+        } else {
+            throw new TicketStateException("User not found!");
         }
-        return ticketDtos;
-    }
-
-    @Override
-    public List<TicketDto> findByAssignee(Long id) {
-        List<Ticket> tickets = ticketRepository.getByAssigneeId(id);
-
-        List<TicketDto> ticketDtos = new ArrayList<>();
-
-        if (tickets != null) {
-            tickets.forEach(ticket -> {
-                ticketDtos.add(ticketConverter.toDto(ticket));
-            });
-        }
-        return ticketDtos;
-    }
-
-    @Override
-    public List<TicketDto> findByState(State state) {
-
-        List<Ticket> tickets = ticketRepository.getByState(state);
-
-        List<TicketDto> ticketDtos = new ArrayList<>();
-
-        if (tickets != null) {
-            tickets.forEach(ticket -> {
-                ticketDtos.add(ticketConverter.toDto(ticket));
-            });
-        }
-        return ticketDtos;
-    }
-
-    @Override
-    public List<TicketDto> findByUrgency(Urgency urgency) {
-        List<Ticket> tickets = ticketRepository.getByUrgency(urgency);
-
-        List<TicketDto> ticketDtos = new ArrayList<>();
-
-        if (tickets != null) {
-            tickets.forEach(ticket -> {
-                ticketDtos.add(ticketConverter.toDto(ticket));
-            });
-        }
-        return ticketDtos;
     }
 
     @Transactional
     @Override
-    public Ticket save(TicketDto dto) {
+    public TicketDto postNewTicket(String action, TicketDto ticketDto) throws TicketStateException {
+        if (ticketDto != null && action != null) {
+            if (action.equalsIgnoreCase(DRAFT)) {
+                ticketDto.setState(DRAFT);
+                Ticket ticket = save(ticketDto);
+
+                return ticketConverter.toDto(ticket);
+            } else if (action.equalsIgnoreCase(SUBMIT)) {
+                ticketDto.setState(NEW);
+                Ticket ticket = save(ticketDto);
+
+                emailService.sendAllManagerMessage(ticketDto);
+
+                return ticketConverter.toDto(ticket);
+
+            } else {
+                throw new TicketStateException("Unacceptable action!");
+            }
+        } else {
+            throw new TicketStateException("Oops! Something going wrong. Chek your request.");
+        }
+    }
+
+    @Transactional
+    @Override
+    public Ticket save(TicketDto dto) throws TicketStateException {
         Timestamp now = Timestamp.from(Instant.now());
         LocalDate currentDate = now.toLocalDateTime().toLocalDate();
 
@@ -138,13 +132,36 @@ public class TicketServiceImpl implements TicketService {
         Ticket ticket = null;
         if (currentDate.compareTo(resolutionDate) <= 0) {
             ticket = ticketRepository.create(ticketConverter.toEntity(dto));
-        }
-        if (ticket == null) {
+            return ticket;
+        } else {
             throw new EntityNotFoundException("Ticket does not create!");
         }
-
-        return ticket;
     }
+
+    @Override
+    public TicketDto editTicket(String action, TicketDto ticketDto) throws TicketStateException {
+        if (ticketDto.getId() != null && ticketDto.getState().equals(DRAFT)
+                && ticketDto.getOwner().getEmail().equals(userService.getCurrentUser().getEmail())) {
+            if (action.equalsIgnoreCase(SUBMIT)) {
+                return ticketConverter.toDto(changeState(ticketDto, State.valueOf(NEW)));
+            } else if (action.equalsIgnoreCase(DRAFT)) {
+                return ticketDto;
+            } else {
+                throw new TicketStateException("Incorrect action!");
+            }
+        } else {
+            throw new TicketStateException("You can't edit this Ticket anymore!");
+        }
+
+    }
+
+    @Transactional
+    @Override
+    public TicketDto ticketStatusChange(Long id, State state) throws TicketStateException {
+        TicketDto ticketDto = ticketConverter.toDto(ticketRepository.getById(id).orElseThrow(EntityNotFoundException::new));
+        return ticketConverter.toDto(changeState(ticketDto, state));
+    }
+
 
     @Transactional
     @Override
@@ -152,24 +169,36 @@ public class TicketServiceImpl implements TicketService {
         User user = userService.getCurrentUser();
 
         if (dto != null && state != null) {
-            if (user.getRoleId().equals(Role.EMPLOYEE) || user.getRoleId().equals(Role.MANAGER)) {
-                if (dto.getState().equals(DRAFT) || dto.getState().equals(DECLINE)) {
+            if (dto.getState().equals(DRAFT) || dto.getState().equals(DECLINE) &&
+                    (user.getRoleId().equals(Role.EMPLOYEE) || user.getRoleId().equals(Role.MANAGER))) {
+                changeStateFromDraft(dto, state);
+                emailService.sendAllManagerMessage(dto);
+                return ticketRepository.update(ticketConverter.toUpdEntity(dto));
 
-                    changeStateFromDraft(dto, state);
-                    emailService.sendAllManagerMessage(dto);
+            } else if (dto.getState().equals(NEW) && user.getRoleId().equals(Role.MANAGER)) {
+                changeStateFromNew(dto, state);
+                emailService.sendEmailsForNewTickets(dto);
+                return ticketRepository.update(ticketConverter.toUpdEntity(dto));
 
-                    return ticketRepository.update(ticketConverter.toUpdEntity(dto));
-                }
+            } else if (dto.getState().equals(APPROVE) && user.getRoleId().equals(Role.ENGINEER)) {
+                changeStateFromApprove(dto, state);
+                emailService.sendApproveMessage(dto);
+                return ticketRepository.update(ticketConverter.toUpdEntity(dto));
+
+            } else if (dto.getState().equals(IN_PROGRESS) && user.getRoleId().equals(Role.ENGINEER)) {
+                changeStateFromInProgress(dto, state);
+                emailService.sendCreatorMessage(dto);
+                return ticketRepository.update(ticketConverter.toUpdEntity(dto));
             }
         }
-        throw new TicketStateException("You don't own this ticket!");
+        throw new TicketStateException("Something wrong. Chek your request and/or your access rights!");
     }
 
 
     private void changeStateFromDraft(TicketDto dto, State state) throws TicketStateException {
         if (dto.getOwner().getEmail().equals(userService.getCurrentUser().getEmail())) {
-            if (!state.name().equals(dto.getState())) {
-                if (state.name().equals(NEW) || state.name().equals(CANCEL)) {
+            if (!state.name().equalsIgnoreCase(dto.getState())) {
+                if (state.name().equalsIgnoreCase(NEW) || state.name().equalsIgnoreCase(CANCEL)) {
                     dto.setState(state.name());
                 } else {
                     throw new TicketStateException("You can't use it for Draft Ticket!");
@@ -186,7 +215,7 @@ public class TicketServiceImpl implements TicketService {
     private void changeStateFromNew(TicketDto dto, State state) throws TicketStateException {
         if (!dto.getOwner().getEmail().equals(userService.getCurrentUser().getEmail())) {
             if (!state.name().equals(dto.getState())) {
-                if (state.name().equals(APPROVE) || state.name().equals(DECLINE) || state.name().equals(CANCEL)) {
+                if (state.name().equalsIgnoreCase(APPROVE) || state.name().equalsIgnoreCase(DECLINE) || state.name().equalsIgnoreCase(CANCEL)) {
                     dto.setState(state.name());
                     dto.setApprove(userConverter.toDto(userService.getCurrentUser()));
                 } else {
@@ -203,7 +232,7 @@ public class TicketServiceImpl implements TicketService {
 
     private void changeStateFromApprove(TicketDto dto, State state) throws TicketStateException {
         if (!state.name().equals(dto.getState())) {
-            if (state.name().equals(IN_PROGRESS) || state.name().equals(CANCEL)) {
+            if (state.name().equalsIgnoreCase(IN_PROGRESS) || state.name().equalsIgnoreCase(CANCEL)) {
                 dto.setState(state.name());
                 dto.setAssignee(userConverter.toDto(userService.getCurrentUser()));
             } else {
@@ -217,7 +246,7 @@ public class TicketServiceImpl implements TicketService {
 
     private void changeStateFromInProgress(TicketDto dto, State state) throws TicketStateException {
         if (!state.name().equals(dto.getState())) {
-            if (state.name().equals(DONE) || state.name().equals(CANCEL)) {
+            if (state.name().equalsIgnoreCase(DONE) || state.name().equalsIgnoreCase(CANCEL)) {
                 dto.setState(state.name());
                 dto.setAssignee(userConverter.toDto(userService.getCurrentUser()));
             } else {
@@ -227,6 +256,63 @@ public class TicketServiceImpl implements TicketService {
             throw new TicketStateException("It's nothing to change!");
         }
 
+    }
+
+    private List<TicketDto> findByOwner() {
+        User user = userService.getCurrentUser();
+        List<Ticket> tickets = ticketRepository.getByOwnerId(user.getId());
+
+        List<TicketDto> ticketDtos = new ArrayList<>();
+
+        if (tickets != null) {
+            tickets.forEach(ticket -> {
+                ticketDtos.add(ticketConverter.toDto(ticket));
+            });
+        }
+
+        return ticketDtos;
+    }
+
+    private List<TicketDto> findByApprove() {
+        User user = userService.getCurrentUser();
+        List<Ticket> tickets = ticketRepository.getByApproveId(user.getId());
+
+        List<TicketDto> ticketDtos = new ArrayList<>();
+
+        if (tickets != null) {
+            tickets.forEach(ticket -> {
+                ticketDtos.add(ticketConverter.toDto(ticket));
+            });
+        }
+        return ticketDtos;
+    }
+
+    private List<TicketDto> findByAssignee() {
+        User user = userService.getCurrentUser();
+        List<Ticket> tickets = ticketRepository.getByAssigneeId(user.getId());
+
+        List<TicketDto> ticketDtos = new ArrayList<>();
+
+        if (tickets != null) {
+            tickets.forEach(ticket -> {
+                ticketDtos.add(ticketConverter.toDto(ticket));
+            });
+        }
+        return ticketDtos;
+    }
+
+    private List<TicketDto> findByState(State state) {
+
+        List<Ticket> tickets = ticketRepository.getByState(state);
+
+        List<TicketDto> ticketDtos = new ArrayList<>();
+
+        if (tickets != null) {
+            tickets.forEach(ticket -> {
+                ticketDtos.add(ticketConverter.toDto(ticket));
+            });
+        }
+        return ticketDtos;
     }
 
 }
