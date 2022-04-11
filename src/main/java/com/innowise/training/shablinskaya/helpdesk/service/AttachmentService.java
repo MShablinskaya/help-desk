@@ -11,11 +11,11 @@ import org.springframework.web.multipart.commons.CommonsMultipartResolver;
 import java.io.IOException;
 
 public interface AttachmentService {
-    Attachment downloadFile(TicketDto ticket, MultipartFile file) throws IOException, TicketStateException;
+    Attachment uploadFile(TicketDto ticket, MultipartFile file) throws IOException, TicketStateException;
 
     void removeFile(AttachmentDto dto) throws TicketStateException;
 
     void deleteFile(Long id) throws TicketStateException;
 
-    AttachmentDto postFile(Long id, MultipartFile file) throws TicketStateException, IOException;
+    AttachmentDto multipleUploadFile(Long id, MultipartFile file) throws TicketStateException, IOException;
 }

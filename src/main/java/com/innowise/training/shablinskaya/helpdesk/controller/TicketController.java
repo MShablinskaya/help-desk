@@ -36,8 +36,8 @@ public class TicketController {
         return ResponseEntity.ok(ticketService.findByCurrentUser());
     }
 
-    @GetMapping("")
-    public ResponseEntity<List<TicketDto>> getByRole() throws TicketStateException {
+    @GetMapping
+    public ResponseEntity<List<TicketDto>> getAllTickets() throws TicketStateException {
         return ResponseEntity.ok(ticketService.findByRole());
     }
 

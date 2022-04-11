@@ -13,13 +13,14 @@ import com.innowise.training.shablinskaya.helpdesk.service.HistoryService;
 import com.innowise.training.shablinskaya.helpdesk.service.TicketService;
 import com.innowise.training.shablinskaya.helpdesk.service.UserService;
 import org.apache.commons.io.FilenameUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.persistence.EntityNotFoundException;
+import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -50,9 +51,11 @@ public class AttachmentServiceImpl implements AttachmentService {
 
     @Override
     @Transactional
-    public AttachmentDto postFile(Long id, MultipartFile file) throws TicketStateException, IOException {
+    public AttachmentDto multipleUploadFile(Long id, MultipartFile file) throws TicketStateException, IOException {
         TicketDto dto = ticketService.findById(id);
-        return converter.toDto(downloadFile(dto, file));
+//        Attachment fileForUpload = uploadFile(dto, file);
+//        try(InputStream inputStream = file.getInputStream())
+        return converter.toDto(uploadFile(dto, file));
     }
 
 
@@ -65,7 +68,7 @@ public class AttachmentServiceImpl implements AttachmentService {
 
     @Override
     @Transactional
-    public Attachment downloadFile(TicketDto ticketDto, MultipartFile file) throws IOException, TicketStateException {
+    public Attachment uploadFile(TicketDto ticketDto, MultipartFile file) throws IOException, TicketStateException {
         if (ticketDto != null
                 && file != null
                 && ticketDto.getOwner().equals(userConverter.toDto(userService.getCurrentUser()))) {
@@ -77,7 +80,7 @@ public class AttachmentServiceImpl implements AttachmentService {
                     attachment.setTicket(ticketConverter.toUpdEntity(ticketDto));
                     attachment.setAttachment(file.getBytes());
 
-                    historyService.historyForAddAttachment(converter.toDto(attachment));
+                    historyService.historyForAddAttachment(converter.toDto(attachment), attachment.getTicket());
                     return attachmentRepository.save(attachment);
                 } else {
                     throw new TicketStateException(WRONG_SELECTED_TYPE);
@@ -98,7 +101,7 @@ public class AttachmentServiceImpl implements AttachmentService {
             TicketDto ticketDto = ticketService.findById(dto.getTicketId());
             if (ticketDto.getOwner().equals(userConverter.toDto(userService.getCurrentUser()))) {
                 attachmentRepository.remove(attachmentRepository.getById(dto.getId()).orElseThrow(EntityNotFoundException::new));
-                historyService.historyForDeletedAttachment(dto);
+                historyService.historyForDeletedAttachment(dto, ticketConverter.toUpdEntity(ticketDto));
             } else {
                 throw new TicketStateException("You don't have permission to delete this Attachment");
             }

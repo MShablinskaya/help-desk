@@ -4,10 +4,10 @@ import com.innowise.training.shablinskaya.helpdesk.converter.impl.TicketConverte
 import com.innowise.training.shablinskaya.helpdesk.dto.AttachmentDto;
 import com.innowise.training.shablinskaya.helpdesk.dto.TicketDto;
 import com.innowise.training.shablinskaya.helpdesk.entity.History;
+import com.innowise.training.shablinskaya.helpdesk.entity.Ticket;
 import com.innowise.training.shablinskaya.helpdesk.exception.TicketStateException;
 import com.innowise.training.shablinskaya.helpdesk.repository.HistoryRepository;
 import com.innowise.training.shablinskaya.helpdesk.service.HistoryService;
-import com.innowise.training.shablinskaya.helpdesk.service.TicketService;
 import com.innowise.training.shablinskaya.helpdesk.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -40,28 +40,25 @@ public class HistoryServiceImpl implements HistoryService {
 
     private final HistoryRepository historyRepository;
     private final UserService userService;
-    private final TicketService ticketService;
-    private final TicketConverterImpl converter;
+
 
 
     @Autowired
-    public HistoryServiceImpl(HistoryRepository historyRepository, UserService userService, TicketService ticketService, TicketConverterImpl converter) {
+    public HistoryServiceImpl(HistoryRepository historyRepository, UserService userService) {
         this.historyRepository = historyRepository;
         this.userService = userService;
-        this.ticketService = ticketService;
-        this.converter = converter;
     }
 
 
     @Override
     @Transactional
-    public void createTicketHistory(TicketDto ticket) throws TicketStateException {
+    public void createTicketHistory(Ticket ticket) throws TicketStateException {
         if (ticket != null) {
             History history = new History();
-            history.setTicket(converter.toEntity(ticket));
+            history.setTicket(ticket);
             history.setDate(Timestamp.from(Instant.now()));
             history.setUserId(userService.getCurrentUser());
-            switch (ticket.getState()) {
+            switch (ticket.getState().name()) {
                 case DRAFT:
                     creation(history);
                     historyRepository.save(history);
@@ -107,13 +104,13 @@ public class HistoryServiceImpl implements HistoryService {
 
     @Override
     @Transactional
-    public void ticketHistoryForEdit(TicketDto ticket) throws TicketStateException {
+    public void ticketHistoryForEdit(Ticket ticket) throws TicketStateException {
         if (ticket != null) {
             History history = new History();
-            history.setTicket(converter.toUpdEntity(ticket));
+            history.setTicket(ticket);
             history.setDate(Timestamp.from(Instant.now()));
             history.setUserId(userService.getCurrentUser());
-            if (ticket.getState().equals(NEW)) {
+            if (ticket.getState().name().equals(NEW)) {
                 edit(history);
                 historyRepository.save(history);
             } else {
@@ -126,20 +123,20 @@ public class HistoryServiceImpl implements HistoryService {
 
     @Override
     @Transactional
-    public void historyForAddAttachment(AttachmentDto dto) throws TicketStateException {
-        createHistory(dto, ADD);
+    public void historyForAddAttachment(AttachmentDto dto, Ticket ticket) throws TicketStateException {
+        createHistory(dto, ADD, ticket);
     }
 
     @Override
     @Transactional
-    public void historyForDeletedAttachment(AttachmentDto dto) throws TicketStateException {
-        createHistory(dto, DELETE);
+    public void historyForDeletedAttachment(AttachmentDto dto, Ticket ticket) throws TicketStateException {
+        createHistory(dto, DELETE, ticket);
     }
 
-    private void createHistory(AttachmentDto dto, String action) throws TicketStateException {
+    private void createHistory(AttachmentDto dto, String action, Ticket ticket) throws TicketStateException {
         if (dto != null) {
             History history = new History();
-            history.setTicket(converter.toUpdEntity(ticketService.findById(dto.getTicketId())));
+            history.setTicket(ticket);
             history.setDate(Timestamp.from(Instant.now()));
             history.setUserId(userService.getCurrentUser());
             history.setAction(action);

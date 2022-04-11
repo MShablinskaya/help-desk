@@ -10,6 +10,7 @@ import com.innowise.training.shablinskaya.helpdesk.enums.State;
 import com.innowise.training.shablinskaya.helpdesk.exception.TicketStateException;
 import com.innowise.training.shablinskaya.helpdesk.repository.TicketRepository;
 import com.innowise.training.shablinskaya.helpdesk.service.EmailService;
+import com.innowise.training.shablinskaya.helpdesk.service.HistoryService;
 import com.innowise.training.shablinskaya.helpdesk.service.TicketService;
 import com.innowise.training.shablinskaya.helpdesk.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,15 +44,17 @@ public class TicketServiceImpl implements TicketService {
     private final UserService userService;
     private final UserConverter userConverter;
     private final EmailService emailService;
+    private final HistoryService historyService;
 
 
     @Autowired
-    public TicketServiceImpl(TicketRepository ticketRepository, TicketConverter ticketConverter, UserService userService, UserConverter userConverter, EmailService emailService) {
+    public TicketServiceImpl(TicketRepository ticketRepository, TicketConverter ticketConverter, UserService userService, UserConverter userConverter, EmailService emailService, HistoryService historyService) {
         this.ticketRepository = ticketRepository;
         this.ticketConverter = ticketConverter;
         this.userService = userService;
         this.userConverter = userConverter;
         this.emailService = emailService;
+        this.historyService = historyService;
     }
 
     @Override
@@ -104,11 +107,14 @@ public class TicketServiceImpl implements TicketService {
                 ticketDto.setState(DRAFT);
                 Ticket ticket = save(ticketDto);
 
+                historyService.createTicketHistory(ticket);
+
                 return ticketConverter.toDto(ticket);
             } else if (action.equalsIgnoreCase(SUBMIT)) {
                 ticketDto.setState(NEW);
                 Ticket ticket = save(ticketDto);
 
+                historyService.createTicketHistory(ticket);
                 emailService.sendAllManagerMessage(ticketDto);
 
                 return ticketConverter.toDto(ticket);

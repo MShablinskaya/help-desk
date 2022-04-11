@@ -35,6 +35,7 @@
         <javax.servlet.version>4.0.1</javax.servlet.version>
         <javax.validation.version>2.0.1.Final</javax.validation.version>
         <commons.fileupload.version>1.4</commons.fileupload.version>
+        <commons-io.version>2.11.0</commons-io.version>
         <javax.mail.version>1.6.2</javax.mail.version>
         <junit.version>4.13.1</junit.version>
         <jwebunit.version>3.3</jwebunit.version>
@@ -228,6 +229,14 @@
             <artifactId>commons-fileupload</artifactId>
             <version>${commons.fileupload.version}</version>
         </dependency>
+
+        <!-- commons-io -->
+        <dependency>
+            <groupId>commons-io</groupId>
+            <artifactId>commons-io</artifactId>
+            <version>${commons-io.version}</version>
+        </dependency>
+
 
         <!-- javax.mail-api -->
         <dependency>

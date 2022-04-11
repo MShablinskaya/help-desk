@@ -29,7 +29,7 @@ public class AttachmentController {
     @PreAuthorize("@userServiceImpl.hasRole('EMPLOYEE', 'MANAGER')")
     public ResponseEntity<AttachmentDto> uploadFile(@PathVariable(name = "id") Long id,
                                                     @RequestParam("file") MultipartFile file) throws TicketStateException, IOException {
-        return ResponseEntity.ok(attachmentService.postFile(id, file));
+        return ResponseEntity.ok(attachmentService.multipleUploadFile(id, file));
     }
 
 
