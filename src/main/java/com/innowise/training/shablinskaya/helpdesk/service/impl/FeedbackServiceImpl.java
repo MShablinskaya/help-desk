@@ -1,5 +1,6 @@
 package com.innowise.training.shablinskaya.helpdesk.service.impl;
 
+import com.innowise.training.shablinskaya.helpdesk.converter.FeedbackConverter;
 import com.innowise.training.shablinskaya.helpdesk.converter.UserConverter;
 import com.innowise.training.shablinskaya.helpdesk.converter.impl.FeedbackConverterImpl;
 import com.innowise.training.shablinskaya.helpdesk.dto.FeedbackDto;
@@ -19,14 +20,19 @@ import org.springframework.transaction.annotation.Transactional;
 public class FeedbackServiceImpl implements FeedbackService {
     private final static String DONE = "DONE";
     private final FeedbackRepository feedbackRepository;
-    private final FeedbackConverterImpl converter;
+    private final FeedbackConverter converter;
     private final EmailService emailService;
     private final TicketService ticketService;
     private final UserService userService;
     private final UserConverter userConverter;
 
     @Autowired
-    public FeedbackServiceImpl(FeedbackRepository feedbackRepository, FeedbackConverterImpl converter, EmailService emailService, TicketService ticketService, UserService userService, UserConverter userConverter) {
+    public FeedbackServiceImpl(FeedbackRepository feedbackRepository,
+                               FeedbackConverter converter,
+                               EmailService emailService,
+                               TicketService ticketService,
+                               UserService userService,
+                               UserConverter userConverter) {
         this.feedbackRepository = feedbackRepository;
         this.converter = converter;
         this.emailService = emailService;

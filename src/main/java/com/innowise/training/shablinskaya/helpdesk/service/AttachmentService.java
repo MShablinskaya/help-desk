@@ -9,6 +9,7 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.commons.CommonsMultipartResolver;
 
 import java.io.IOException;
+import java.util.List;
 
 public interface AttachmentService {
     Attachment uploadFile(TicketDto ticket, MultipartFile file) throws IOException, TicketStateException;
@@ -17,5 +18,5 @@ public interface AttachmentService {
 
     void deleteFile(Long id) throws TicketStateException;
 
-    AttachmentDto multipleUploadFile(Long id, MultipartFile file) throws TicketStateException, IOException;
+    List<AttachmentDto> multipleUploadFile(Long id, MultipartFile[] file);
 }

@@ -20,8 +20,8 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.persistence.EntityNotFoundException;
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 @Service
@@ -39,7 +39,13 @@ public class AttachmentServiceImpl implements AttachmentService {
     private final HistoryService historyService;
 
 
-    public AttachmentServiceImpl(AttachmentRepository attachmentRepository,AttachmentDtoConverter converter, TicketConverter ticketConverter, TicketService ticketService, UserService userService, UserConverter userConverter, HistoryService historyService) {
+    public AttachmentServiceImpl(AttachmentRepository attachmentRepository,
+                                 AttachmentDtoConverter converter,
+                                 TicketConverter ticketConverter,
+                                 TicketService ticketService,
+                                 UserService userService,
+                                 UserConverter userConverter,
+                                 HistoryService historyService) {
         this.attachmentRepository = attachmentRepository;
         this.converter = converter;
         this.ticketConverter = ticketConverter;
@@ -51,11 +57,20 @@ public class AttachmentServiceImpl implements AttachmentService {
 
     @Override
     @Transactional
-    public AttachmentDto multipleUploadFile(Long id, MultipartFile file) throws TicketStateException, IOException {
+    public List<AttachmentDto> multipleUploadFile(Long id, MultipartFile[] files){
         TicketDto dto = ticketService.findById(id);
-//        Attachment fileForUpload = uploadFile(dto, file);
-//        try(InputStream inputStream = file.getInputStream())
-        return converter.toDto(uploadFile(dto, file));
+        List<AttachmentDto> attachmentDtoList = new ArrayList<>();
+
+        Arrays.stream(files).forEach(file -> {
+            Attachment fileForUpload;
+            try{
+                fileForUpload = uploadFile(dto, file);
+                attachmentDtoList.add(converter.toDto(fileForUpload));
+            } catch (TicketStateException | IOException e) {
+                e.printStackTrace();
+            }
+        });
+    return attachmentDtoList;
     }
 
 
@@ -80,7 +95,7 @@ public class AttachmentServiceImpl implements AttachmentService {
                     attachment.setTicket(ticketConverter.toUpdEntity(ticketDto));
                     attachment.setAttachment(file.getBytes());
 
-                    historyService.historyForAddAttachment(converter.toDto(attachment), attachment.getTicket());
+                    historyService.recordHistoryForUploadedAttachment(converter.toDto(attachment), attachment.getTicket());
                     return attachmentRepository.save(attachment);
                 } else {
                     throw new TicketStateException(WRONG_SELECTED_TYPE);
@@ -101,7 +116,7 @@ public class AttachmentServiceImpl implements AttachmentService {
             TicketDto ticketDto = ticketService.findById(dto.getTicketId());
             if (ticketDto.getOwner().equals(userConverter.toDto(userService.getCurrentUser()))) {
                 attachmentRepository.remove(attachmentRepository.getById(dto.getId()).orElseThrow(EntityNotFoundException::new));
-                historyService.historyForDeletedAttachment(dto, ticketConverter.toUpdEntity(ticketDto));
+                historyService.recordHistoryForDeletedAttachment(dto, ticketConverter.toUpdEntity(ticketDto));
             } else {
                 throw new TicketStateException("You don't have permission to delete this Attachment");
             }

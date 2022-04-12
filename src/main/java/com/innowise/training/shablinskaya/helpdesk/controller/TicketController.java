@@ -1,7 +1,6 @@
 package com.innowise.training.shablinskaya.helpdesk.controller;
 
 import com.innowise.training.shablinskaya.helpdesk.dto.TicketDto;
-import com.innowise.training.shablinskaya.helpdesk.enums.State;
 import com.innowise.training.shablinskaya.helpdesk.exception.TicketStateException;
 import com.innowise.training.shablinskaya.helpdesk.service.TicketService;
 import org.apache.log4j.Logger;
@@ -38,7 +37,7 @@ public class TicketController {
 
     @GetMapping
     public ResponseEntity<List<TicketDto>> getAllTickets() throws TicketStateException {
-        return ResponseEntity.ok(ticketService.findByRole());
+        return ResponseEntity.ok(ticketService.findAllTicketsByRole());
     }
 
     @PreAuthorize("@userServiceImpl.hasRole('EMPLOYEE', 'MANAGER')")
@@ -49,7 +48,7 @@ public class TicketController {
     }
 
     @PutMapping("/{action}")
-    public ResponseEntity<TicketDto> changeTicketState(@PathVariable(name = "action") State state,
+    public ResponseEntity<TicketDto> changeTicketState(@PathVariable(name = "action") String state,
                                                        @RequestBody Long id) throws TicketStateException {
         return ResponseEntity.ok(ticketService.ticketStatusChange(id, state));
     }
@@ -59,6 +58,12 @@ public class TicketController {
     public ResponseEntity<TicketDto> editTicket(@PathVariable(name = "action") String action,
                                                 @RequestBody TicketDto ticketDto) throws TicketStateException {
         return ResponseEntity.ok(ticketService.editTicket(action, ticketDto));
+    }
+
+    @GetMapping("/actions/{id}")
+    public ResponseEntity<List<String>> getAllowedActions(@PathVariable(name = "id") Long id){
+
+        return ResponseEntity.ok(ticketService.findAllowedActionsByRole(id));
     }
 }
 

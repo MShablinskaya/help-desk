@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.List;
 
 @RestController
 @RequestMapping(value = "/files", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -27,9 +28,9 @@ public class AttachmentController {
 
     @PostMapping("/{id}")
     @PreAuthorize("@userServiceImpl.hasRole('EMPLOYEE', 'MANAGER')")
-    public ResponseEntity<AttachmentDto> uploadFile(@PathVariable(name = "id") Long id,
-                                                    @RequestParam("file") MultipartFile file) throws TicketStateException, IOException {
-        return ResponseEntity.ok(attachmentService.multipleUploadFile(id, file));
+    public ResponseEntity<List<AttachmentDto>> uploadFile(@PathVariable(name = "id") Long id,
+                                                          @RequestParam("files") MultipartFile[] files) throws TicketStateException, IOException {
+        return ResponseEntity.ok(attachmentService.multipleUploadFile(id, files));
     }
 
 

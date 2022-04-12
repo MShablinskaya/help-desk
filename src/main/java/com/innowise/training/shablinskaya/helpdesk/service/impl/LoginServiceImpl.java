@@ -24,7 +24,9 @@ public class LoginServiceImpl implements LoginService {
     private final AuthenticationManager authenticationManager;
 
     @Autowired
-    public LoginServiceImpl(UserService userService, JwtProvider jwtProvider, AuthenticationManager authenticationManager) {
+    public LoginServiceImpl(UserService userService,
+                            JwtProvider jwtProvider,
+                            AuthenticationManager authenticationManager) {
         this.userService = userService;
         this.jwtProvider = jwtProvider;
         this.authenticationManager = authenticationManager;

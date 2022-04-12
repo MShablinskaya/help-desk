@@ -17,13 +17,15 @@ public interface TicketService {
 
     TicketDto findById(Long id);
 
-    TicketDto ticketStatusChange(Long id, State state) throws TicketStateException;
+    TicketDto ticketStatusChange(Long id, String state) throws TicketStateException;
 
     TicketDto postNewTicket(String action, TicketDto dto) throws TicketStateException;
 
     TicketDto editTicket(String action, TicketDto ticketDto) throws TicketStateException;
 
-    List<TicketDto> findByRole() throws TicketStateException;
+    List<TicketDto> findAllTicketsByRole() throws TicketStateException;
 
     List<TicketDto> findByCurrentUser();
+
+    List<String> findAllowedActionsByRole(Long id);
 }

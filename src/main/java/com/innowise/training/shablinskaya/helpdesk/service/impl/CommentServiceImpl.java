@@ -1,5 +1,6 @@
 package com.innowise.training.shablinskaya.helpdesk.service.impl;
 
+import com.innowise.training.shablinskaya.helpdesk.converter.CommentConverter;
 import com.innowise.training.shablinskaya.helpdesk.converter.impl.CommentConverterImpl;
 import com.innowise.training.shablinskaya.helpdesk.dto.CommentDto;
 import com.innowise.training.shablinskaya.helpdesk.dto.TicketDto;
@@ -15,11 +16,13 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 public class CommentServiceImpl implements CommentService {
     private final CommentRepository commentRepository;
-    private final CommentConverterImpl converter;
+    private final CommentConverter converter;
     private final TicketService ticketService;
 
     @Autowired
-    public CommentServiceImpl(CommentRepository commentRepository, CommentConverterImpl converter,TicketService ticketService) {
+    public CommentServiceImpl(CommentRepository commentRepository,
+                              CommentConverter converter,
+                              TicketService ticketService) {
         this.commentRepository = commentRepository;
         this.converter = converter;
         this.ticketService = ticketService;

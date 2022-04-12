@@ -1,8 +1,6 @@
 package com.innowise.training.shablinskaya.helpdesk.service.impl;
 
-import com.innowise.training.shablinskaya.helpdesk.converter.impl.TicketConverterImpl;
 import com.innowise.training.shablinskaya.helpdesk.dto.AttachmentDto;
-import com.innowise.training.shablinskaya.helpdesk.dto.TicketDto;
 import com.innowise.training.shablinskaya.helpdesk.entity.History;
 import com.innowise.training.shablinskaya.helpdesk.entity.Ticket;
 import com.innowise.training.shablinskaya.helpdesk.exception.TicketStateException;
@@ -42,9 +40,9 @@ public class HistoryServiceImpl implements HistoryService {
     private final UserService userService;
 
 
-
     @Autowired
-    public HistoryServiceImpl(HistoryRepository historyRepository, UserService userService) {
+    public HistoryServiceImpl(HistoryRepository historyRepository,
+                              UserService userService) {
         this.historyRepository = historyRepository;
         this.userService = userService;
     }
@@ -52,59 +50,58 @@ public class HistoryServiceImpl implements HistoryService {
 
     @Override
     @Transactional
-    public void createTicketHistory(Ticket ticket) throws TicketStateException {
+    public void recordHistory(Ticket ticket) {
         if (ticket != null) {
             History history = new History();
             history.setTicket(ticket);
             history.setDate(Timestamp.from(Instant.now()));
             history.setUserId(userService.getCurrentUser());
-            switch (ticket.getState().name()) {
-                case DRAFT:
-                    creation(history);
-                    historyRepository.save(history);
-                    break;
-
-                case NEW:
-                    historyForNew(history);
-                    historyRepository.save(history);
-                    break;
-
-                case CANCEL:
-                    historyForCancelled(history);
-                    historyRepository.save(history);
-                    break;
-
-                case APPROVE:
-                    historyForApprove(history);
-                    historyRepository.save(history);
-                    break;
-
-                case DECLINE:
-                    historyForDecline(history);
-                    historyRepository.save(history);
-                    break;
-
-                case IN_PROGRESS:
-                    historyForInProgress(history);
-                    historyRepository.save(history);
-                    break;
-
-                case DONE:
-                    historyForDone(history);
-                    historyRepository.save(history);
-                    break;
-
-                default:
-                    throw new TicketStateException("Incorrect transition!");
+            if (ticket.getState().name().equalsIgnoreCase(DRAFT)) {
+                creation(history);
+                historyRepository.save(history);
+            } else if (ticket.getState().name().equalsIgnoreCase(NEW) && !ticket.getCreateDate().equals(history.getDate())) {
+                historyForNew(history);
+                historyRepository.save(history);
+            } else if (ticket.getState().name().equalsIgnoreCase(APPROVE)) {
+                historyForApprove(history);
+                historyRepository.save(history);
+            } else if (ticket.getState().name().equalsIgnoreCase(DECLINE)) {
+                historyForDecline(history);
+                historyRepository.save(history);
+            } else if (ticket.getState().name().equalsIgnoreCase(CANCEL)) {
+                historyForCancelled(history);
+                historyRepository.save(history);
+            } else if (ticket.getState().name().equalsIgnoreCase(IN_PROGRESS)) {
+                historyForInProgress(history);
+                historyRepository.save(history);
+            } else if (ticket.getState().name().equalsIgnoreCase(DONE)) {
+                historyForDone(history);
+                historyRepository.save(history);
             }
+
         } else {
             throw new EntityNotFoundException("Ticket not found!");
         }
     }
 
     @Override
+    public void recordHistoryForPostedTicket(Ticket ticket) {
+        if (ticket != null) {
+            History history = new History();
+            history.setTicket(ticket);
+            history.setDate(Timestamp.from(Instant.now()));
+            history.setUserId(userService.getCurrentUser());
+            creation(history);
+            historyRepository.save(history);
+        } else {
+            throw new EntityNotFoundException("Ooops! Something went wrong!");
+        }
+
+    }
+
+    @Override
     @Transactional
-    public void ticketHistoryForEdit(Ticket ticket) throws TicketStateException {
+    public void recordHistoryForEditedTicket(Ticket ticket) throws TicketStateException {
         if (ticket != null) {
             History history = new History();
             history.setTicket(ticket);
@@ -123,13 +120,13 @@ public class HistoryServiceImpl implements HistoryService {
 
     @Override
     @Transactional
-    public void historyForAddAttachment(AttachmentDto dto, Ticket ticket) throws TicketStateException {
+    public void recordHistoryForUploadedAttachment(AttachmentDto dto, Ticket ticket) throws TicketStateException {
         createHistory(dto, ADD, ticket);
     }
 
     @Override
     @Transactional
-    public void historyForDeletedAttachment(AttachmentDto dto, Ticket ticket) throws TicketStateException {
+    public void recordHistoryForDeletedAttachment(AttachmentDto dto, Ticket ticket) throws TicketStateException {
         createHistory(dto, DELETE, ticket);
     }
 

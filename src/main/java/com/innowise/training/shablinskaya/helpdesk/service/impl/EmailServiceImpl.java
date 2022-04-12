@@ -51,7 +51,9 @@ public class EmailServiceImpl implements EmailService {
     private final ThreadPoolExecutor emailExecutor = new ThreadPoolExecutor(10, 10, 1, TimeUnit.SECONDS, new LinkedBlockingDeque<Runnable>());
 
     @Autowired
-    public EmailServiceImpl(JavaMailSender javaMailSender,TemplateEngine templateEngine, UserService userService) {
+    public EmailServiceImpl(JavaMailSender javaMailSender,
+                            TemplateEngine templateEngine,
+                            UserService userService) {
         this.javaMailSender = javaMailSender;
         this.templateEngine = templateEngine;
         this.userService = userService;

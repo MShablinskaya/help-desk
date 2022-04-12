@@ -10,11 +10,13 @@ import java.util.List;
 
 public interface HistoryService {
 
-    void createTicketHistory(Ticket ticket) throws TicketStateException;
+    void recordHistory(Ticket ticket) throws TicketStateException;
 
-    void ticketHistoryForEdit(Ticket ticket) throws TicketStateException;
+    void recordHistoryForPostedTicket(Ticket ticket) throws TicketStateException;
 
-    void historyForAddAttachment(AttachmentDto dto, Ticket ticket) throws TicketStateException;
+    void recordHistoryForEditedTicket(Ticket ticket) throws TicketStateException;
 
-    void historyForDeletedAttachment(AttachmentDto dto, Ticket ticket) throws TicketStateException;
+    void recordHistoryForUploadedAttachment(AttachmentDto dto, Ticket ticket) throws TicketStateException;
+
+    void recordHistoryForDeletedAttachment(AttachmentDto dto, Ticket ticket) throws TicketStateException;
 }
