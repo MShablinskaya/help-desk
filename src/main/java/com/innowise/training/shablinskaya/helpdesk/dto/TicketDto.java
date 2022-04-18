@@ -1,6 +1,7 @@
 package com.innowise.training.shablinskaya.helpdesk.dto;
 
 import java.sql.Timestamp;
+import java.util.List;
 import java.util.Objects;
 
 public class TicketDto {
@@ -16,6 +17,7 @@ public class TicketDto {
     private String state;
     private String category;
     private String urgency;
+    private List<String> actions;
 
     public TicketDto() {
     }
@@ -108,6 +110,14 @@ public class TicketDto {
         this.urgency = urgency;
     }
 
+    public List<String> getActions() {
+        return actions;
+    }
+
+    public void setActions(List<String> actions) {
+        this.actions = actions;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -123,18 +133,20 @@ public class TicketDto {
                 && Objects.equals(approve, dto.approve)
                 && Objects.equals(state, dto.state)
                 && Objects.equals(category, dto.category)
-                && Objects.equals(urgency, dto.urgency);
+                && Objects.equals(urgency, dto.urgency)
+                && Objects.equals(actions, dto.actions);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, name, description, creationDate, resolutionDate, owner, assignee, approve, state, category, urgency);
+        return Objects.hash(id, name, description, creationDate, resolutionDate, owner, assignee, approve, state, category, urgency, actions);
     }
 
     @Override
     public String toString() {
         return "TicketDto{" +
-                "name='" + name + '\'' +
+                "id=" + id +
+                ", name='" + name + '\'' +
                 ", description='" + description + '\'' +
                 ", creationDate=" + creationDate +
                 ", resolutionDate=" + resolutionDate +
@@ -144,6 +156,7 @@ public class TicketDto {
                 ", state='" + state + '\'' +
                 ", category='" + category + '\'' +
                 ", urgency='" + urgency + '\'' +
+                ", actions=" + actions +
                 '}';
     }
 }

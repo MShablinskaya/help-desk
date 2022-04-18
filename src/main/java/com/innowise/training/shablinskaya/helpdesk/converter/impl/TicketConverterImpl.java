@@ -7,6 +7,7 @@ import com.innowise.training.shablinskaya.helpdesk.entity.Ticket;
 import com.innowise.training.shablinskaya.helpdesk.enums.State;
 import com.innowise.training.shablinskaya.helpdesk.enums.Urgency;
 import com.innowise.training.shablinskaya.helpdesk.service.CategoryService;
+import com.innowise.training.shablinskaya.helpdesk.service.TicketService;
 import com.innowise.training.shablinskaya.helpdesk.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -22,11 +23,13 @@ public class TicketConverterImpl implements TicketConverter {
     private final CategoryService categoryService;
     private final UserConverter userConverter;
 
+
     @Autowired
     public TicketConverterImpl(UserService userService, CategoryService categoryService, UserConverter userConverter) {
         this.userService = userService;
         this.categoryService = categoryService;
         this.userConverter = userConverter;
+
     }
 
     @Override
@@ -44,6 +47,7 @@ public class TicketConverterImpl implements TicketConverter {
         dto.setState(ticket.getState().name());
         dto.setCategory(ticket.getCategory().getCategoryName());
         dto.setUrgency(ticket.getUrgency().name());
+
 
         return dto;
     }

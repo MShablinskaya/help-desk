@@ -13,15 +13,15 @@ public interface TicketService {
 
     Ticket save(TicketDto dto) throws TicketStateException;
 
-    Ticket changeState(TicketDto ticketDto, State state) throws TicketStateException;
+    Ticket changeState(Long id, String state) throws TicketStateException;
 
     TicketDto findById(Long id);
-
-    TicketDto ticketStatusChange(Long id, String state) throws TicketStateException;
 
     TicketDto postNewTicket(String action, TicketDto dto) throws TicketStateException;
 
     TicketDto editTicket(String action, TicketDto ticketDto) throws TicketStateException;
+
+    List<TicketDto> setActionToTicketDto() throws TicketStateException;
 
     List<TicketDto> findAllTicketsByRole() throws TicketStateException;
 

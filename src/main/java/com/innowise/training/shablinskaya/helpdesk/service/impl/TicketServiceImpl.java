@@ -85,11 +85,20 @@ public class TicketServiceImpl implements TicketService {
     }
 
     @Override
+    public List<TicketDto> setActionToTicketDto() throws TicketStateException {
+        List<TicketDto> ticketDtoList = new ArrayList<>(findAllTicketsByRole());
+
+        return ticketDtoList.stream().map(ticketDto -> {
+            ticketDto.setActions(findAllowedActionsByRole(ticketDto.getId()));
+            return ticketDto;
+        }).collect(Collectors.toList());
+    }
+
+    @Override
     public List<TicketDto> findAllTicketsByRole() throws TicketStateException {
         User user = userService.getCurrentUser();
         if (user != null) {
             if (user.getRoleId().name().equals(EMPLOYEE)) {
-
                 return findByOwner();
             } else if (user.getRoleId().name().equals(MANAGER)) {
                 Set<TicketDto> managersAllTicketsSet = new LinkedHashSet<>(findByOwner());
@@ -147,9 +156,8 @@ public class TicketServiceImpl implements TicketService {
 
         Timestamp setTime = dto.getResolutionDate();
         LocalDate resolutionDate = setTime.toLocalDateTime().toLocalDate();
-        Ticket ticket = null;
         if (currentDate.compareTo(resolutionDate) <= 0) {
-            ticket = ticketRepository.create(ticketConverter.toEntity(dto));
+            Ticket ticket = ticketRepository.create(ticketConverter.toEntity(dto));
             return ticket;
         } else {
             throw new EntityNotFoundException("Ticket does not create!");
@@ -162,9 +170,9 @@ public class TicketServiceImpl implements TicketService {
                 && ticketDto.getOwner().getEmail().equals(userService.getCurrentUser().getEmail())) {
             if (action.equalsIgnoreCase(ACTION_SUBMIT)) {
                 historyService.recordHistoryForEditedTicket(ticketConverter.toUpdEntity(ticketDto));
-                return ticketConverter.toDto(changeState(ticketDto, State.valueOf(NEW)));
+                return ticketConverter.toDto(changeState(ticketDto.getId(), NEW));
             } else if (action.equalsIgnoreCase(DRAFT)) {
-                return ticketDto;
+                return ticketConverter.toDto(ticketConverter.toUpdEntity(ticketDto));
             } else {
                 throw new TicketStateException("Incorrect action!");
             }
@@ -176,39 +184,31 @@ public class TicketServiceImpl implements TicketService {
 
     @Transactional
     @Override
-    public TicketDto ticketStatusChange(Long id, String state) throws TicketStateException {
-        TicketDto ticketDto = ticketConverter.toDto(ticketRepository.getById(id).orElseThrow(EntityNotFoundException::new));
-        return ticketConverter.toDto(changeState(ticketDto, State.valueOf(state.toUpperCase())));
-    }
-
-
-    @Transactional
-    @Override
-    public Ticket changeState(TicketDto dto, State state) throws TicketStateException {
+    public Ticket changeState(Long id, String state) throws TicketStateException {
         User user = userService.getCurrentUser();
-
+        TicketDto dto = ticketConverter.toDto(ticketRepository.getById(id).orElseThrow(EntityNotFoundException::new));
         if (dto != null && state != null) {
             if (dto.getState().equals(DRAFT) || dto.getState().equals(DECLINED) &&
                     (user.getRoleId().equals(Role.EMPLOYEE) || user.getRoleId().equals(Role.MANAGER))) {
-                changeStateFromDraft(dto, state);
+                changeStateFromDraft(dto, State.valueOf(state.toUpperCase()));
                 historyService.recordHistory(ticketConverter.toUpdEntity(dto));
                 emailService.sendAllManagerMessage(dto);
                 return ticketRepository.update(ticketConverter.toUpdEntity(dto));
 
             } else if (dto.getState().equals(NEW) && user.getRoleId().equals(Role.MANAGER)) {
-                changeStateFromNew(dto, state);
+                changeStateFromNew(dto, State.valueOf(state.toUpperCase()));
                 historyService.recordHistory(ticketConverter.toUpdEntity(dto));
                 emailService.sendEmailsForNewTickets(dto);
                 return ticketRepository.update(ticketConverter.toUpdEntity(dto));
 
             } else if (dto.getState().equals(APPROVED) && user.getRoleId().equals(Role.ENGINEER)) {
-                changeStateFromApprove(dto, state);
+                changeStateFromApprove(dto, State.valueOf(state.toUpperCase()));
                 historyService.recordHistory(ticketConverter.toUpdEntity(dto));
                 emailService.sendApproveMessage(dto);
                 return ticketRepository.update(ticketConverter.toUpdEntity(dto));
 
             } else if (dto.getState().equals(IN_PROGRESS) && user.getRoleId().equals(Role.ENGINEER)) {
-                changeStateFromInProgress(dto, state);
+                changeStateFromInProgress(dto, State.valueOf(state.toUpperCase()));
                 historyService.recordHistory(ticketConverter.toUpdEntity(dto));
                 emailService.sendCreatorMessage(dto);
                 return ticketRepository.update(ticketConverter.toUpdEntity(dto));
@@ -346,9 +346,7 @@ public class TicketServiceImpl implements TicketService {
         List<TicketDto> ticketDtos = new ArrayList<>();
 
         if (tickets != null) {
-            tickets.forEach(ticket -> {
-                ticketDtos.add(ticketConverter.toDto(ticket));
-            });
+            tickets.forEach(ticket -> ticketDtos.add(ticketConverter.toDto(ticket)));
         }
 
         return ticketDtos;
@@ -361,9 +359,7 @@ public class TicketServiceImpl implements TicketService {
         List<TicketDto> ticketDtos = new ArrayList<>();
 
         if (tickets != null) {
-            tickets.forEach(ticket -> {
-                ticketDtos.add(ticketConverter.toDto(ticket));
-            });
+            tickets.forEach(ticket -> ticketDtos.add(ticketConverter.toDto(ticket)));
         }
         return ticketDtos;
     }
@@ -375,9 +371,7 @@ public class TicketServiceImpl implements TicketService {
         List<TicketDto> ticketDtos = new ArrayList<>();
 
         if (tickets != null) {
-            tickets.forEach(ticket -> {
-                ticketDtos.add(ticketConverter.toDto(ticket));
-            });
+            tickets.forEach(ticket -> ticketDtos.add(ticketConverter.toDto(ticket)));
         }
         return ticketDtos;
     }
@@ -389,9 +383,7 @@ public class TicketServiceImpl implements TicketService {
         List<TicketDto> ticketDtos = new ArrayList<>();
 
         if (tickets != null) {
-            tickets.forEach(ticket -> {
-                ticketDtos.add(ticketConverter.toDto(ticket));
-            });
+            tickets.forEach(ticket -> ticketDtos.add(ticketConverter.toDto(ticket)));
         }
         return ticketDtos;
     }
