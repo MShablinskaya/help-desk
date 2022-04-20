@@ -5,6 +5,7 @@ import com.innowise.training.shablinskaya.helpdesk.converter.UserConverter;
 import com.innowise.training.shablinskaya.helpdesk.dto.TicketDto;
 import com.innowise.training.shablinskaya.helpdesk.entity.Ticket;
 import com.innowise.training.shablinskaya.helpdesk.entity.User;
+import com.innowise.training.shablinskaya.helpdesk.enums.Action;
 import com.innowise.training.shablinskaya.helpdesk.enums.Role;
 import com.innowise.training.shablinskaya.helpdesk.enums.State;
 import com.innowise.training.shablinskaya.helpdesk.exception.TicketStateException;
@@ -37,14 +38,7 @@ public class TicketServiceImpl implements TicketService {
     private static final String EMPLOYEE = "EMPLOYEE";
     private static final String MANAGER = "MANAGER";
     private static final String ENGINEER = "ENGINEER";
-    private static final String ACTION_SUBMIT = "Submit";
-    private static final String ACTION_EDIT = "Edit";
-    private static final String ACTION_DECLINE = "Decline";
-    private static final String ACTION_CANCEL = "Cancel";
-    private static final String ACTION_APPROVE = "Approve";
-    private static final String ACTION_ASSIGN = "Assign";
-    private static final String ACTION_DONE = "Done";
-    private static final String ACTION_LEAVE_FEEDBACK = "Leave feedback";
+
 
     private final TicketRepository ticketRepository;
     private final TicketConverter ticketConverter;
@@ -78,9 +72,17 @@ public class TicketServiceImpl implements TicketService {
     public List<TicketDto> findByCurrentUser() {
         User user = userService.getCurrentUser();
         if (user.getRoleId().name().equals(EMPLOYEE) || user.getRoleId().name().equals(MANAGER)) {
-            return findByOwner();
+            List<TicketDto> ticketDtoList = new ArrayList<>(findByOwner());
+            return ticketDtoList.stream().map(ticketDto -> {
+                ticketDto.setActions(findAllowedActionsByRole(ticketDto.getId()));
+                return ticketDto;
+            }).collect(Collectors.toList());
         } else {
-            return findByAssignee();
+            List<TicketDto> ticketDtoList = new ArrayList<>(findByAssignee());
+            return ticketDtoList.stream().map(ticketDto -> {
+                ticketDto.setActions(findAllowedActionsByRole(ticketDto.getId()));
+                return ticketDto;
+            }).collect(Collectors.toList());
         }
     }
 
@@ -131,7 +133,7 @@ public class TicketServiceImpl implements TicketService {
                 historyService.recordHistory(ticket);
 
                 return ticketConverter.toDto(ticket);
-            } else if (action.equalsIgnoreCase(ACTION_SUBMIT)) {
+            } else if (action.equalsIgnoreCase(Action.SUBMIT.name())) {
                 ticketDto.setState(NEW);
                 Ticket ticket = save(ticketDto);
 
@@ -157,8 +159,7 @@ public class TicketServiceImpl implements TicketService {
         Timestamp setTime = dto.getResolutionDate();
         LocalDate resolutionDate = setTime.toLocalDateTime().toLocalDate();
         if (currentDate.compareTo(resolutionDate) <= 0) {
-            Ticket ticket = ticketRepository.create(ticketConverter.toEntity(dto));
-            return ticket;
+            return ticketRepository.create(ticketConverter.toEntity(dto));
         } else {
             throw new EntityNotFoundException("Ticket does not create!");
         }
@@ -166,9 +167,9 @@ public class TicketServiceImpl implements TicketService {
 
     @Override
     public TicketDto editTicket(String action, TicketDto ticketDto) throws TicketStateException {
-        if (ticketDto.getId() != null && ticketDto.getState().equals(DRAFT)
-                && ticketDto.getOwner().getEmail().equals(userService.getCurrentUser().getEmail())) {
-            if (action.equalsIgnoreCase(ACTION_SUBMIT)) {
+        if (ticketDto.getId() != null && ticketDto.getOwner().getEmail().equals(userService.getCurrentUser().getEmail())
+                && ticketDto.getState().equals(DRAFT) || ticketDto.getState().equals(DECLINED)) {
+            if (action.equalsIgnoreCase(Action.SUBMIT.name())) {
                 historyService.recordHistoryForEditedTicket(ticketConverter.toUpdEntity(ticketDto));
                 return ticketConverter.toDto(changeState(ticketDto.getId(), NEW));
             } else if (action.equalsIgnoreCase(DRAFT)) {
@@ -184,31 +185,33 @@ public class TicketServiceImpl implements TicketService {
 
     @Transactional
     @Override
-    public Ticket changeState(Long id, String state) throws TicketStateException {
+    public Ticket changeState(Long id, String action) throws TicketStateException {
         User user = userService.getCurrentUser();
         TicketDto dto = ticketConverter.toDto(ticketRepository.getById(id).orElseThrow(EntityNotFoundException::new));
+        Action inputAction = Action.valueOf(action.toUpperCase());
+        String state = inputAction.getAction();
         if (dto != null && state != null) {
             if (dto.getState().equals(DRAFT) || dto.getState().equals(DECLINED) &&
                     (user.getRoleId().equals(Role.EMPLOYEE) || user.getRoleId().equals(Role.MANAGER))) {
-                changeStateFromDraft(dto, State.valueOf(state.toUpperCase()));
+                changeStateFromDraft(dto, State.valueOf(state));
                 historyService.recordHistory(ticketConverter.toUpdEntity(dto));
                 emailService.sendAllManagerMessage(dto);
                 return ticketRepository.update(ticketConverter.toUpdEntity(dto));
 
             } else if (dto.getState().equals(NEW) && user.getRoleId().equals(Role.MANAGER)) {
-                changeStateFromNew(dto, State.valueOf(state.toUpperCase()));
+                changeStateFromNew(dto, State.valueOf(state));
                 historyService.recordHistory(ticketConverter.toUpdEntity(dto));
                 emailService.sendEmailsForNewTickets(dto);
                 return ticketRepository.update(ticketConverter.toUpdEntity(dto));
 
             } else if (dto.getState().equals(APPROVED) && user.getRoleId().equals(Role.ENGINEER)) {
-                changeStateFromApprove(dto, State.valueOf(state.toUpperCase()));
+                changeStateFromApprove(dto, State.valueOf(state));
                 historyService.recordHistory(ticketConverter.toUpdEntity(dto));
                 emailService.sendApproveMessage(dto);
                 return ticketRepository.update(ticketConverter.toUpdEntity(dto));
 
             } else if (dto.getState().equals(IN_PROGRESS) && user.getRoleId().equals(Role.ENGINEER)) {
-                changeStateFromInProgress(dto, State.valueOf(state.toUpperCase()));
+                changeStateFromInProgress(dto, State.valueOf(state));
                 historyService.recordHistory(ticketConverter.toUpdEntity(dto));
                 emailService.sendCreatorMessage(dto);
                 return ticketRepository.update(ticketConverter.toUpdEntity(dto));
@@ -225,14 +228,14 @@ public class TicketServiceImpl implements TicketService {
             if (userService.getCurrentUser().getRoleId().name().equals(EMPLOYEE)
                     || userService.getCurrentUser().getRoleId().name().equals(MANAGER)
                     && dto.getOwner().getEmail().equals(userService.getCurrentUser().getEmail())) {
-                if (dto.getState().equals(DRAFT)) {
-                    actionsList.add(ACTION_SUBMIT);
-                    actionsList.add(ACTION_EDIT);
-                    actionsList.add(ACTION_CANCEL);
+                if (dto.getState().equals(DRAFT) || dto.getState().equals(DECLINED)) {
+                    actionsList.add(Action.SUBMIT.name());
+                    actionsList.add(Action.EDIT.getAction());
+                    actionsList.add(Action.CANCEL.name());
 
                     return actionsList;
                 } else if (dto.getState().equals(DONE)) {
-                    actionsList.add(ACTION_LEAVE_FEEDBACK);
+                    actionsList.add(Action.LEAVE_FEEDBACK.getAction());
 
                     return actionsList;
                 } else {
@@ -242,9 +245,9 @@ public class TicketServiceImpl implements TicketService {
                 }
             } else if (userService.getCurrentUser().getRoleId().name().equals(MANAGER)) {
                 if (!dto.getOwner().getEmail().equals(userService.getCurrentUser().getEmail()) && dto.getState().equals(NEW)) {
-                    actionsList.add(ACTION_APPROVE);
-                    actionsList.add(ACTION_DECLINE);
-                    actionsList.add(ACTION_CANCEL);
+                    actionsList.add(Action.APPROVE.name());
+                    actionsList.add(Action.DECLINE.name());
+                    actionsList.add(Action.CANCEL.name());
 
                 } else {
                     actionsList.add("No active actions...");
@@ -253,13 +256,13 @@ public class TicketServiceImpl implements TicketService {
                 return actionsList;
             } else if (userService.getCurrentUser().getRoleId().name().equals(ENGINEER)) {
                 if (dto.getState().equals(APPROVED)) {
-                    actionsList.add(ACTION_ASSIGN);
-                    actionsList.add(ACTION_CANCEL);
+                    actionsList.add(Action.ASSIGN.name());
+                    actionsList.add(Action.CANCEL.name());
 
                     return actionsList;
                 } else if (dto.getState().equals(IN_PROGRESS)
                         && dto.getAssignee().getEmail().equals(userService.getCurrentUser().getEmail())) {
-                    actionsList.add(ACTION_DONE);
+                    actionsList.add(Action.DONE.name());
 
                     return actionsList;
                 } else {
