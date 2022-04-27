@@ -107,7 +107,7 @@ public class HistoryServiceImpl implements HistoryService {
             history.setTicket(ticket);
             history.setDate(Timestamp.from(Instant.now()));
             history.setUserId(userService.getCurrentUser());
-            if (ticket.getState().name().equals(NEW)) {
+            if (ticket.getState().name().equals(NEW) || ticket.getState().name().equals(DRAFT) ) {
                 edit(history);
                 historyRepository.save(history);
             } else {

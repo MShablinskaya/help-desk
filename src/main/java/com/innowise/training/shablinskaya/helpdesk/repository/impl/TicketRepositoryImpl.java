@@ -9,10 +9,6 @@ import org.springframework.stereotype.Repository;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
-import javax.persistence.TypedQuery;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Root;
 import java.util.List;
 import java.util.Optional;
 
@@ -81,27 +77,5 @@ public class TicketRepositoryImpl implements TicketRepository {
         return ticket;
     }
 
-    public void getPagination() {
-        int pageNumber = 1;
-        int pageSize = 5;
-
-        CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
-
-        CriteriaQuery<Long> countQuery = criteriaBuilder.createQuery(Long.class);
-        countQuery.select(criteriaBuilder.count(countQuery.from(Ticket.class)));
-        Long count = entityManager.createQuery(countQuery).getSingleResult();
-        CriteriaQuery<Ticket> criteriaQuery = criteriaBuilder.createQuery(Ticket.class);
-        Root<Ticket> from = criteriaQuery.from(Ticket.class);
-        CriteriaQuery<Ticket> select = criteriaQuery.select(from);
-
-        TypedQuery<Ticket> typedQuery = entityManager.createQuery(select);
-        while (pageNumber < count.intValue()) {
-            typedQuery.setFirstResult(pageNumber - 1);
-            typedQuery.setMaxResults(pageSize);
-            pageNumber += pageSize;
-        }
-
-
-    }
 
 }

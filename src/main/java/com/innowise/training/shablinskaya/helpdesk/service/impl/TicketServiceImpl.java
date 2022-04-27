@@ -131,8 +131,9 @@ public class TicketServiceImpl implements TicketService {
                 Ticket ticket = save(ticketDto);
 
                 historyService.recordHistory(ticket);
-
-                return ticketConverter.toDto(ticket);
+                TicketDto dto = ticketConverter.toDto(ticket);
+                dto.setActions(findAllowedActionsByRole(dto.getId()));
+                return dto;
             } else if (action.equalsIgnoreCase(Action.SUBMIT.name())) {
                 ticketDto.setState(NEW);
                 Ticket ticket = save(ticketDto);
@@ -166,13 +167,18 @@ public class TicketServiceImpl implements TicketService {
     }
 
     @Override
+    @Transactional
     public TicketDto editTicket(String action, TicketDto ticketDto) throws TicketStateException {
         if (ticketDto.getId() != null && ticketDto.getOwner().getEmail().equals(userService.getCurrentUser().getEmail())
                 && ticketDto.getState().equals(DRAFT) || ticketDto.getState().equals(DECLINED)) {
             if (action.equalsIgnoreCase(Action.SUBMIT.name())) {
+                ticketRepository.update(ticketConverter.toUpdEntity(ticketDto));
+                ticketDto = ticketConverter.toDto(changeState(ticketDto.getId(), Action.SUBMIT.name()));
                 historyService.recordHistoryForEditedTicket(ticketConverter.toUpdEntity(ticketDto));
-                return ticketConverter.toDto(changeState(ticketDto.getId(), NEW));
+                return ticketDto;
             } else if (action.equalsIgnoreCase(DRAFT)) {
+                historyService.recordHistoryForEditedTicket(ticketConverter.toUpdEntity(ticketDto));
+                ticketRepository.update(ticketConverter.toUpdEntity(ticketDto));
                 return ticketConverter.toDto(ticketConverter.toUpdEntity(ticketDto));
             } else {
                 throw new TicketStateException("Incorrect action!");

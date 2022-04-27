@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.persistence.EntityNotFoundException;
+import java.util.List;
 
 @Service
 public class CategoryServiceImpl implements CategoryService {
@@ -26,5 +27,10 @@ public class CategoryServiceImpl implements CategoryService {
     @Override
     public Category findByName(String name) {
         return categoryRepository.getByName(name);
+    }
+
+    @Override
+    public List<Category> getAllCategories() {
+        return categoryRepository.getAll();
     }
 }

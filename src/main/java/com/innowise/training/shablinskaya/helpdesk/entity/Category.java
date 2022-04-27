@@ -1,6 +1,7 @@
 package com.innowise.training.shablinskaya.helpdesk.entity;
 
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import javax.persistence.*;
@@ -22,6 +23,7 @@ public class Category {
     private String categoryName;
 
     @OneToMany(mappedBy = "category")
+    @JsonIgnore
     private List<Ticket> ticketCategories = new ArrayList<>();
 
     public Category() {
