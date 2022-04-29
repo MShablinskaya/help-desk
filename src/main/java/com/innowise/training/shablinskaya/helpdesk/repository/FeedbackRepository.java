@@ -9,6 +9,8 @@ public interface FeedbackRepository {
 
     Optional<Feedback> getById(Long id);
 
+    Feedback getByTicketId(Long ticketId);
+
     Feedback save(Feedback feedback);
 
 }

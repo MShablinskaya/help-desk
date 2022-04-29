@@ -53,7 +53,7 @@ public class TicketController {
     }
 
     @PreAuthorize("@userServiceImpl.hasRole('EMPLOYEE', 'MANAGER')")
-    @PostMapping("/{action}")
+    @PostMapping("/create/{action}")
     @Operation(summary = "Post new ticket", security = @SecurityRequirement(name = "bearerAuth"))
     @ApiResponse(responseCode = "200")
     public ResponseEntity<TicketDto> postNewTicket(@PathVariable(name = "action") String action,

@@ -126,7 +126,7 @@ public class TicketServiceImpl implements TicketService {
     @Override
     public TicketDto postNewTicket(String action, TicketDto ticketDto) throws TicketStateException {
         if (ticketDto != null && action != null) {
-            if (action.equalsIgnoreCase(DRAFT)) {
+            if (action.equalsIgnoreCase(Action.DRAFT.name())) {
                 ticketDto.setState(DRAFT);
                 Ticket ticket = save(ticketDto);
 
@@ -172,14 +172,14 @@ public class TicketServiceImpl implements TicketService {
         if (ticketDto.getId() != null && ticketDto.getOwner().getEmail().equals(userService.getCurrentUser().getEmail())
                 && ticketDto.getState().equals(DRAFT) || ticketDto.getState().equals(DECLINED)) {
             if (action.equalsIgnoreCase(Action.SUBMIT.name())) {
-                ticketRepository.update(ticketConverter.toUpdEntity(ticketDto));
                 ticketDto = ticketConverter.toDto(changeState(ticketDto.getId(), Action.SUBMIT.name()));
-                historyService.recordHistoryForEditedTicket(ticketConverter.toUpdEntity(ticketDto));
-                return ticketDto;
-            } else if (action.equalsIgnoreCase(DRAFT)) {
-                historyService.recordHistoryForEditedTicket(ticketConverter.toUpdEntity(ticketDto));
-                ticketRepository.update(ticketConverter.toUpdEntity(ticketDto));
-                return ticketConverter.toDto(ticketConverter.toUpdEntity(ticketDto));
+                Ticket ticket = ticketConverter.toUpdEntity(ticketDto);
+                historyService.recordHistoryForEditedTicket(ticket);
+                return ticketConverter.toDto(ticketRepository.update(ticket));
+            } else if (action.equalsIgnoreCase(Action.DRAFT.name())) {
+                Ticket ticket = ticketConverter.toUpdEntity(ticketDto);
+                historyService.recordHistoryForEditedTicket(ticket);
+                return ticketConverter.toDto(ticketRepository.update(ticket));
             } else {
                 throw new TicketStateException("Incorrect action!");
             }

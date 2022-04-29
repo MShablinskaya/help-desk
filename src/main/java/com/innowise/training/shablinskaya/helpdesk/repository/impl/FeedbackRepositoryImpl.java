@@ -29,5 +29,10 @@ public class FeedbackRepositoryImpl implements FeedbackRepository {
         return feedback;
     }
 
-
+    @Override
+    public Feedback getByTicketId(Long ticketId) {
+        return entityManager.createQuery("SELECT f FROM Feedback f WHERE f.ticket.id =: ticketId", Feedback.class)
+                .setParameter("ticketId", ticketId)
+                .getSingleResult();
+    }
 }

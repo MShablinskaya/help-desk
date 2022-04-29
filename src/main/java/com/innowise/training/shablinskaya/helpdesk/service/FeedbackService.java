@@ -11,4 +11,6 @@ public interface FeedbackService {
 
     FeedbackDto postFeedback(Long id, FeedbackDto feedbackDto) throws TicketStateException;
 
+    FeedbackDto getTicketFeedback(Long ticketId) throws TicketStateException;
+
 }

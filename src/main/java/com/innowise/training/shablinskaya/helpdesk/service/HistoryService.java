@@ -1,6 +1,7 @@
 package com.innowise.training.shablinskaya.helpdesk.service;
 
 import com.innowise.training.shablinskaya.helpdesk.dto.AttachmentDto;
+import com.innowise.training.shablinskaya.helpdesk.dto.HistoryDto;
 import com.innowise.training.shablinskaya.helpdesk.dto.TicketDto;
 import com.innowise.training.shablinskaya.helpdesk.entity.History;
 import com.innowise.training.shablinskaya.helpdesk.entity.Ticket;
@@ -19,4 +20,6 @@ public interface HistoryService {
     void recordHistoryForUploadedAttachment(AttachmentDto dto, Ticket ticket) throws TicketStateException;
 
     void recordHistoryForDeletedAttachment(AttachmentDto dto, Ticket ticket) throws TicketStateException;
+
+    List<HistoryDto> getTicketHistory(Long ticketId) throws TicketStateException;
 }

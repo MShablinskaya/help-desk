@@ -21,9 +21,16 @@ public class FeedbackController {
     }
 
     @PreAuthorize("@userServiceImpl.hasRole('EMPLOYEE', 'MANAGER')")
-    @PostMapping("{id}")
+    @PostMapping("/create/{id}")
     public ResponseEntity<FeedbackDto> createFeedback(@PathVariable(name = "id") Long id,
                                                       @RequestBody FeedbackDto dto) throws TicketStateException {
         return ResponseEntity.ok(feedbackService.postFeedback(id, dto));
+    }
+
+    @GetMapping("/info/{ticketId}")
+    public ResponseEntity<FeedbackDto> getTicketFeedback(@PathVariable(name = "ticketId") Long ticketId) throws TicketStateException {
+
+        return ResponseEntity.ok(feedbackService.getTicketFeedback(ticketId));
+
     }
 }

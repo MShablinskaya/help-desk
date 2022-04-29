@@ -66,4 +66,23 @@ public class FeedbackServiceImpl implements FeedbackService {
         }
     }
 
+    @Override
+    public FeedbackDto getTicketFeedback(Long ticketId) throws TicketStateException {
+        if (ticketId != null){
+            TicketDto dto = ticketService.findById(ticketId);
+            if(dto != null) {
+                FeedbackDto feedbackDto = converter.toDto(feedbackRepository.getByTicketId(dto.getId()));
+                if (feedbackDto != null) {
+                    return feedbackDto;
+                } else {
+                    throw new TicketStateException("This ticket has no feedback yet!");
+                }
+            }else{
+                throw new TicketStateException("Ticket Id doesn't exist!");
+            }
+
+        }else {
+            throw new TicketStateException("Enter ticket Id please");
+        }
+    }
 }

@@ -8,7 +8,8 @@ public enum Action {
     ASSIGN("IN_PROGRESS"),
     DONE("DONE"),
     EDIT("Edit"),
-    LEAVE_FEEDBACK("Leave Feedback");
+    LEAVE_FEEDBACK("Leave Feedback"),
+    DRAFT("Draft");
 
     private final String action;
 

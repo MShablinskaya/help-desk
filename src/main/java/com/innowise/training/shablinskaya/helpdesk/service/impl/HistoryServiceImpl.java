@@ -1,6 +1,8 @@
 package com.innowise.training.shablinskaya.helpdesk.service.impl;
 
+import com.innowise.training.shablinskaya.helpdesk.converter.HistoryConverter;
 import com.innowise.training.shablinskaya.helpdesk.dto.AttachmentDto;
+import com.innowise.training.shablinskaya.helpdesk.dto.HistoryDto;
 import com.innowise.training.shablinskaya.helpdesk.entity.History;
 import com.innowise.training.shablinskaya.helpdesk.entity.Ticket;
 import com.innowise.training.shablinskaya.helpdesk.exception.TicketStateException;
@@ -14,6 +16,8 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.persistence.EntityNotFoundException;
 import java.sql.Timestamp;
 import java.time.Instant;
+import java.util.ArrayList;
+import java.util.List;
 
 @Service
 public class HistoryServiceImpl implements HistoryService {
@@ -38,13 +42,16 @@ public class HistoryServiceImpl implements HistoryService {
 
     private final HistoryRepository historyRepository;
     private final UserService userService;
+    private final HistoryConverter converter;
 
 
     @Autowired
     public HistoryServiceImpl(HistoryRepository historyRepository,
-                              UserService userService) {
+                              UserService userService,
+                              HistoryConverter converter) {
         this.historyRepository = historyRepository;
         this.userService = userService;
+        this.converter = converter;
     }
 
 
@@ -107,7 +114,7 @@ public class HistoryServiceImpl implements HistoryService {
             history.setTicket(ticket);
             history.setDate(Timestamp.from(Instant.now()));
             history.setUserId(userService.getCurrentUser());
-            if (ticket.getState().name().equals(NEW) || ticket.getState().name().equals(DRAFT) ) {
+            if (ticket.getState().name().equals(NEW) || ticket.getState().name().equals(DRAFT)) {
                 edit(history);
                 historyRepository.save(history);
             } else {
@@ -129,6 +136,24 @@ public class HistoryServiceImpl implements HistoryService {
     public void recordHistoryForDeletedAttachment(AttachmentDto dto, Ticket ticket) throws TicketStateException {
         createHistory(dto, DELETE, ticket);
     }
+
+    @Override
+    public List<HistoryDto> getTicketHistory(Long ticketId) throws TicketStateException {
+        if (ticketId != null) {
+            List<History> histories = historyRepository.findByTicketId(ticketId);
+
+            List<HistoryDto> historyDtos = new ArrayList<>();
+
+            if (histories != null) {
+                histories.forEach(history -> historyDtos.add(converter.toDto(history)));
+            }
+
+            return historyDtos;
+        } else {
+            throw new TicketStateException("Enter ticket ID please");
+        }
+    }
+
 
     private void createHistory(AttachmentDto dto, String action, Ticket ticket) throws TicketStateException {
         if (dto != null) {

@@ -29,9 +29,6 @@ public class FeedbackConverterImpl implements FeedbackConverter {
     public FeedbackDto toDto(Feedback feedback) {
         FeedbackDto dto = new FeedbackDto();
 
-        dto.setId(feedback.getFeedbackId());
-        dto.setUserId(feedback.getUserId().getEmail());
-        dto.setDate((Timestamp) feedback.getFeedbackDate());
         dto.setRate(feedback.getFeedbackRate());
         dto.setText(feedback.getText());
         dto.setTicketId(feedback.getFeedbackTicketId().getId());

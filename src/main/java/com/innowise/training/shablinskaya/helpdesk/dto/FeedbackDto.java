@@ -4,30 +4,12 @@ import java.sql.Timestamp;
 import java.util.Objects;
 
 public class FeedbackDto {
-    private Long id;
-    private String userId;
+
     private Long rate;
-    private Timestamp date;
     private String text;
     private Long ticketId;
 
     public FeedbackDto() {
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public String getUserId() {
-        return userId;
-    }
-
-    public void setUserId(String userId) {
-        this.userId = userId;
     }
 
     public Long getRate() {
@@ -36,14 +18,6 @@ public class FeedbackDto {
 
     public void setRate(Long rate) {
         this.rate = rate;
-    }
-
-    public Timestamp getDate() {
-        return date;
-    }
-
-    public void setDate(Timestamp date) {
-        this.date = date;
     }
 
     public String getText() {
@@ -66,26 +40,21 @@ public class FeedbackDto {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        FeedbackDto dto = (FeedbackDto) o;
-        return Objects.equals(id, dto.id)
-                && Objects.equals(userId, dto.userId)
-                && Objects.equals(rate, dto.rate)
-                && Objects.equals(date, dto.date)
-                && Objects.equals(text, dto.text)
-                && Objects.equals(ticketId, dto.ticketId);
+        FeedbackDto that = (FeedbackDto) o;
+        return Objects.equals(rate, that.rate)
+                && Objects.equals(text, that.text)
+                && Objects.equals(ticketId, that.ticketId);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, userId, rate, date, text, ticketId);
+        return Objects.hash(rate, text, ticketId);
     }
 
     @Override
     public String toString() {
         return "FeedbackDto{" +
-                ", userId='" + userId + '\'' +
-                ", rate=" + rate +
-                ", date=" + date +
+                "rate=" + rate +
                 ", text='" + text + '\'' +
                 ", ticketId=" + ticketId +
                 '}';
