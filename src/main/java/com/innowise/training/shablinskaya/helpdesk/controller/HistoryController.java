@@ -23,7 +23,7 @@ public class HistoryController {
         this.historyService = historyService;
     }
 
-    @GetMapping("{ticketId}")
+    @GetMapping("/{ticketId}")
     public ResponseEntity<List<HistoryDto>> getAllTicketHistory(@PathVariable(name = "ticketId") Long ticketId) throws TicketStateException{
         return ResponseEntity.ok(historyService.getTicketHistory(ticketId));
     }

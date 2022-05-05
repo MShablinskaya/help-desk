@@ -18,7 +18,7 @@ public class HistoryRepositoryImpl implements HistoryRepository {
     @Override
     public List<History> findByTicketId(Long ticketId) {
         return entityManager.createQuery("SELECT h FROM History h WHERE h.ticket.id = :ticketId", History.class)
-                .setParameter("ticketId", History.class)
+                .setParameter("ticketId", ticketId)
                 .getResultList();
     }
 

@@ -6,6 +6,7 @@ import org.springframework.stereotype.Repository;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import java.util.List;
 import java.util.Optional;
 
 @Repository
@@ -28,6 +29,13 @@ public class CommentRepositoryImpl implements CommentRepository {
         }
         return comment;
 
+    }
+
+    @Override
+    public List<Comment> getCommentsByTicketId(Long ticketId) {
+        return entityManager.createQuery("SELECT c FROM Comment c WHERE c.ticket.id = :ticketId", Comment.class)
+                .setParameter("ticketId", ticketId)
+                .getResultList();
     }
 
 }

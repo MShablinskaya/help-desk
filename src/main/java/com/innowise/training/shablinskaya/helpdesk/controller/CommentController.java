@@ -8,6 +8,8 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping(value = "/comments", produces = MediaType.APPLICATION_JSON_VALUE)
 public class CommentController {
@@ -18,9 +20,15 @@ public class CommentController {
         this.commentService = commentService;
     }
 
-    @PostMapping("{id}")
+    @PostMapping("/{id}")
     public ResponseEntity<CommentDto> addComment(@PathVariable(name = "id") Long id,
                                                  @RequestBody CommentDto dto) throws TicketStateException {
         return ResponseEntity.ok(commentService.postComment(id, dto));
+    }
+
+    @GetMapping("/{ticketId}")
+    public ResponseEntity<List<CommentDto>> getCommentsByTicketId(@PathVariable(name = "ticketId") Long ticketId) throws TicketStateException {
+
+        return ResponseEntity.ok(commentService.getCommentsByTicketId(ticketId));
     }
 }
