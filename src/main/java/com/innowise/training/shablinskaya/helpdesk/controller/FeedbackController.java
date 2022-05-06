@@ -1,6 +1,7 @@
 package com.innowise.training.shablinskaya.helpdesk.controller;
 
 import com.innowise.training.shablinskaya.helpdesk.dto.FeedbackDto;
+import com.innowise.training.shablinskaya.helpdesk.entity.Feedback;
 import com.innowise.training.shablinskaya.helpdesk.exception.TicketStateException;
 import com.innowise.training.shablinskaya.helpdesk.service.FeedbackService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,9 +23,9 @@ public class FeedbackController {
 
     @PreAuthorize("@userServiceImpl.hasRole('EMPLOYEE', 'MANAGER')")
     @PostMapping("/create/{id}")
-    public ResponseEntity<FeedbackDto> createFeedback(@PathVariable(name = "id") Long id,
-                                                      @RequestBody FeedbackDto dto) throws TicketStateException {
-        return ResponseEntity.ok(feedbackService.postFeedback(id, dto));
+    public ResponseEntity<Feedback> createFeedback(@PathVariable(name = "id") Long id,
+                                                   @RequestBody FeedbackDto dto) throws TicketStateException {
+        return ResponseEntity.ok(feedbackService.saveFeedback(dto, id));
     }
 
     @GetMapping("/info/{ticketId}")

@@ -2,7 +2,6 @@ package com.innowise.training.shablinskaya.helpdesk.service.impl;
 
 import com.innowise.training.shablinskaya.helpdesk.converter.FeedbackConverter;
 import com.innowise.training.shablinskaya.helpdesk.converter.UserConverter;
-import com.innowise.training.shablinskaya.helpdesk.converter.impl.FeedbackConverterImpl;
 import com.innowise.training.shablinskaya.helpdesk.dto.FeedbackDto;
 import com.innowise.training.shablinskaya.helpdesk.dto.TicketDto;
 import com.innowise.training.shablinskaya.helpdesk.entity.Feedback;
@@ -43,15 +42,11 @@ public class FeedbackServiceImpl implements FeedbackService {
 
     @Transactional
     @Override
-    public FeedbackDto postFeedback(Long id, FeedbackDto feedbackDto) throws TicketStateException {
+    public Feedback saveFeedback(FeedbackDto dto, Long id) throws TicketStateException {
         TicketDto ticketDto = ticketService.findById(id);
-        return converter.toDto(saveFeedback(feedbackDto, ticketDto));
-    }
-
-    @Transactional
-    @Override
-    public Feedback saveFeedback(FeedbackDto dto, TicketDto ticketDto) throws TicketStateException {
+        FeedbackDto feedbackDto = converter.toDto(feedbackRepository.getByTicketId(id));
         if (ticketDto != null
+                && feedbackDto == null
                 && ticketDto.getState().equals(DONE)
                 && ticketDto.getOwner().equals(userConverter.toDto(userService.getCurrentUser()))) {
             if (dto.getRate() != null) {
@@ -85,4 +80,5 @@ public class FeedbackServiceImpl implements FeedbackService {
             throw new TicketStateException("Enter ticket Id please");
         }
     }
+
 }

@@ -35,4 +35,5 @@ public class FeedbackRepositoryImpl implements FeedbackRepository {
                 .setParameter("ticketId", ticketId)
                 .getSingleResult();
     }
+
 }
