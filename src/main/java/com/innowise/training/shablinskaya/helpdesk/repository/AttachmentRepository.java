@@ -13,4 +13,6 @@ public interface AttachmentRepository {
     void remove(Attachment attachment);
 
     Attachment save(Attachment attachment);
+
+    List<Attachment> getByTicketId(Long ticketId);
 }

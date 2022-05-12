@@ -19,4 +19,6 @@ public interface AttachmentService {
     void deleteFile(Long id) throws TicketStateException;
 
     List<AttachmentDto> multipleUploadFile(Long id, MultipartFile[] file);
+
+    List<AttachmentDto> getAttachmentsByTicketId(Long ticketId) throws TicketStateException;
 }

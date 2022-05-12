@@ -11,7 +11,6 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.IOException;
 import java.util.List;
 
 @RestController
@@ -29,7 +28,7 @@ public class AttachmentController {
     @PostMapping("/{id}")
     @PreAuthorize("@userServiceImpl.hasRole('EMPLOYEE', 'MANAGER')")
     public ResponseEntity<List<AttachmentDto>> uploadFile(@PathVariable(name = "id") Long id,
-                                                          @RequestParam("files") MultipartFile[] files) throws TicketStateException, IOException {
+                                                          @RequestParam("files") MultipartFile[] files) {
         return ResponseEntity.ok(attachmentService.multipleUploadFile(id, files));
     }
 
@@ -39,5 +38,11 @@ public class AttachmentController {
     public ResponseEntity deleteFile(@PathVariable(name = "id") Long id) throws TicketStateException {
         attachmentService.deleteFile(id);
         return new ResponseEntity(HttpStatus.OK);
+    }
+
+    @GetMapping("/{ticketId}")
+    public ResponseEntity<List<AttachmentDto>> getAttachmentByTicketId(@PathVariable(name = "ticketId") Long ticketId) throws TicketStateException {
+
+        return ResponseEntity.ok(attachmentService.getAttachmentsByTicketId(ticketId));
     }
 }

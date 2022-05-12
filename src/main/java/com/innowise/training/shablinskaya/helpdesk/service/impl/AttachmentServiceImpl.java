@@ -125,6 +125,21 @@ public class AttachmentServiceImpl implements AttachmentService {
         }
     }
 
+    @Override
+    public List<AttachmentDto> getAttachmentsByTicketId(Long ticketId) throws TicketStateException {
+        if (ticketId != null){
+            List<Attachment> attachments = attachmentRepository.getByTicketId(ticketId);
+
+            List<AttachmentDto> dtos = new ArrayList<>();
+            if(attachments != null){
+                attachments.forEach(attachment -> dtos.add(converter.toDto(attachment))); }
+            return dtos;
+        }else{
+            throw new TicketStateException("Ticket ID is can't be NULL!");
+        }
+
+    }
+
     private AttachmentDto findById(Long id) {
         return converter.toDto(attachmentRepository.getById(id).orElseThrow(EntityNotFoundException::new));
     }

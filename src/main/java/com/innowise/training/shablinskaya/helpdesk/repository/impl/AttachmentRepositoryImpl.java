@@ -37,4 +37,11 @@ public class AttachmentRepositoryImpl implements AttachmentRepository {
         }
         return attachment;
     }
+
+    @Override
+    public List<Attachment> getByTicketId(Long ticketId) {
+        return entityManager.createQuery("SELECT a FROM Attachment a WHERE a.ticket.id = :ticketId", Attachment.class)
+                .setParameter("ticketId", ticketId)
+                .getResultList();
+    }
 }

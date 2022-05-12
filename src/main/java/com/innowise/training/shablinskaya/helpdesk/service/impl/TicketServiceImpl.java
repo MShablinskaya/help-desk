@@ -194,6 +194,8 @@ public class TicketServiceImpl implements TicketService {
     public Ticket changeState(Long id, String action) throws TicketStateException {
         User user = userService.getCurrentUser();
         TicketDto dto = ticketConverter.toDto(ticketRepository.getById(id).orElseThrow(EntityNotFoundException::new));
+//        char replaceCharacter = '_';
+//        action = action.replace(' ', replaceCharacter);
         Action inputAction = Action.valueOf(action.toUpperCase());
         String state = inputAction.getAction();
         if (dto != null && state != null) {
