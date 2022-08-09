@@ -1,8 +1,13 @@
 # help-desk-mvc
-Apparently, the backend code for the HelpDesk application is presented.    
-The task was completed according to the following stories    
+The backend for the HelpDesk web-app.   
 The application was developed without using SpringBoot, SpringData or Lombock.
-Used technologies SpringMVC, Hibernate, H2, Java 8, Tomcat
+Used technologies:
+* SpringMVC, 
+* JPA/Hibernate,
+* H2,
+* Java 8, 
+* Tomcat    
+The task was completed according to the following stories:  
 _____
 
 ### User Authentication
